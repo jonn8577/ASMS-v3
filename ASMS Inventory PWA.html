@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ASMS">
+    <title>ASMS - Art Studio Management System</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        :root {
+            --color-bg: #0a0e1a;
+            --color-surface: #151923;
+            --color-surface-elevated: #1e2430;
+            --color-primary: #3b82f6;
+            --color-primary-hover: #2563eb;
+            --color-text: #e5e7eb;
+            --color-text-secondary: #9ca3af;
+            --color-border: #374151;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-badge-artwork: #8b5cf6;
+            --color-badge-material: #3b82f6;
+            --color-badge-equipment: #f59e0b;
+            --color-badge-tool: #10b981;
+            --color-badge-supply: #ec4899;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--color-text);
+            font-size: 20px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .icon-btn:active {
+            background: var(--color-surface-elevated);
+        }
+
+        .content {
+            margin-top: 64px;
+            padding: 16px;
+            min-height: calc(100vh - 144px);
+        }
+
+        .search-bar {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 16px;
+            color: var(--color-text);
+            width: 100%;
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .chip {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .chip.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .item-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .item-card:active {
+            background: var(--color-surface-elevated);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-artwork { background: rgba(139, 92, 246, 0.2); color: var(--color-badge-artwork); }
+        .badge-material { background: rgba(59, 130, 246, 0.2); color: var(--color-badge-material); }
+        .badge-equipment { background: rgba(245, 158, 11, 0.2); color: var(--color-badge-equipment); }
+        .badge-tool { background: rgba(16, 185, 129, 0.2); color: var(--color-badge-tool); }
+        .badge-supply { background: rgba(236, 72, 153, 0.2); color: var(--color-badge-supply); }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-available { background: var(--color-success); }
+        .status-in-use { background: var(--color-warning); }
+        .status-storage { background: var(--color-text-secondary); }
+        .status-sold { background: var(--color-error); }
+        .status-on-loan { background: var(--color-primary); }
+
+        .low-stock-badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--color-error);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 100;
+        }
+
+        .tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+        }
+
+        .tab-label {
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .btn {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn:active {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface-elevated);
+            color: var(--color-text);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: flex-end;
+            z-index: 200;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--color-text-secondary);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            color: var(--color-text);
+            width: 100%;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .scanner-container {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        #qr-reader {
+            width: 100%;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .settings-group {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .connection-online {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-success);
+        }
+
+        .connection-offline {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--color-error);
+        }
+
+        .audit-progress {
+            background: var(--color-surface-elevated);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            background: var(--color-surface);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            background: var(--color-primary);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .audit-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .audit-actions button {
+            flex: 1;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .detail-label {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            font-weight: 500;
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 200px;
+            background: var(--color-surface-elevated);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1 id="header-title">ASMS</h1>
+        <div class="header-actions">
+            <button class="icon-btn" id="add-btn">➕</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Inventory Tab -->
+        <div id="inventory-tab" class="tab-content">
+            <input type="text" class="search-bar" id="search-input" placeholder="Search inventory...">
+            <div class="filter-chips" id="filter-chips"></div>
+            <div id="inventory-list"></div>
+        </div>
+
+        <!-- Locations Tab -->
+        <div id="locations-tab" class="tab-content hidden">
+            <div id="locations-list"></div>
+        </div>
+
+        <!-- Projects Tab -->
+        <div id="projects-tab" class="tab-content hidden">
+            <div id="projects-list"></div>
+        </div>
+
+        <!-- Audit Tab -->
+        <div id="audit-tab" class="tab-content hidden">
+            <div id="audit-start-screen">
+                <h2 style="margin-bottom: 24px;">Start Audit Session</h2>
+                <button class="btn" onclick="startAudit('full')">🔍 Full Audit</button>
+                <button class="btn" onclick="startAudit('location')">📍 By Location</button>
+                <button class="btn" onclick="startAudit('not-audited')">⏰ Not Recently Audited</button>
+                <div id="audit-history" style="margin-top: 32px;"></div>
+            </div>
+            <div id="audit-item-screen" class="hidden"></div>
+            <div id="audit-summary-screen" class="hidden"></div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings-tab" class="tab-content hidden">
+            <div class="settings-group">
+                <h3 style="margin-bottom: 16px;">Airtable Configuration</h3>
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <input type="password" class="form-input" id="api-key-input" placeholder="patXXXXXXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Base ID</label>
+                    <input type="text" class="form-input" id="base-id-input" placeholder="appXXXXXXXXXXXXX">
+                </div>
+                <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+                <button class="btn btn-secondary" onclick="testConnection()">🔌 Test Connection</button>
+                <div style="margin-top: 16px; text-align: center;">
+                    <span class="connection-status connection-offline" id="connection-status">Offline</span>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3 style="margin-bottom: 16px;">Data Export</h3>
+                <button class="btn btn-secondary" onclick="exportData()">📥 Export to CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab active" data-tab="inventory">
+            <div>📦</div>
+            <div class="tab-label">Inventory</div>
+        </div>
+        <div class="tab" data-tab="locations">
+            <div>📍</div>
+            <div class="tab-label">Locations</div>
+        </div>
+        <div class="tab" data-tab="projects">
+            <div>📋</div>
+            <div class="tab-label">Projects</div>
+        </div>
+        <div class="tab" data-tab="audit">
+            <div>✅</div>
+            <div class="tab-label">Audit</div>
+        </div>
+        <div class="tab" data-tab="settings">
+            <div>⚙️</div>
+            <div class="tab-label">Settings</div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="add-item-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Item</h2>
+                <button class="icon-btn" onclick="closeModal('add-item-modal')">✖️</button>
+            </div>
+            <form id="add-item-form">
+                <div class="form-group">
+                    <label class="form-label">Name *</label>
+                    <input type="text" class="form-input" id="item-name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="item-category">
+                        <option value="Artwork">Artwork</option>
+                        <option value="Material" selected>Material</option>
+                        <option value="Equipment">Equipment</option>
+                        <option value="Tool">Tool</option>
+                        <option value="Supply">Supply</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="item-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-input" id="item-quantity" value="1" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Low Stock Threshold</label>
+                    <input type="number" class="form-input" id="item-threshold" value="5" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="item-status">
+                        <option value="Available" selected>Available</option>
+                        <option value="In Use">In Use</option>
+                        <option value="Storage">Storage</option>
+                        <option value="Sold">Sold</option>
+                        <option value="On Loan">On Loan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" id="item-location">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price</label>
+                    <input type="number" class="form-input" id="item-price" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Barcode / QR Code</label>
+                    <input type="text" class="form-input" id="item-barcode">
+                    <button type="button" class="btn btn-secondary" onclick="startBarcodeScanner()">📷 Scan Barcode</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags</label>
+                    <input type="text" class="form-input" id="item-tags" placeholder="tag1, tag2, tag3">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="item-notes"></textarea>
+                </div>
+                <button type="submit" class="btn">Save Item</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="barcode-scanner-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Scan Barcode</h2>
+                <button class="icon-btn" onclick="stopBarcodeScanner()">✖️</button>
+            </div>
+            <div class="scanner-container">
+                <div id="qr-reader"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="item-detail-modal">
+        <div class="modal-content" id="item-detail-content"></div>
+    </div>
+
+    <script>
+        // Data Storage
+        let inventory = [];
+        let locations = [];
+        let projects = [];
+        let auditSessions = [];
+        let currentAuditSession = null;
+        let currentTab = 'inventory';
+        let html5QrCode = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            loadData();
+            renderInventory();
+            setupTabs();
+            setupSearch();
+            setupFilters();
+        });
+
+        // Settings
+        function loadSettings() {
+            const apiKey = localStorage.getItem('airtable_api_key');
+            const baseId = localStorage.getItem('airtable_base_id');
+            if (apiKey) document.getElementById('api-key-input').value = apiKey;
+            if (baseId) document.getElementById('base-id-input').value = baseId;
+        }
+
+        function saveSettings() {
+            const apiKey = document.getElementById('api-key-input').value;
+            const baseId = document.getElementById('base-id-input').value;
+            localStorage.setItem('airtable_api_key', apiKey);
+            localStorage.setItem('airtable_base_id', baseId);
+            alert('✅ Settings saved!');
+        }
+
+        async function testConnection() {
+            const apiKey = localStorage.getItem('airtable_api_key');
+            const baseId = localStorage.getItem('airtable_base_id');
+            
+            if (!apiKey || !baseId) {
+                alert('❌ Please configure API Key and Base ID first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.airtable.com/v0/${baseId}/Inventory?maxRecords=1`, {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+                
+                if (response.ok) {
+                    document.getElementById('connection-status').className = 'connection-status connection-online';
+                    document.getElementById('connection-status').textContent = 'Online';
+                    alert('✅ Connection successful!');
+                } else {
+                    throw new Error('Connection failed');
+                }
+            } catch (error) {
+                document.getElementById('connection-status').className = 'connection-status connection-offline';
+                document.getElementById('connection-status').textContent = 'Offline';
+                alert('❌ Connection failed. Check your credentials.');
+            }
+        }
+
+        // Data Management
+        function loadData() {
+            inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+            locations = JSON.parse(localStorage.getItem('locations') || '[]');
+            projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            auditSessions = JSON.parse(localStorage.getItem('auditSessions') || '[]');
+        }
+
+        function saveData() {
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('locations', JSON.stringify(locations));
+            localStorage.setItem('projects', JSON.stringify(projects));
+            localStorage.setItem('auditSessions', JSON.stringify(auditSessions));
+        }
+
+        // Tab Management
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+
+            document.getElementById('add-btn').addEventListener('click', () => {
+                if (currentTab === 'inventory') {
+                    openModal('add-item-modal');
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            document.getElementById('header-title').textContent = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+            document.getElementById('add-btn').style.display = tabName === 'inventory' ? 'block' : 'none';
+
+            if (tabName === 'inventory') renderInventory();
+            if (tabName === 'locations') renderLocations();
+            if (tabName === 'projects') renderProjects();
+            if (tabName === 'audit') renderAuditHistory();
+        }
+
+        // Search & Filter
+        function setupSearch() {
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                renderInventory(e.target.value);
+            });
+        }
+
+        function setupFilters() {
+            const categories = ['All', 'Artwork', 'Material', 'Equipment', 'Tool', 'Supply'];
+            const filterChips = document.getElementById('filter-chips');
+            
+            categories.forEach(cat => {
+                const chip = document.createElement('div');
+                chip.className = `chip ${cat === 'All' ? 'active' : ''}`;
+                chip.textContent = cat;
+                chip.onclick = () => {
+                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    renderInventory(document.getElementById('search-input').value, cat);
+                };
+                filterChips.appendChild(chip);
+            });
+        }
+
+        // Inventory Rendering
+        function renderInventory(searchTerm = '', category = 'All') {
+            const list = document.getElementById('inventory-list');
+            let filtered = inventory.filter(item => {
+                const matchesSearch = !searchTerm || 
+                    item.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (item.Tags || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (item.Barcode || '').toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesCategory = category === 'All' || item.Category === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>No items found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = filtered.map(item => {
+                const isLowStock = item.Quantity <= (item['Low Stock Threshold'] || 0);
+                return `
+                    <div class="item-card" onclick="showItemDetail('${item.id}')">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-name">${item.Name}</div>
+                                <div class="item-meta">
+                                    <span class="badge badge-${item.Category.toLowerCase()}">${item.Category}</span>
+                                    <span style="color: var(--color-text-secondary); font-size: 12px;">
+                                        <span class="status-indicator status-${item.Status.toLowerCase().replace(' ', '-')}"></span>
+                                        ${item.Status}
+                                    </span>
+                                    ${item.Location ? `<span style="color: var(--color-text-secondary); font-size: 12px;">📍 ${item.Location}</span>` : ''}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 18px; font-weight: 600;">×${item.Quantity}</div>
+                                ${isLowStock ? '<div class="low-stock-badge">LOW STOCK</div>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Add Item
+        document.getElementById('add-item-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newItem = {
+                id: Date.now().toString(),
+                Name: document.getElementById('item-name').value,
+                Category: document.getElementById('item-category').value,
+                Description: document.getElementById('item-description').value,
+                Quantity: parseInt(document.getElementById('item-quantity').value),
+                'Low Stock Threshold': parseInt(document.getElementById('item-threshold').value),
+                Status: document.getElementById('item-status').value,
+                Location: document.getElementById('item-location').value,
+                Price: parseFloat(document.getElementById('item-price').value) || 0,
+                Barcode: document.getElementById('item-barcode').value,
+                Tags: document.getElementById('item-tags').value,
+                Notes: document.getElementById('item-notes').value,
+                'Date Added': new Date().toISOString(),
+                'Last Modified': new Date().toISOString(),
+                'Audit Status': 'Pending'
+            };
+
+            inventory.push(newItem);
+            saveData();
+            await syncToAirtable('Inventory', newItem);
+            
+            closeModal('add-item-modal');
+            document.getElementById('add-item-form').reset();
+            renderInventory();
+            alert('✅ Item added successfully!');
+        });
+
+        // Item Detail
+        function showItemDetail(itemId) {
+            const item = inventory.find(i => i.id === itemId);
+            if (!item) return;
+
+            const content = document.getElementById('item-detail-content');
+            content.innerHTML = `
+                <div class="modal-header">
+                    <h2 class="modal-title">${item.Name}</h2>
+                    <button class="icon-btn" onclick="closeModal('item-detail-modal')">✖️</button>
+                </div>
+                <div class="photo-preview">
+                    <div style="color: var(--color-text-secondary); font-size: 48px;">📷</div>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Category</span>
+                    <span class="detail-value"><span class="badge badge-${item.Category.toLowerCase()}">${item.Category}</span></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value">${item.Status}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Quantity</span>
+                    <span class="detail-value">×${item.Quantity}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location</span>
+                    <span class="detail-value">${item.Location || 'Not set'}</span>
+                </div>
+                ${item.Description ? `<div class="detail-row"><span class="detail-label">Description</span><span class="detail-value">${item.Description}</span></div>` : ''}
+                ${item.Price ? `<div class="detail-row"><span class="detail-label">Price</span><span class="detail-value">$${item.Price.toFixed(2)}</span></div>` : ''}
+                ${item.Barcode ? `<div class="detail-row"><span class="detail-label">Barcode</span><span class="detail-value">${item.Barcode}</span></div>` : ''}
+                ${item.Tags ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="detail-value">${item.Tags}</span></div>` : ''}
+                ${item.Notes ? `<div class="detail-row"><span class="detail-label">Notes</span><span class="detail-value">${item.Notes}</span></div>` : ''}
+                <button class="btn btn-secondary" onclick="deleteItem('${item.id}')">🗑️ Delete Item</button>
+            `;
+            openModal('item-detail-modal');
+        }
+
+        function deleteItem(itemId) {
+            if (!confirm('Are you sure you want to delete this item?')) return;
+            inventory = inventory.filter(i => i.id !== itemId);
+            saveData();
+            closeModal('item-detail-modal');
+            renderInventory();
+        }
+
+        // Barcode Scanner
+        function startBarcodeScanner() {
+            openModal('barcode-scanner-modal');
+            html5QrCode = new Html5Qrcode("qr-reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    document.getElementById('item-barcode').value = decodedText;
+                    stopBarcodeScanner();
+                }
+            ).catch(err => console.error(err));
+        }
+
+        function stopBarcodeScanner() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    closeModal('barcode-scanner-modal');
+                });
+            }
+        }
+
+        // Locations
+        function renderLocations() {
+            const list = document.getElementById('locations-list');
+            if (locations.length === 0) {
+                list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📍</div><p>No locations yet</p></div>`;
+                return;
+            }
+            list.innerHTML = locations.map(loc => `
+                <div class="item-card">
+                    <div class="item-name">${loc['Location Name']}</div>
+                    <div style="color: var(--color-text-secondary); font-size: 14px;">${loc['Location Type']}</div>
+                </div>
+            `).join('');
+        }
+
+        // Projects
+        function renderProjects() {
+            const list = document.getElementById('projects-list');
+            if (projects.length === 0) {
+                list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><p>No projects yet</p></div>`;
+                return;
+            }
+            list.innerHTML = projects.map(proj => `
+                <div class="item-card">
+                    <div class="item-name">${proj['Project Name']}</div>
+                    <div class="item-meta">
+                        <span class="badge badge-${proj.Status.toLowerCase().replace(' ', '-')}">${proj.Status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Audit System
+        function startAudit(type) {
+            let auditItems = [];
+            if (type === 'full') {
+                auditItems = [...inventory];
+            } else if (type === 'location') {
+                const location = prompt('Enter location name:');
+                if (!location) return;
+                auditItems = inventory.filter(i => i.Location === location);
+            } else if (type === 'not-audited') {
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                auditItems = inventory.filter(i => !i['Last Audited Date'] || new Date(i['Last Audited Date']) < thirtyDaysAgo);
+            }
+
+            if (auditItems.length === 0) {
+                alert('No items to audit');
+                return;
+            }
+
+            currentAuditSession = {
+                id: Date.now().toString(),
+                type: type,
+                items: auditItems,
+                currentIndex: 0,
+                results: [],
+                startDate: new Date().toISOString()
+            };
+
+            showAuditItem();
+        }
+
+        function showAuditItem() {
+            document.getElementById('audit-start-screen').classList.add('hidden');
+            const screen = document.getElementById('audit-item-screen');
+            screen.classList.remove('hidden');
+
+            const session = currentAuditSession;
+            const item = session.items[session.currentIndex];
+            const progress = ((session.currentIndex + 1) / session.items.length * 100).toFixed(0);
+
+            screen.innerHTML = `
+                <div class="audit-progress">
+                    <h3>${item.Name}</h3>
+                    <p style="color: var(--color-text-secondary); margin: 8px 0;">📍 ${item.Location || 'No location'}</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                    <p style="margin-top: 8px; font-size: 14px;">Item ${session.currentIndex + 1} of ${session.items.length}</p>
+                </div>
+                <div style="background: var(--color-surface-elevated); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <div class="detail-row">
+                        <span class="detail-label">Expected Quantity</span>
+                        <span class="detail-value" style="font-size: 24px; font-weight: 600;">×${item.Quantity}</span>
+                    </div>
+                </div>
+                <div class="audit-actions">
+                    <button class="btn" style="background: var(--color-success);" onclick="auditResult('Confirmed')">✅ Confirmed</button>
+                </div>
+                <button class="btn btn-secondary" onclick="auditResult('Quantity Off')">🔢 Quantity Off</button>
+                <button class="btn btn-secondary" style="background: rgba(239, 68, 68, 0.2); color: var(--color-error);" onclick="auditResult('Not Found')">❌ Not Found</button>
+            `;
+        }
+
+        function auditResult(result) {
+            const session = currentAuditSession;
+            const item = session.items[session.currentIndex];
+            
+            let actualQuantity = item.Quantity;
+            if (result === 'Quantity Off') {
+                const input = prompt('Enter actual quantity:', item.Quantity);
+                if (input === null) return;
+                actualQuantity = parseInt(input);
+                item.Quantity = actualQuantity;
+            }
+
+            session.results.push({
+                itemId: item.id,
+                itemName: item.Name,
+                result: result,
+                expectedQuantity: item.Quantity,
+                actualQuantity: actualQuantity,
+                timestamp: new Date().toISOString()
+            });
+
+            item['Last Audited Date'] = new Date().toISOString();
+            item['Audit Status'] = result === 'Confirmed' ? 'Confirmed' : 'Discrepancy';
+
+            session.currentIndex++;
+            if (session.currentIndex < session.items.length) {
+                showAuditItem();
+            } else {
+                showAuditSummary();
+            }
+            saveData();
+        }
+
+        function showAuditSummary() {
+            document.getElementById('audit-item-screen').classList.add('hidden');
+            const screen = document.getElementById('audit-summary-screen');
+            screen.classList.remove('hidden');
+
+            const session = currentAuditSession;
+            const confirmed = session.results.filter(r => r.result === 'Confirmed').length;
+            const quantityOff = session.results.filter(r => r.result === 'Quantity Off').length;
+            const notFound = session.results.filter(r => r.result === 'Not Found').length;
+
+            screen.innerHTML = `
+                <h2>Audit Complete</h2>
+                <div style="margin: 24px 0;">
+                    <div class="detail-row">
+                        <span class="detail-label">Total Items</span>
+                        <span class="detail-value">${session.items.length}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">✅ Confirmed</span>
+                        <span class="detail-value" style="color: var(--color-success);">${confirmed}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">🔢 Quantity Off</span>
+                        <span class="detail-value" style="color: var(--color-warning);">${quantityOff}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">❌ Not Found</span>
+                        <span class="detail-value" style="color: var(--color-error);">${notFound}</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="closeAudit()">Close Audit</button>
+            `;
+
+            session.endDate = new Date().toISOString();
+            auditSessions.push(session);
+            saveData();
+        }
+
+        function closeAudit() {
+            document.getElementById('audit-summary-screen').classList.add('hidden');
+            document.getElementById('audit-start-screen').classList.remove('hidden');
+            currentAuditSession = null;
+            renderAuditHistory();
+        }
+
+        function renderAuditHistory() {
+            const container = document.getElementById('audit-history');
+            if (auditSessions.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); margin-top: 24px;">No audit history</p>';
+                return;
+            }
+            container.innerHTML = '<h3 style="margin-bottom: 16px;">Audit History</h3>' + 
+                auditSessions.slice().reverse().map(session => {
+                    const discrepancies = session.results.filter(r => r.result !== 'Confirmed').length;
+                    return `
+                        <div class="item-card">
+                            <div class="item-name">${session.type.charAt(0).toUpperCase() + session.type.slice(1)} Audit</div>
+                            <div style="color: var(--color-text-secondary); font-size: 14px; margin-top: 4px;">
+                                ${new Date(session.startDate).toLocaleDateString()}
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <span class="badge badge-material">${session.items.length} items</span>
+                                ${discrepancies > 0 ? `<span class="low-stock-badge">${discrepancies} discrepancies</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        // Export
+        function exportData() {
+            let csv = 'Name,Category,Description,Quantity,Status,Location,Price,Barcode,Tags,Date Added\n';
+            inventory.forEach(item => {
+                csv += `"${item.Name}","${item.Category}","${item.Description || ''}",${item.Quantity},"${item.Status}","${item.Location || ''}",${item.Price || 0},"${item.Barcode || ''}","${item.Tags || ''}","${item['Date Added']}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `asms-inventory-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        // Airtable Sync
+        async function syncToAirtable(table, record) {
+            const apiKey = localStorage.getItem('airtable_api_key');
+            const baseId = localStorage.getItem('airtable_base_id');
+            
+            if (!apiKey || !baseId) return;
+
+            try {
+                await fetch(`https://api.airtable.com/v0/${baseId}/${table}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ fields: record })
+                });
+            } catch (error) {
+                console.error('Sync error:', error);
+            }
+        }
+
+        // Modal Management
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+    </script>
+</body>
+</html>
