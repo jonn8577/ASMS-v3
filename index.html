@@ -1,1157 +1,2387 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ASMS">
-    <title>ASMS - Art Studio Management System</title>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <style>
-        :root {
-            --color-bg: #0a0e1a;
-            --color-surface: #151923;
-            --color-surface-elevated: #1e2430;
-            --color-primary: #3b82f6;
-            --color-primary-hover: #2563eb;
-            --color-text: #e5e7eb;
-            --color-text-secondary: #9ca3af;
-            --color-border: #374151;
-            --color-success: #10b981;
-            --color-warning: #f59e0b;
-            --color-error: #ef4444;
-            --color-badge-artwork: #8b5cf6;
-            --color-badge-material: #3b82f6;
-            --color-badge-equipment: #f59e0b;
-            --color-badge-tool: #10b981;
-            --color-badge-supply: #ec4899;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ASMS">
+<title>ASMS — Art Studio Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+/* ============================================
+   APPLE LIQUID GLASS DESIGN SYSTEM
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+:root {
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--color-bg);
-            color: var(--color-text);
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            padding-bottom: 80px;
-        }
+  /* Glass system */
+  --glass-bg: rgba(255,255,255,0.06);
+  --glass-bg-hover: rgba(255,255,255,0.10);
+  --glass-bg-active: rgba(255,255,255,0.14);
+  --glass-border: rgba(255,255,255,0.12);
+  --glass-border-strong: rgba(255,255,255,0.20);
+  --glass-blur: blur(20px) saturate(180%);
+  --glass-blur-heavy: blur(40px) saturate(200%);
 
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--color-surface);
-            border-bottom: 1px solid var(--color-border);
-            padding: 16px;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+  /* Deep navy base */
+  --bg: #09090f;
+  --bg-2: #0d0d18;
+  --surface: rgba(255,255,255,0.04);
+  --surface-2: rgba(255,255,255,0.07);
+  --surface-3: rgba(255,255,255,0.10);
 
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
+  /* Text */
+  --text: #f0f0f8;
+  --text-muted: rgba(240,240,248,0.55);
+  --text-faint: rgba(240,240,248,0.30);
 
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
+  /* Accent — Apple blue */
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.35);
+  --accent-glass: rgba(59,130,246,0.15);
+  --accent-border: rgba(59,130,246,0.40);
 
-        .icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--color-text);
-            font-size: 20px;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 8px;
-        }
+  /* Status colors */
+  --green: #30d158;
+  --green-glass: rgba(48,209,88,0.12);
+  --yellow: #ffd60a;
+  --yellow-glass: rgba(255,214,10,0.12);
+  --red: #ff453a;
+  --red-glass: rgba(255,69,58,0.12);
+  --orange: #ff9f0a;
+  --orange-glass: rgba(255,159,10,0.12);
+  --purple: #bf5af2;
+  --purple-glass: rgba(191,90,242,0.12);
+  --teal: #5ac8fa;
+  --teal-glass: rgba(90,200,250,0.12);
 
-        .icon-btn:active {
-            background: var(--color-surface-elevated);
-        }
+  /* Spacing */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px;
+  --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px;
 
-        .content {
-            margin-top: 64px;
-            padding: 16px;
-            min-height: calc(100vh - 144px);
-        }
+  /* Radius */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-2xl: 28px; --r-full: 9999px;
 
-        .search-bar {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-            font-size: 16px;
-            color: var(--color-text);
-            width: 100%;
-        }
+  /* Tab bar height */
+  --tab-h: 82px;
+  --header-h: 60px;
 
-        .filter-chips {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-        }
+  /* Transitions */
+  --t: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --t-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-        .chip {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            white-space: nowrap;
-            cursor: pointer;
-        }
+html, body {
+  height: 100%; overflow: hidden;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
 
-        .chip.active {
-            background: var(--color-primary);
-            border-color: var(--color-primary);
-        }
+/* ── Animated mesh background ─────────────────── */
+#mesh {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  overflow: hidden;
+}
+.mesh-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0.18;
+  animation: float 12s ease-in-out infinite;
+}
+.orb1 { width: 400px; height: 400px; background: radial-gradient(circle, #3b82f6, transparent); top: -100px; left: -80px; animation-delay: 0s; }
+.orb2 { width: 350px; height: 350px; background: radial-gradient(circle, #bf5af2, transparent); top: 30%; right: -100px; animation-delay: -4s; }
+.orb3 { width: 300px; height: 300px; background: radial-gradient(circle, #5ac8fa, transparent); bottom: 10%; left: 20%; animation-delay: -8s; }
 
-        .item-card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -30px) scale(1.05); }
+  66% { transform: translate(-15px, 20px) scale(0.97); }
+}
 
-        .item-card:active {
-            background: var(--color-surface-elevated);
-        }
+/* ── App shell ─────────────────────────────────── */
+#app {
+  position: fixed; inset: 0; z-index: 1;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
 
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 8px;
-        }
+/* ── Header ────────────────────────────────────── */
+#header {
+  height: var(--header-h);
+  background: rgba(9,9,15,0.7);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex; align-items: center;
+  padding: 0 var(--s4);
+  gap: var(--s3);
+  flex-shrink: 0;
+  position: relative; z-index: 10;
+}
+.header-logo {
+  width: 32px; height: 32px; border-radius: var(--r-sm);
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.header-logo svg { color: white; }
+#header-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; flex: 1; }
+.header-btn {
+  width: 36px; height: 36px; border-radius: var(--r-full);
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--t); flex-shrink: 0; color: var(--text);
+}
+.header-btn:active { background: var(--glass-bg-active); transform: scale(0.92); }
+.header-btn.accent {
+  background: var(--accent); border-color: transparent;
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+.header-btn.accent svg { color: white; }
 
-        .item-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
+/* ── Main scroll area ──────────────────────────── */
+#main {
+  flex: 1; overflow: hidden; position: relative;
+}
 
-        .item-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
+/* ── Tabs ──────────────────────────────────────── */
+.tab-view { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+.tab-view.hidden { display: none; }
+.tab-content { padding: var(--s4); padding-bottom: calc(var(--tab-h) + var(--s4)); min-height: 100%; }
 
-        .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-        }
+/* ── Tab bar ───────────────────────────────────── */
+#tabbar {
+  height: var(--tab-h);
+  background: rgba(9,9,15,0.80);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border-top: 1px solid var(--glass-border);
+  display: flex; align-items: flex-start;
+  padding: var(--s2) var(--s2) 0;
+  gap: 2px;
+  flex-shrink: 0; position: relative; z-index: 10;
+}
+.tab-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  padding: var(--s2) var(--s1);
+  cursor: pointer; transition: var(--t); border-radius: var(--r-md);
+  position: relative;
+}
+.tab-item:active { background: var(--glass-bg); }
+.tab-icon {
+  width: 28px; height: 28px; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--t-spring); color: var(--text-muted);
+}
+.tab-label { font-size: 10px; font-weight: 500; color: var(--text-muted); transition: var(--t); }
+.tab-item.active .tab-icon {
+  background: var(--accent-glass);
+  color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.tab-item.active .tab-label { color: var(--accent); font-weight: 600; }
+.tab-dot {
+  position: absolute; top: 4px; right: calc(50% - 16px);
+  width: 6px; height: 6px; border-radius: var(--r-full);
+  background: var(--red); display: none;
+}
+.tab-dot.show { display: block; }
 
-        .badge-artwork { background: rgba(139, 92, 246, 0.2); color: var(--color-badge-artwork); }
-        .badge-material { background: rgba(59, 130, 246, 0.2); color: var(--color-badge-material); }
-        .badge-equipment { background: rgba(245, 158, 11, 0.2); color: var(--color-badge-equipment); }
-        .badge-tool { background: rgba(16, 185, 129, 0.2); color: var(--color-badge-tool); }
-        .badge-supply { background: rgba(236, 72, 153, 0.2); color: var(--color-badge-supply); }
+/* ── Section header ────────────────────────────── */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--s4);
+}
+.section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.section-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
+/* ── Search bar ────────────────────────────────── */
+.search-wrap {
+  position: relative; margin-bottom: var(--s3);
+}
+.search-input {
+  width: 100%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-full);
+  padding: var(--s2) var(--s4) var(--s2) 38px;
+  color: var(--text); font-size: 15px; font-family: var(--font);
+  outline: none; transition: var(--t);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+.search-input::placeholder { color: var(--text-faint); }
+.search-input:focus { border-color: var(--accent-border); background: var(--glass-bg-hover); }
+.search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-faint); pointer-events: none;
+}
 
-        .status-available { background: var(--color-success); }
-        .status-in-use { background: var(--color-warning); }
-        .status-storage { background: var(--color-text-secondary); }
-        .status-sold { background: var(--color-error); }
-        .status-on-loan { background: var(--color-primary); }
+/* ── Filter chips ──────────────────────────────── */
+.filter-row {
+  display: flex; gap: var(--s2); overflow-x: auto; padding-bottom: var(--s2);
+  margin-bottom: var(--s3); scrollbar-width: none;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  font-size: 12px; font-weight: 500; color: var(--text-muted);
+  cursor: pointer; transition: var(--t); white-space: nowrap;
+}
+.chip.active { background: var(--accent-glass); border-color: var(--accent-border); color: var(--accent); }
+.chip:active { transform: scale(0.95); }
 
-        .low-stock-badge {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--color-error);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
+/* ── Card ──────────────────────────────────────── */
+.card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  overflow: hidden; transition: var(--t);
+  margin-bottom: var(--s3);
+}
+.card:active { background: var(--glass-bg-hover); transform: scale(0.99); }
+.card-body { padding: var(--s4); }
+.card-row { display: flex; align-items: center; gap: var(--s3); }
 
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--color-surface);
-            border-top: 1px solid var(--color-border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            z-index: 100;
-        }
+/* ── Inventory item card ───────────────────────── */
+.inv-card { cursor: pointer; }
+.inv-thumb {
+  width: 52px; height: 52px; border-radius: var(--r-md);
+  object-fit: cover; background: var(--surface-2); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.inv-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.inv-thumb-placeholder { color: var(--text-faint); }
+.inv-info { flex: 1; min-width: 0; }
+.inv-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inv-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.inv-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.qty-badge {
+  font-size: 14px; font-weight: 700;
+  padding: 2px 10px; border-radius: var(--r-full);
+  background: var(--glass-bg-hover); border: 1px solid var(--glass-border);
+}
+.qty-badge.low { background: var(--red-glass); border-color: rgba(255,69,58,0.3); color: var(--red); }
 
-        .tab {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 8px;
-            color: var(--color-text-secondary);
-            cursor: pointer;
-            font-size: 24px;
-        }
+/* ── Badges ────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.2px;
+}
+.badge-artwork    { background: var(--purple-glass); color: var(--purple); }
+.badge-material   { background: var(--teal-glass); color: var(--teal); }
+.badge-equipment  { background: var(--orange-glass); color: var(--orange); }
+.badge-tool       { background: var(--yellow-glass); color: var(--yellow); }
+.badge-supply     { background: var(--green-glass); color: var(--green); }
+.badge-available  { background: var(--green-glass); color: var(--green); }
+.badge-in-use     { background: var(--yellow-glass); color: var(--yellow); }
+.badge-storage    { background: rgba(90,200,250,0.12); color: var(--teal); }
+.badge-sold       { background: var(--red-glass); color: var(--red); }
+.badge-on-loan    { background: var(--orange-glass); color: var(--orange); }
+.badge-active     { background: var(--green-glass); color: var(--green); }
+.badge-complete   { background: var(--glass-bg-hover); color: var(--text-muted); }
+.badge-on-hold    { background: var(--yellow-glass); color: var(--yellow); }
+.badge-low-stock  { background: var(--red-glass); color: var(--red); }
+.badge-confirmed  { background: var(--green-glass); color: var(--green); }
+.badge-discrepancy { background: var(--red-glass); color: var(--red); }
+.badge-pending    { background: var(--yellow-glass); color: var(--yellow); }
 
-        .tab.active {
-            color: var(--color-primary);
-        }
+/* ── Stat row ──────────────────────────────────── */
+.stat-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: var(--s3); margin-bottom: var(--s4);
+}
+.stat-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl);
+  padding: var(--s4);
+  text-align: center;
+}
+.stat-num { font-size: 26px; font-weight: 700; letter-spacing: -1px; }
+.stat-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
 
-        .tab-label {
-            font-size: 11px;
-            margin-top: 4px;
-        }
+/* ── Empty state ───────────────────────────────── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: var(--s10) var(--s8);
+  color: var(--text-muted);
+}
+.empty-icon {
+  width: 56px; height: 56px; border-radius: var(--r-xl);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: var(--s4); color: var(--text-faint);
+}
+.empty-state h3 { color: var(--text); margin-bottom: var(--s2); font-size: 17px; font-weight: 600; }
+.empty-state p { font-size: 14px; max-width: 26ch; line-height: 1.5; }
 
-        .btn {
-            background: var(--color-primary);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
-        }
+/* ── Floating action button ────────────────────── */
+.fab {
+  position: fixed; bottom: calc(var(--tab-h) + var(--s4)); right: var(--s4);
+  width: 52px; height: 52px; border-radius: var(--r-full);
+  background: var(--accent);
+  box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 1px rgba(255,255,255,0.15) inset;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--t-spring); z-index: 20; color: white;
+}
+.fab:active { transform: scale(0.90); }
 
-        .btn:active {
-            background: var(--color-primary-hover);
-        }
+/* ── Modal / Bottom sheet ──────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 300ms ease;
+  display: flex; align-items: flex-end;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-sheet {
+  width: 100%; max-height: 92dvh;
+  background: rgba(15,15,25,0.92);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border: 1px solid var(--glass-border);
+  border-bottom: none;
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  transform: translateY(100%);
+  transition: transform 350ms cubic-bezier(0.34, 1.1, 0.64, 1);
+  overflow: hidden; display: flex; flex-direction: column;
+}
+.modal-overlay.open .modal-sheet { transform: translateY(0); }
+.modal-pill {
+  width: 36px; height: 4px; border-radius: var(--r-full);
+  background: var(--glass-border-strong); margin: var(--s3) auto var(--s1);
+  flex-shrink: 0;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--s2) var(--s4) var(--s4);
+  flex-shrink: 0;
+}
+.modal-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+.modal-close {
+  width: 30px; height: 30px; border-radius: var(--r-full);
+  background: var(--surface-2); border: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--t); color: var(--text-muted);
+}
+.modal-close:active { background: var(--glass-bg-active); }
+.modal-body { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 0 var(--s4) var(--s8); }
 
-        .btn-secondary {
-            background: var(--color-surface-elevated);
-            color: var(--color-text);
-        }
+/* ── Forms ─────────────────────────────────────── */
+.form-group { margin-bottom: var(--s5); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); }
+.form-label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: var(--s2);
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  padding: var(--s3) var(--s4);
+  color: var(--text); font-size: 15px; font-family: var(--font);
+  outline: none; transition: var(--t);
+  -webkit-appearance: none; appearance: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--accent-border);
+  background: var(--glass-bg-hover);
+  box-shadow: 0 0 0 3px var(--accent-glass);
+}
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text-faint); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(240,240,248,0.4)' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+.form-select option { background: #1a1a2e; color: var(--text); }
 
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
-            align-items: flex-end;
-            z-index: 200;
-        }
+/* Custom dropdown */
+.custom-dropdown { position: relative; }
+.dropdown-trigger {
+  width: 100%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  padding: var(--s3) var(--s4);
+  color: var(--text); font-size: 15px; font-family: var(--font);
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; transition: var(--t); text-align: left;
+}
+.dropdown-trigger.open,
+.dropdown-trigger:focus {
+  border-color: var(--accent-border);
+  background: var(--glass-bg-hover);
+  box-shadow: 0 0 0 3px var(--accent-glass);
+  outline: none;
+}
+.dropdown-trigger span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dropdown-trigger .placeholder { color: var(--text-faint); }
+.dropdown-list {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 200;
+  background: rgba(15,15,25,0.96);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  max-height: 220px; overflow-y: auto;
+  display: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.dropdown-list.open { display: block; }
+.dropdown-opt {
+  padding: var(--s3) var(--s4);
+  font-size: 14px; cursor: pointer;
+  transition: var(--t); border-bottom: 1px solid var(--glass-border);
+  display: flex; align-items: center; gap: var(--s2);
+}
+.dropdown-opt:last-child { border-bottom: none; }
+.dropdown-opt:hover, .dropdown-opt:active { background: var(--glass-bg-hover); }
+.dropdown-opt.selected { color: var(--accent); }
+.dropdown-opt .check { margin-left: auto; }
+/* Dropdown search */
+.dropdown-search-wrap { padding: var(--s2); border-bottom: 1px solid var(--glass-border); }
+.dropdown-search {
+  width: 100%; background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--r-sm); padding: 6px 10px;
+  color: var(--text); font-size: 13px; font-family: var(--font); outline: none;
+}
+.dropdown-search:focus { border-color: var(--accent-border); }
+.dropdown-add-new {
+  padding: var(--s3) var(--s4);
+  font-size: 13px; color: var(--accent); cursor: pointer;
+  border-top: 1px solid var(--glass-border);
+  display: flex; align-items: center; gap: var(--s2);
+}
+.dropdown-add-new:hover { background: var(--accent-glass); }
 
-        .modal.active {
-            display: flex;
-        }
+/* Tags multi-select */
+.tags-input-wrap {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  padding: var(--s2) var(--s3);
+  min-height: 46px; cursor: text;
+  display: flex; flex-wrap: wrap; gap: var(--s1); align-items: center;
+  transition: var(--t);
+}
+.tags-input-wrap.focused { border-color: var(--accent-border); background: var(--glass-bg-hover); box-shadow: 0 0 0 3px var(--accent-glass); }
+.tag-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: var(--r-full);
+  background: var(--accent-glass); border: 1px solid var(--accent-border);
+  font-size: 12px; color: var(--accent); font-weight: 500;
+}
+.tag-chip-remove { cursor: pointer; color: var(--accent); display: flex; align-items: center; }
+.tags-text-input {
+  border: none; background: none; outline: none;
+  color: var(--text); font-size: 14px; font-family: var(--font);
+  min-width: 80px; flex: 1;
+}
+.tags-text-input::placeholder { color: var(--text-faint); }
+.tags-suggestions {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 200;
+  background: rgba(15,15,25,0.96);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--r-lg); overflow: hidden;
+  max-height: 160px; overflow-y: auto;
+  display: none; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.tags-suggestions.open { display: block; }
 
-        .modal-content {
-            background: var(--color-surface);
-            border-radius: 20px 20px 0 0;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 24px;
-            animation: slideUp 0.3s ease-out;
-        }
+/* ── Photo upload ───────────────────────────────── */
+.photo-upload-zone {
+  border: 2px dashed var(--glass-border-strong);
+  border-radius: var(--r-xl);
+  padding: var(--s6);
+  text-align: center; cursor: pointer;
+  transition: var(--t); position: relative; overflow: hidden;
+}
+.photo-upload-zone:hover, .photo-upload-zone.has-photo {
+  border-color: var(--accent-border);
+  background: var(--accent-glass);
+}
+.photo-upload-zone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.photo-preview {
+  width: 100%; max-height: 200px; object-fit: cover;
+  border-radius: var(--r-lg); display: none;
+}
+.photo-preview.show { display: block; }
+.photo-placeholder { display: flex; flex-direction: column; align-items: center; gap: var(--s2); color: var(--text-muted); }
+.photo-placeholder.hide { display: none; }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
+/* ── Stepper ────────────────────────────────────── */
+.stepper {
+  display: flex; align-items: center; gap: var(--s2);
+}
+.step-btn {
+  width: 36px; height: 36px; border-radius: var(--r-full);
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--t); color: var(--text); font-size: 18px;
+}
+.step-btn:active { background: var(--glass-bg-active); transform: scale(0.9); }
+.step-val {
+  min-width: 52px; text-align: center;
+  background: var(--glass-bg-hover); border: 1px solid var(--glass-border);
+  border-radius: var(--r-md); padding: var(--s2) var(--s2);
+  font-size: 16px; font-weight: 700;
+}
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
+/* ── Buttons ────────────────────────────────────── */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: var(--s2);
+  padding: var(--s3) var(--s5); border-radius: var(--r-full);
+  font-size: 15px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; transition: var(--t); border: 1px solid transparent;
+  -webkit-appearance: none; appearance: none; text-decoration: none;
+}
+.btn-primary {
+  background: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+  color: white; width: 100%;
+}
+.btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+.btn-glass {
+  background: var(--glass-bg); border-color: var(--glass-border);
+  color: var(--text);
+}
+.btn-glass:active { background: var(--glass-bg-active); }
+.btn-danger {
+  background: var(--red-glass); border-color: rgba(255,69,58,0.3);
+  color: var(--red);
+}
+.btn-danger:active { opacity: 0.8; }
+.btn-icon { padding: var(--s2) var(--s3); gap: var(--s1); }
 
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-        }
+/* Scan button in forms */
+.input-with-scan {
+  display: flex; gap: var(--s2); align-items: center;
+}
+.input-with-scan .form-input { flex: 1; }
+.scan-btn {
+  flex-shrink: 0; width: 46px; height: 46px;
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--t); color: var(--text-muted);
+}
+.scan-btn:active { background: var(--glass-bg-active); color: var(--accent); }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+/* ── Divider ─────────────────────────────────────── */
+.divider { height: 1px; background: var(--glass-border); margin: var(--s4) 0; }
 
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--color-text-secondary);
-        }
+/* ── Detail view ──────────────────────────────────── */
+.detail-hero {
+  width: 100%; aspect-ratio: 16/9;
+  border-radius: var(--r-xl); overflow: hidden;
+  background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: var(--s4); position: relative;
+}
+.detail-hero img { width: 100%; height: 100%; object-fit: cover; }
+.detail-hero-placeholder { color: var(--text-faint); }
+.detail-field { margin-bottom: var(--s4); }
+.detail-field-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.detail-field-value { font-size: 15px; color: var(--text); line-height: 1.5; }
+.detail-field-value.large { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+.detail-actions { display: flex; gap: var(--s3); margin-top: var(--s4); }
+.detail-actions .btn { flex: 1; }
 
-        .form-input, .form-select, .form-textarea {
-            background: var(--color-surface-elevated);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 16px;
-            color: var(--color-text);
-            width: 100%;
-        }
+/* ── Location cards ───────────────────────────────── */
+.loc-card { cursor: pointer; }
+.loc-icon {
+  width: 44px; height: 44px; border-radius: var(--r-lg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.loc-shelf  { background: var(--teal-glass); color: var(--teal); }
+.loc-bin    { background: var(--orange-glass); color: var(--orange); }
+.loc-cabinet { background: var(--purple-glass); color: var(--purple); }
+.loc-table  { background: var(--green-glass); color: var(--green); }
+.loc-box    { background: var(--yellow-glass); color: var(--yellow); }
+.loc-storage { background: var(--glass-bg-hover); color: var(--text-muted); }
+.loc-drawer { background: var(--teal-glass); color: var(--teal); }
 
-        .form-textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
+/* ── Project cards ───────────────────────────────── */
+.proj-card { cursor: pointer; }
+.proj-dates { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; gap: var(--s2); }
+.proj-budget { font-size: 13px; color: var(--accent); font-weight: 600; }
 
-        .hidden {
-            display: none !important;
-        }
+/* ── Audit ─────────────────────────────────────── */
+.audit-view { display: none; }
+.audit-view.visible { display: flex; flex-direction: column; height: 100%; }
 
-        .scanner-container {
-            width: 100%;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
+.audit-start-card {
+  padding: var(--s5);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl);
+  display: flex; align-items: center; gap: var(--s4);
+  cursor: pointer; transition: var(--t); margin-bottom: var(--s3);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+.audit-start-card:active { background: var(--glass-bg-hover); transform: scale(0.98); }
+.audit-start-icon {
+  width: 48px; height: 48px; border-radius: var(--r-xl);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.audit-item-screen {
+  display: flex; flex-direction: column; align-items: center; gap: var(--s4);
+}
+.audit-item-hero {
+  width: 100%; aspect-ratio: 4/3; border-radius: var(--r-xl);
+  background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.audit-item-hero img { width: 100%; height: 100%; object-fit: cover; }
+.audit-qty-box {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl);
+  padding: var(--s5); text-align: center; width: 100%;
+}
+.audit-qty-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.audit-qty-num { font-size: 56px; font-weight: 700; letter-spacing: -2px; margin-top: 4px; }
+.audit-actions { display: flex; flex-direction: column; gap: var(--s3); width: 100%; }
+.audit-action-btn {
+  width: 100%; padding: var(--s4);
+  border-radius: var(--r-xl); border: 1px solid transparent;
+  font-size: 16px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; transition: var(--t); display: flex; align-items: center; justify-content: center; gap: var(--s2);
+}
+.audit-action-btn:active { transform: scale(0.98); }
+.btn-confirm { background: rgba(48,209,88,0.15); border-color: rgba(48,209,88,0.3); color: var(--green); }
+.btn-qty-off { background: rgba(255,214,10,0.15); border-color: rgba(255,214,10,0.3); color: var(--yellow); }
+.btn-not-found { background: rgba(255,69,58,0.15); border-color: rgba(255,69,58,0.3); color: var(--red); }
+.btn-scan-audit {
+  background: rgba(59,130,246,0.15); border-color: var(--accent-border);
+  color: var(--accent); padding: var(--s3);
+  font-size: 14px;
+}
 
-        #qr-reader {
-            width: 100%;
-        }
+/* Audit progress */
+.audit-progress {
+  width: 100%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-full);
+  height: 6px; overflow: hidden; margin-bottom: var(--s2);
+}
+.audit-progress-fill {
+  height: 100%; border-radius: var(--r-full);
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+  transition: width 400ms cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+.audit-counter { font-size: 13px; color: var(--text-muted); text-align: center; }
 
-        .empty-state {
-            text-align: center;
-            padding: 48px 24px;
-            color: var(--color-text-secondary);
-        }
+/* ── Settings ──────────────────────────────────── */
+.settings-section { margin-bottom: var(--s6); }
+.settings-section-title { font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--s3); }
+.settings-row {
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg); padding: var(--s4);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--s2); cursor: pointer; transition: var(--t);
+}
+.settings-row:active { background: var(--glass-bg-hover); }
+.settings-row-label { font-size: 15px; }
+.settings-row-value { font-size: 14px; color: var(--text-muted); }
 
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
+/* ── Scanner overlay ───────────────────────────── */
+#scanner-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.95);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--s4); padding: var(--s6);
+}
+#scanner-overlay.open { display: flex; }
+#scanner-viewport { width: 100%; max-width: 320px; border-radius: var(--r-xl); overflow: hidden; background: #000; }
+.scanner-frame {
+  width: 100%; max-width: 320px;
+  border: 2px solid var(--accent);
+  border-radius: var(--r-xl); position: relative;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
+}
+.scanner-hint { color: var(--text-muted); font-size: 14px; text-align: center; }
+.scanner-close-btn {
+  padding: var(--s3) var(--s6);
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--r-full); color: var(--text); font-size: 15px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+}
+.scanner-close-btn:active { background: var(--glass-bg-active); }
+/* Scanning indicator for audit */
+.scan-pulse {
+  display: flex; align-items: center; gap: var(--s2);
+  background: var(--accent-glass); border: 1px solid var(--accent-border);
+  border-radius: var(--r-full); padding: 6px 14px; font-size: 13px; color: var(--accent);
+}
+.scan-pulse-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
 
-        .settings-group {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
+/* ── Toast ──────────────────────────────────────── */
+#toast-container { position: fixed; bottom: calc(var(--tab-h) + 16px); left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.toast {
+  background: rgba(30,30,46,0.95);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--r-full);
+  padding: 10px 20px; font-size: 14px; font-weight: 500;
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  animation: toast-in 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+.toast.success { border-color: rgba(48,209,88,0.3); color: var(--green); }
+.toast.error { border-color: rgba(255,69,58,0.3); color: var(--red); }
+.toast.info { color: var(--text); }
+@keyframes toast-in { from { opacity:0; transform:translateY(16px) scale(0.9); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes toast-out { to { opacity:0; transform:translateY(-8px) scale(0.9); } }
 
-        .settings-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--color-border);
-        }
+/* ── Qty-off input ─────────────────────────────── */
+.qty-off-wrap {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl); padding: var(--s4);
+  display: none; flex-direction: column; gap: var(--s3); width: 100%;
+}
+.qty-off-wrap.show { display: flex; }
 
-        .settings-item:last-child {
-            border-bottom: none;
-        }
+/* ── History cards ─────────────────────────────── */
+.history-card {
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl); padding: var(--s4); margin-bottom: var(--s3);
+  cursor: pointer; transition: var(--t);
+}
+.history-card:active { background: var(--glass-bg-hover); }
+.history-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-        .connection-status {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
+/* ── Skeleton ───────────────────────────────────── */
+@keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--r-md);
+}
 
-        .connection-online {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--color-success);
-        }
-
-        .connection-offline {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--color-error);
-        }
-
-        .audit-progress {
-            background: var(--color-surface-elevated);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .progress-bar {
-            background: var(--color-surface);
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 12px 0;
-        }
-
-        .progress-fill {
-            background: var(--color-primary);
-            height: 100%;
-            transition: width 0.3s;
-        }
-
-        .audit-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .audit-actions button {
-            flex: 1;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--color-border);
-        }
-
-        .detail-label {
-            color: var(--color-text-secondary);
-            font-size: 14px;
-        }
-
-        .detail-value {
-            font-weight: 500;
-        }
-
-        .photo-preview {
-            width: 100%;
-            height: 200px;
-            background: var(--color-surface-elevated);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-            overflow: hidden;
-        }
-
-        .photo-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    </style>
+/* ── Responsive ─────────────────────────────────── */
+@media (min-width: 600px) {
+  .tab-content { max-width: 560px; margin-inline: auto; }
+}
+</style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="header">
-        <h1 id="header-title">ASMS</h1>
-        <div class="header-actions">
-            <button class="icon-btn" id="add-btn">➕</button>
+<div id="mesh">
+  <div class="mesh-orb orb1"></div>
+  <div class="mesh-orb orb2"></div>
+  <div class="mesh-orb orb3"></div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="header-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <span id="header-title">ASMS</span>
+    <button class="header-btn" id="header-search-btn" aria-label="Search" style="display:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </button>
+    <button class="header-btn accent" id="header-add-btn" aria-label="Add item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+  </header>
+
+  <!-- MAIN -->
+  <main id="main">
+
+    <!-- TAB: INVENTORY -->
+    <div id="tab-inventory" class="tab-view">
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Inventory</div>
+            <div class="section-subtitle" id="inv-count-label">0 items</div>
+          </div>
+          <button class="btn btn-glass btn-icon" id="low-stock-toggle" style="font-size:12px; gap:4px; padding:6px 12px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Low Stock
+          </button>
         </div>
+        <div class="search-wrap">
+          <span class="search-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+          <input type="search" class="search-input" id="inv-search" placeholder="Search name, barcode, tags…">
+        </div>
+        <div class="filter-row" id="cat-filters">
+          <span class="chip active" data-cat="all">All</span>
+          <span class="chip" data-cat="Artwork">🎨 Artwork</span>
+          <span class="chip" data-cat="Material">✏️ Material</span>
+          <span class="chip" data-cat="Equipment">🔧 Equipment</span>
+          <span class="chip" data-cat="Tool">🛠 Tool</span>
+          <span class="chip" data-cat="Supply">📦 Supply</span>
+        </div>
+        <div id="inv-list"></div>
+      </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="content">
-        <!-- Inventory Tab -->
-        <div id="inventory-tab" class="tab-content">
-            <input type="text" class="search-bar" id="search-input" placeholder="Search inventory...">
-            <div class="filter-chips" id="filter-chips"></div>
-            <div id="inventory-list"></div>
+    <!-- TAB: LOCATIONS -->
+    <div id="tab-locations" class="tab-view hidden">
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Locations</div>
+            <div class="section-subtitle" id="loc-count-label">0 locations</div>
+          </div>
         </div>
-
-        <!-- Locations Tab -->
-        <div id="locations-tab" class="tab-content hidden">
-            <div id="locations-list"></div>
-        </div>
-
-        <!-- Projects Tab -->
-        <div id="projects-tab" class="tab-content hidden">
-            <div id="projects-list"></div>
-        </div>
-
-        <!-- Audit Tab -->
-        <div id="audit-tab" class="tab-content hidden">
-            <div id="audit-start-screen">
-                <h2 style="margin-bottom: 24px;">Start Audit Session</h2>
-                <button class="btn" onclick="startAudit('full')">🔍 Full Audit</button>
-                <button class="btn" onclick="startAudit('location')">📍 By Location</button>
-                <button class="btn" onclick="startAudit('not-audited')">⏰ Not Recently Audited</button>
-                <div id="audit-history" style="margin-top: 32px;"></div>
-            </div>
-            <div id="audit-item-screen" class="hidden"></div>
-            <div id="audit-summary-screen" class="hidden"></div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="settings-tab" class="tab-content hidden">
-            <div class="settings-group">
-                <h3 style="margin-bottom: 16px;">Airtable Configuration</h3>
-                <div class="form-group">
-                    <label class="form-label">API Key</label>
-                    <input type="password" class="form-input" id="api-key-input" placeholder="patXXXXXXXXXXXXX">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Base ID</label>
-                    <input type="text" class="form-input" id="base-id-input" placeholder="appXXXXXXXXXXXXX">
-                </div>
-                <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
-                <button class="btn btn-secondary" onclick="testConnection()">🔌 Test Connection</button>
-                <div style="margin-top: 16px; text-align: center;">
-                    <span class="connection-status connection-offline" id="connection-status">Offline</span>
-                </div>
-            </div>
-            <div class="settings-group">
-                <h3 style="margin-bottom: 16px;">Data Export</h3>
-                <button class="btn btn-secondary" onclick="exportData()">📥 Export to CSV</button>
-            </div>
-        </div>
+        <div id="loc-list"></div>
+      </div>
     </div>
 
-    <!-- Tab Bar -->
-    <div class="tab-bar">
-        <div class="tab active" data-tab="inventory">
-            <div>📦</div>
-            <div class="tab-label">Inventory</div>
+    <!-- TAB: PROJECTS -->
+    <div id="tab-projects" class="tab-view hidden">
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Projects</div>
+          </div>
         </div>
-        <div class="tab" data-tab="locations">
-            <div>📍</div>
-            <div class="tab-label">Locations</div>
+        <div class="filter-row" id="proj-filters">
+          <span class="chip active" data-proj="all">All</span>
+          <span class="chip" data-proj="Active">Active</span>
+          <span class="chip" data-proj="On Hold">On Hold</span>
+          <span class="chip" data-proj="Complete">Complete</span>
         </div>
-        <div class="tab" data-tab="projects">
-            <div>📋</div>
-            <div class="tab-label">Projects</div>
-        </div>
-        <div class="tab" data-tab="audit">
-            <div>✅</div>
-            <div class="tab-label">Audit</div>
-        </div>
-        <div class="tab" data-tab="settings">
-            <div>⚙️</div>
-            <div class="tab-label">Settings</div>
-        </div>
+        <div id="proj-list"></div>
+      </div>
     </div>
 
-    <!-- Modals -->
-    <div class="modal" id="add-item-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Add Item</h2>
-                <button class="icon-btn" onclick="closeModal('add-item-modal')">✖️</button>
+    <!-- TAB: AUDIT -->
+    <div id="tab-audit" class="tab-view hidden">
+      <div class="tab-content">
+        <!-- START SCREEN -->
+        <div id="audit-start" class="audit-view visible">
+          <div class="section-header">
+            <div><div class="section-title">Audit</div><div class="section-subtitle">Cycle count your studio</div></div>
+          </div>
+          <div class="stat-grid" id="audit-stats-grid">
+            <div class="stat-card"><div class="stat-num" id="as-total">0</div><div class="stat-lbl">Total</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:var(--green)" id="as-confirmed">0</div><div class="stat-lbl">Confirmed</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="as-disc">0</div><div class="stat-lbl">Discrepancies</div></div>
+          </div>
+          <div style="font-size:13px; font-weight:600; letter-spacing:.6px; text-transform:uppercase; color:var(--text-muted); margin-bottom:var(--s3)">Start New Audit</div>
+          <div class="audit-start-card" onclick="startAudit('full')">
+            <div class="audit-start-icon" style="background:var(--accent-glass)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></div>
+            <div><div style="font-size:16px;font-weight:600">Full Audit</div><div style="font-size:13px;color:var(--text-muted);margin-top:2px">All inventory items</div></div>
+          </div>
+          <div class="audit-start-card" onclick="showLocationPicker()">
+            <div class="audit-start-icon" style="background:var(--purple-glass)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 00-8 8c0 5.4 7 12 8 12s8-6.6 8-12a8 8 0 00-8-8z"/></svg></div>
+            <div><div style="font-size:16px;font-weight:600">By Location</div><div style="font-size:13px;color:var(--text-muted);margin-top:2px">Pick a specific location</div></div>
+          </div>
+          <div class="audit-start-card" onclick="startAudit('stale')">
+            <div class="audit-start-icon" style="background:var(--orange-glass)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><div style="font-size:16px;font-weight:600">Not Recently Audited</div><div style="font-size:13px;color:var(--text-muted);margin-top:2px">Items unchecked &gt;30 days</div></div>
+          </div>
+          <div class="divider"></div>
+          <div style="font-size:13px; font-weight:600; letter-spacing:.6px; text-transform:uppercase; color:var(--text-muted); margin-bottom:var(--s3)">Audit History</div>
+          <div id="audit-history-list"></div>
+        </div>
+
+        <!-- AUDIT SESSION SCREEN -->
+        <div id="audit-session" class="audit-view">
+          <div style="margin-bottom:var(--s3)">
+            <div class="audit-progress"><div class="audit-progress-fill" id="audit-progress-fill"></div></div>
+            <div class="audit-counter" id="audit-counter">Item 0 of 0</div>
+          </div>
+          <div class="audit-item-screen">
+            <div class="audit-item-hero" id="audit-item-hero">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(240,240,248,0.2)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             </div>
-            <form id="add-item-form">
-                <div class="form-group">
-                    <label class="form-label">Name *</label>
-                    <input type="text" class="form-input" id="item-name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Category</label>
-                    <select class="form-select" id="item-category">
-                        <option value="Artwork">Artwork</option>
-                        <option value="Material" selected>Material</option>
-                        <option value="Equipment">Equipment</option>
-                        <option value="Tool">Tool</option>
-                        <option value="Supply">Supply</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea class="form-textarea" id="item-description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Quantity</label>
-                    <input type="number" class="form-input" id="item-quantity" value="1" min="0">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Low Stock Threshold</label>
-                    <input type="number" class="form-input" id="item-threshold" value="5" min="0">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select class="form-select" id="item-status">
-                        <option value="Available" selected>Available</option>
-                        <option value="In Use">In Use</option>
-                        <option value="Storage">Storage</option>
-                        <option value="Sold">Sold</option>
-                        <option value="On Loan">On Loan</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Location</label>
-                    <input type="text" class="form-input" id="item-location">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Price</label>
-                    <input type="number" class="form-input" id="item-price" step="0.01" min="0">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Barcode / QR Code</label>
-                    <input type="text" class="form-input" id="item-barcode">
-                    <button type="button" class="btn btn-secondary" onclick="startBarcodeScanner()">📷 Scan Barcode</button>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tags</label>
-                    <input type="text" class="form-input" id="item-tags" placeholder="tag1, tag2, tag3">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <textarea class="form-textarea" id="item-notes"></textarea>
-                </div>
-                <button type="submit" class="btn">Save Item</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="barcode-scanner-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Scan Barcode</h2>
-                <button class="icon-btn" onclick="stopBarcodeScanner()">✖️</button>
+            <div style="width:100%;text-align:left">
+              <div style="font-size:22px;font-weight:700;letter-spacing:-0.4px" id="audit-item-name">—</div>
+              <div style="font-size:14px;color:var(--text-muted);margin-top:4px" id="audit-item-location">—</div>
+              <div style="margin-top:var(--s2)" id="audit-item-badge"></div>
             </div>
-            <div class="scanner-container">
-                <div id="qr-reader"></div>
+            <div class="audit-qty-box">
+              <div class="audit-qty-label">Expected Quantity</div>
+              <div class="audit-qty-num" id="audit-expected-qty">×0</div>
             </div>
+            <!-- Scan to confirm -->
+            <div class="scan-pulse" id="scan-pulse-indicator" style="display:none">
+              <div class="scan-pulse-dot"></div>
+              <span>Scanning barcode…</span>
+            </div>
+            <div class="audit-actions">
+              <button class="audit-action-btn btn-scan-audit" onclick="toggleAuditScanner()" id="audit-scan-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="7.01" y2="12"/><line x1="12" y1="12" x2="17" y2="12"/></svg>
+                Scan Barcode to Confirm
+              </button>
+              <button class="audit-action-btn btn-confirm" onclick="auditAction('confirm')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Confirmed — Qty Matches
+              </button>
+              <button class="audit-action-btn btn-qty-off" onclick="showQtyOff()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Quantity Different
+              </button>
+              <div class="qty-off-wrap" id="qty-off-wrap">
+                <label class="form-label">Actual Count Found</label>
+                <div class="stepper">
+                  <button class="step-btn" onclick="stepQtyOff(-1)">−</button>
+                  <div class="step-val" id="qty-off-val">0</div>
+                  <button class="step-btn" onclick="stepQtyOff(1)">+</button>
+                </div>
+                <button class="btn btn-primary" onclick="auditAction('qty-off')">Submit Count</button>
+              </div>
+              <button class="audit-action-btn btn-not-found" onclick="auditAction('not-found')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                Not Found
+              </button>
+            </div>
+          </div>
         </div>
+
+        <!-- AUDIT SUMMARY -->
+        <div id="audit-summary" class="audit-view">
+          <div class="section-header">
+            <div><div class="section-title">Summary</div></div>
+            <button class="btn btn-glass btn-icon" onclick="closeAuditSession()">Done</button>
+          </div>
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-num" style="color:var(--green)" id="sum-confirmed">0</div><div class="stat-lbl">Confirmed</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:var(--yellow)" id="sum-qty-off">0</div><div class="stat-lbl">Qty Off</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="sum-not-found">0</div><div class="stat-lbl">Not Found</div></div>
+          </div>
+          <div class="divider"></div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-muted);margin-bottom:var(--s3);text-transform:uppercase;letter-spacing:.6px">Discrepancies</div>
+          <div id="discrepancy-list"></div>
+        </div>
+
+      </div><!-- /tab-content -->
+    </div><!-- /tab-audit -->
+
+    <!-- TAB: SETTINGS -->
+    <div id="tab-settings" class="tab-view hidden">
+      <div class="tab-content">
+        <div class="section-header"><div class="section-title">Settings</div></div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Studio Stats</div>
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-num" id="set-inv-count">0</div><div class="stat-lbl">Items</div></div>
+            <div class="stat-card"><div class="stat-num" id="set-loc-count">0</div><div class="stat-lbl">Locations</div></div>
+            <div class="stat-card"><div class="stat-num" id="set-proj-count">0</div><div class="stat-lbl">Projects</div></div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Tags Library</div>
+          <div class="card card-body" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center" id="tags-library-view">
+            <span style="font-size:13px;color:var(--text-muted)">No tags yet. Tags are created when you add items.</span>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Data</div>
+          <button class="settings-row" onclick="exportCSV()">
+            <span class="settings-row-label">Export Inventory CSV</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="settings-row" onclick="exportJSON()">
+            <span class="settings-row-label">Backup All Data (JSON)</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <label class="settings-row" style="cursor:pointer">
+            <span class="settings-row-label">Restore from JSON</span>
+            <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 3 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </label>
+          <button class="settings-row" onclick="clearAllData()" style="color:var(--red)">
+            <span class="settings-row-label">Clear All Data</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">App Info</div>
+          <div class="card card-body">
+            <div style="font-size:16px;font-weight:700">ASMS v4.1</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:4px">Art Studio Management System</div>
+            <div style="font-size:12px;color:var(--text-faint);margin-top:var(--s2)">All data stored locally on this device. Export JSON regularly to back up.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="modal" id="item-detail-modal">
-        <div class="modal-content" id="item-detail-content"></div>
+  </main><!-- /main -->
+
+  <!-- TAB BAR -->
+  <nav id="tabbar">
+    <div class="tab-item active" data-tab="inventory" onclick="switchTab('inventory')">
+      <div class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <span class="tab-label">Inventory</span>
+      <span class="tab-dot" id="dot-inventory"></span>
     </div>
+    <div class="tab-item" data-tab="locations" onclick="switchTab('locations')">
+      <div class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 00-8 8c0 5.4 7 12 8 12s8-6.6 8-12a8 8 0 00-8-8z"/></svg></div>
+      <span class="tab-label">Locations</span>
+    </div>
+    <div class="tab-item" data-tab="projects" onclick="switchTab('projects')">
+      <div class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+      <span class="tab-label">Projects</span>
+    </div>
+    <div class="tab-item" data-tab="audit" onclick="switchTab('audit')">
+      <div class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+      <span class="tab-label">Audit</span>
+    </div>
+    <div class="tab-item" data-tab="settings" onclick="switchTab('settings')">
+      <div class="tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+      <span class="tab-label">Settings</span>
+    </div>
+  </nav>
 
-    <script>
-        // Data Storage
-        let inventory = [];
-        let locations = [];
-        let projects = [];
-        let auditSessions = [];
-        let currentAuditSession = null;
-        let currentTab = 'inventory';
-        let html5QrCode = null;
+</div><!-- /app -->
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSettings();
-            loadData();
-            renderInventory();
-            setupTabs();
-            setupSearch();
-            setupFilters();
-        });
+<!-- ===== MODALS ===== -->
 
-        // Settings
-        function loadSettings() {
-            const apiKey = localStorage.getItem('airtable_api_key');
-            const baseId = localStorage.getItem('airtable_base_id');
-            if (apiKey) document.getElementById('api-key-input').value = apiKey;
-            if (baseId) document.getElementById('base-id-input').value = baseId;
-        }
+<!-- ADD/EDIT ITEM MODAL -->
+<div class="modal-overlay" id="item-modal">
+  <div class="modal-sheet">
+    <div class="modal-pill"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="item-modal-title">Add Item</div>
+      <button class="modal-close" onclick="closeItemModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Photo upload -->
+      <div class="form-group">
+        <label class="form-label">Photo</label>
+        <div class="photo-upload-zone" id="photo-zone" onclick="document.getElementById('photo-file').click()">
+          <img class="photo-preview" id="photo-preview" src="" alt="Item photo">
+          <div class="photo-placeholder" id="photo-placeholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text-faint)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span style="font-size:13px">Tap to add photo</span>
+            <span style="font-size:11px;color:var(--text-faint)">Camera or library</span>
+          </div>
+          <input type="file" id="photo-file" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoSelect(event)">
+        </div>
+        <button class="btn btn-glass" style="margin-top:8px;font-size:13px;padding:8px 16px" onclick="clearPhoto()" id="clear-photo-btn" style="display:none">Remove Photo</button>
+      </div>
 
-        function saveSettings() {
-            const apiKey = document.getElementById('api-key-input').value;
-            const baseId = document.getElementById('base-id-input').value;
-            localStorage.setItem('airtable_api_key', apiKey);
-            localStorage.setItem('airtable_base_id', baseId);
-            alert('✅ Settings saved!');
-        }
+      <div class="form-group">
+        <label class="form-label" for="item-name">Name *</label>
+        <input type="text" class="form-input" id="item-name" placeholder="e.g. Acrylic Paint Set">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="item-category">
+            <option value="Artwork">🎨 Artwork</option>
+            <option value="Material" selected>✏️ Material</option>
+            <option value="Equipment">🔧 Equipment</option>
+            <option value="Tool">🛠 Tool</option>
+            <option value="Supply">📦 Supply</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="item-status">
+            <option value="Available" selected>Available</option>
+            <option value="In Use">In Use</option>
+            <option value="Storage">Storage</option>
+            <option value="Sold">Sold</option>
+            <option value="On Loan">On Loan</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="item-desc" placeholder="Describe this item…" rows="2"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Quantity</label>
+          <div class="stepper">
+            <button class="step-btn" onclick="stepField('item-qty', -1)">−</button>
+            <div class="step-val" id="item-qty-display">1</div>
+            <button class="step-btn" onclick="stepField('item-qty', 1)">+</button>
+          </div>
+          <input type="hidden" id="item-qty" value="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Low Stock Alert</label>
+          <input type="number" class="form-input" id="item-low-stock" value="5" min="0">
+        </div>
+      </div>
+      <!-- LOCATION — custom dropdown -->
+      <div class="form-row">
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Location</label>
+          <div class="custom-dropdown" id="location-dropdown">
+            <button type="button" class="dropdown-trigger" id="location-trigger" onclick="toggleDropdown('location-dropdown')">
+              <span class="placeholder" id="location-display-val">Select or add location…</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(240,240,248,0.4)" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="dropdown-list" id="location-dropdown-list">
+              <div class="dropdown-search-wrap"><input class="dropdown-search" id="location-search" placeholder="Search locations…" oninput="filterDropdown('location-dropdown', this.value)" onclick="event.stopPropagation()"></div>
+              <div id="location-opts"></div>
+              <div class="dropdown-add-new" onclick="addNewLocationFromDropdown()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add new location
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="item-location" value="">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Price ($)</label>
+          <input type="number" class="form-input" id="item-price" value="0" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Barcode / QR</label>
+        <div class="input-with-scan">
+          <input type="text" class="form-input" id="item-barcode" placeholder="Scan or enter barcode…">
+          <button class="scan-btn" onclick="openScanner('barcode')" aria-label="Scan barcode">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="7.01" y2="12"/><line x1="12" y1="12" x2="17" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- TAGS — multi-select with suggestions -->
+      <div class="form-group">
+        <label class="form-label">Tags</label>
+        <div style="position:relative">
+          <div class="tags-input-wrap" id="tags-wrap" onclick="document.getElementById('tags-text').focus()">
+            <div id="tags-chips"></div>
+            <input type="text" class="tags-text-input" id="tags-text" placeholder="acrylic, mixed media…"
+              oninput="onTagsInput(this.value)"
+              onkeydown="onTagsKeydown(event)"
+              onfocus="showTagsSuggestions()"
+              onblur="hideTagsSuggestions()">
+          </div>
+          <div class="tags-suggestions" id="tags-suggestions"></div>
+        </div>
+        <input type="hidden" id="item-tags" value="">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="item-notes" placeholder="Any extra details…" rows="2"></textarea>
+      </div>
+      <button class="btn btn-primary" id="item-save-btn" onclick="saveItem()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Item
+      </button>
+    </div>
+  </div>
+</div>
 
-        async function testConnection() {
-            const apiKey = localStorage.getItem('airtable_api_key');
-            const baseId = localStorage.getItem('airtable_base_id');
-            
-            if (!apiKey || !baseId) {
-                alert('❌ Please configure API Key and Base ID first');
-                return;
-            }
+<!-- ITEM DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal-sheet">
+    <div class="modal-pill"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="detail-modal-title">Item</div>
+      <button class="modal-close" onclick="closeDetailModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="detail-modal-body"></div>
+  </div>
+</div>
 
-            try {
-                const response = await fetch(`https://api.airtable.com/v0/${baseId}/Inventory?maxRecords=1`, {
-                    headers: { 'Authorization': `Bearer ${apiKey}` }
-                });
-                
-                if (response.ok) {
-                    document.getElementById('connection-status').className = 'connection-status connection-online';
-                    document.getElementById('connection-status').textContent = 'Online';
-                    alert('✅ Connection successful!');
-                } else {
-                    throw new Error('Connection failed');
-                }
-            } catch (error) {
-                document.getElementById('connection-status').className = 'connection-status connection-offline';
-                document.getElementById('connection-status').textContent = 'Offline';
-                alert('❌ Connection failed. Check your credentials.');
-            }
-        }
+<!-- LOCATION MODAL -->
+<div class="modal-overlay" id="location-modal">
+  <div class="modal-sheet">
+    <div class="modal-pill"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="location-modal-title">Add Location</div>
+      <button class="modal-close" onclick="closeLocationModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="loc-name">Location Name *</label>
+        <input type="text" class="form-input" id="loc-name" placeholder="e.g. Studio A, Shelf 2">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select class="form-select" id="loc-type">
+          <option value="Studio">Studio</option>
+          <option value="Storage">Storage</option>
+          <option value="Shelf" selected>Shelf</option>
+          <option value="Cabinet">Cabinet</option>
+          <option value="Drawer">Drawer</option>
+          <option value="Bin">Bin</option>
+          <option value="Table">Table</option>
+          <option value="Box">Box</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="loc-desc" placeholder="Optional notes about this location…" rows="2"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="saveLocation()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Location
+      </button>
+    </div>
+  </div>
+</div>
 
-        // Data Management
-        function loadData() {
-            inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
-            locations = JSON.parse(localStorage.getItem('locations') || '[]');
-            projects = JSON.parse(localStorage.getItem('projects') || '[]');
-            auditSessions = JSON.parse(localStorage.getItem('auditSessions') || '[]');
-        }
+<!-- PROJECT MODAL -->
+<div class="modal-overlay" id="project-modal">
+  <div class="modal-sheet">
+    <div class="modal-pill"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="project-modal-title">Add Project</div>
+      <button class="modal-close" onclick="closeProjectModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Project Name *</label>
+        <input type="text" class="form-input" id="proj-name" placeholder="e.g. Commission — Abstract Series">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="proj-status">
+            <option value="Active" selected>Active</option>
+            <option value="On Hold">On Hold</option>
+            <option value="Complete">Complete</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Budget ($)</label>
+          <input type="number" class="form-input" id="proj-budget" value="0" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Client</label>
+        <input type="text" class="form-input" id="proj-client" placeholder="Client name (optional)">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Start Date</label>
+          <input type="date" class="form-input" id="proj-start">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input type="date" class="form-input" id="proj-due">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="proj-desc" placeholder="Project details…" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="proj-notes" placeholder="Internal notes…" rows="2"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="saveProject()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Project
+      </button>
+    </div>
+  </div>
+</div>
 
-        function saveData() {
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('locations', JSON.stringify(locations));
-            localStorage.setItem('projects', JSON.stringify(projects));
-            localStorage.setItem('auditSessions', JSON.stringify(auditSessions));
-        }
+<!-- LOCATION PICKER FOR AUDIT -->
+<div class="modal-overlay" id="loc-picker-modal">
+  <div class="modal-sheet">
+    <div class="modal-pill"></div>
+    <div class="modal-header">
+      <div class="modal-title">Pick Location</div>
+      <button class="modal-close" onclick="closeModal('loc-picker-modal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="loc-picker-list"></div>
+  </div>
+</div>
 
-        // Tab Management
-        function setupTabs() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.dataset.tab;
-                    switchTab(tabName);
-                });
-            });
+<!-- SCANNER OVERLAY -->
+<div id="scanner-overlay">
+  <div class="scan-pulse" style="margin-bottom:8px">
+    <div class="scan-pulse-dot"></div>
+    <span id="scanner-label">Scanning…</span>
+  </div>
+  <div id="scanner-viewport"></div>
+  <div class="scanner-hint" id="scanner-hint">Point camera at barcode or QR code</div>
+  <button class="scanner-close-btn" onclick="closeScanner()">Cancel</button>
+</div>
 
-            document.getElementById('add-btn').addEventListener('click', () => {
-                if (currentTab === 'inventory') {
-                    openModal('add-item-modal');
-                }
-            });
-        }
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
 
-        function switchTab(tabName) {
-            currentTab = tabName;
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            
-            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-            
-            document.getElementById('header-title').textContent = tabName.charAt(0).toUpperCase() + tabName.slice(1);
-            document.getElementById('add-btn').style.display = tabName === 'inventory' ? 'block' : 'none';
+<script>
+'use strict';
 
-            if (tabName === 'inventory') renderInventory();
-            if (tabName === 'locations') renderLocations();
-            if (tabName === 'projects') renderProjects();
-            if (tabName === 'audit') renderAuditHistory();
-        }
+/* =====================================================
+   DATA LAYER — localStorage, no external deps
+   ===================================================== */
+const DB = {
+  load(key) { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } },
+  save(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+};
 
-        // Search & Filter
-        function setupSearch() {
-            document.getElementById('search-input').addEventListener('input', (e) => {
-                renderInventory(e.target.value);
-            });
-        }
+let inventory  = DB.load('asms_inventory');
+let locations  = DB.load('asms_locations');
+let projects   = DB.load('asms_projects');
+let auditHistory = DB.load('asms_audit_history');
 
-        function setupFilters() {
-            const categories = ['All', 'Artwork', 'Material', 'Equipment', 'Tool', 'Supply'];
-            const filterChips = document.getElementById('filter-chips');
-            
-            categories.forEach(cat => {
-                const chip = document.createElement('div');
-                chip.className = `chip ${cat === 'All' ? 'active' : ''}`;
-                chip.textContent = cat;
-                chip.onclick = () => {
-                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-                    chip.classList.add('active');
-                    renderInventory(document.getElementById('search-input').value, cat);
-                };
-                filterChips.appendChild(chip);
-            });
-        }
+function persist() {
+  DB.save('asms_inventory', inventory);
+  DB.save('asms_locations', locations);
+  DB.save('asms_projects', projects);
+  DB.save('asms_audit_history', auditHistory);
+}
 
-        // Inventory Rendering
-        function renderInventory(searchTerm = '', category = 'All') {
-            const list = document.getElementById('inventory-list');
-            let filtered = inventory.filter(item => {
-                const matchesSearch = !searchTerm || 
-                    item.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    (item.Tags || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    (item.Barcode || '').toLowerCase().includes(searchTerm.toLowerCase());
-                const matchesCategory = category === 'All' || item.Category === category;
-                return matchesSearch && matchesCategory;
-            });
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 
-            if (filtered.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📦</div>
-                        <p>No items found</p>
-                    </div>
-                `;
-                return;
-            }
+/* =====================================================
+   TAGS LIBRARY — derived from inventory
+   ===================================================== */
+function getAllTags() {
+  const set = new Set();
+  inventory.forEach(it => { if (it.tags) it.tags.split(',').map(t => t.trim()).filter(Boolean).forEach(t => set.add(t)); });
+  // seed common art studio tags
+  ['acrylic', 'oil', 'watercolor', 'mixed media', 'canvas', 'paper', 'brush', 'palette', 'charcoal', 'ink', 'digital', 'collage', 'assemblage', 'commission', 'original', 'print', 'resin', 'fabric', 'wood', 'metal'].forEach(t => set.add(t));
+  return [...set].sort();
+}
 
-            list.innerHTML = filtered.map(item => {
-                const isLowStock = item.Quantity <= (item['Low Stock Threshold'] || 0);
-                return `
-                    <div class="item-card" onclick="showItemDetail('${item.id}')">
-                        <div class="item-header">
-                            <div>
-                                <div class="item-name">${item.Name}</div>
-                                <div class="item-meta">
-                                    <span class="badge badge-${item.Category.toLowerCase()}">${item.Category}</span>
-                                    <span style="color: var(--color-text-secondary); font-size: 12px;">
-                                        <span class="status-indicator status-${item.Status.toLowerCase().replace(' ', '-')}"></span>
-                                        ${item.Status}
-                                    </span>
-                                    ${item.Location ? `<span style="color: var(--color-text-secondary); font-size: 12px;">📍 ${item.Location}</span>` : ''}
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 18px; font-weight: 600;">×${item.Quantity}</div>
-                                ${isLowStock ? '<div class="low-stock-badge">LOW STOCK</div>' : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+/* =====================================================
+   NAVIGATION
+   ===================================================== */
+let currentTab = 'inventory';
 
-        // Add Item
-        document.getElementById('add-item-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const newItem = {
-                id: Date.now().toString(),
-                Name: document.getElementById('item-name').value,
-                Category: document.getElementById('item-category').value,
-                Description: document.getElementById('item-description').value,
-                Quantity: parseInt(document.getElementById('item-quantity').value),
-                'Low Stock Threshold': parseInt(document.getElementById('item-threshold').value),
-                Status: document.getElementById('item-status').value,
-                Location: document.getElementById('item-location').value,
-                Price: parseFloat(document.getElementById('item-price').value) || 0,
-                Barcode: document.getElementById('item-barcode').value,
-                Tags: document.getElementById('item-tags').value,
-                Notes: document.getElementById('item-notes').value,
-                'Date Added': new Date().toISOString(),
-                'Last Modified': new Date().toISOString(),
-                'Audit Status': 'Pending'
-            };
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+  document.getElementById('tab-' + tab).classList.remove('hidden');
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
 
-            inventory.push(newItem);
-            saveData();
-            await syncToAirtable('Inventory', newItem);
-            
-            closeModal('add-item-modal');
-            document.getElementById('add-item-form').reset();
-            renderInventory();
-            alert('✅ Item added successfully!');
-        });
+  // Header add button context
+  const addBtn = document.getElementById('header-add-btn');
+  const title = document.getElementById('header-title');
 
-        // Item Detail
-        function showItemDetail(itemId) {
-            const item = inventory.find(i => i.id === itemId);
-            if (!item) return;
+  const labels = { inventory: 'Inventory', locations: 'Locations', projects: 'Projects', audit: 'Audit', settings: 'Settings' };
+  title.textContent = labels[tab] || 'ASMS';
+  addBtn.style.display = (tab === 'settings' || tab === 'audit') ? 'none' : 'flex';
 
-            const content = document.getElementById('item-detail-content');
-            content.innerHTML = `
-                <div class="modal-header">
-                    <h2 class="modal-title">${item.Name}</h2>
-                    <button class="icon-btn" onclick="closeModal('item-detail-modal')">✖️</button>
-                </div>
-                <div class="photo-preview">
-                    <div style="color: var(--color-text-secondary); font-size: 48px;">📷</div>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Category</span>
-                    <span class="detail-value"><span class="badge badge-${item.Category.toLowerCase()}">${item.Category}</span></span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Status</span>
-                    <span class="detail-value">${item.Status}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Quantity</span>
-                    <span class="detail-value">×${item.Quantity}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Location</span>
-                    <span class="detail-value">${item.Location || 'Not set'}</span>
-                </div>
-                ${item.Description ? `<div class="detail-row"><span class="detail-label">Description</span><span class="detail-value">${item.Description}</span></div>` : ''}
-                ${item.Price ? `<div class="detail-row"><span class="detail-label">Price</span><span class="detail-value">$${item.Price.toFixed(2)}</span></div>` : ''}
-                ${item.Barcode ? `<div class="detail-row"><span class="detail-label">Barcode</span><span class="detail-value">${item.Barcode}</span></div>` : ''}
-                ${item.Tags ? `<div class="detail-row"><span class="detail-label">Tags</span><span class="detail-value">${item.Tags}</span></div>` : ''}
-                ${item.Notes ? `<div class="detail-row"><span class="detail-label">Notes</span><span class="detail-value">${item.Notes}</span></div>` : ''}
-                <button class="btn btn-secondary" onclick="deleteItem('${item.id}')">🗑️ Delete Item</button>
-            `;
-            openModal('item-detail-modal');
-        }
+  if (tab === 'inventory') renderInventory();
+  if (tab === 'locations') renderLocations();
+  if (tab === 'projects') renderProjects();
+  if (tab === 'audit') renderAuditStart();
+  if (tab === 'settings') renderSettings();
+}
 
-        function deleteItem(itemId) {
-            if (!confirm('Are you sure you want to delete this item?')) return;
-            inventory = inventory.filter(i => i.id !== itemId);
-            saveData();
-            closeModal('item-detail-modal');
-            renderInventory();
-        }
+document.getElementById('header-add-btn').addEventListener('click', () => {
+  if (currentTab === 'inventory') openItemModal();
+  if (currentTab === 'locations') openLocationModal();
+  if (currentTab === 'projects') openProjectModal();
+});
 
-        // Barcode Scanner
-        function startBarcodeScanner() {
-            openModal('barcode-scanner-modal');
-            html5QrCode = new Html5Qrcode("qr-reader");
-            html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                (decodedText) => {
-                    document.getElementById('item-barcode').value = decodedText;
-                    stopBarcodeScanner();
-                }
-            ).catch(err => console.error(err));
-        }
+/* =====================================================
+   INVENTORY RENDER
+   ===================================================== */
+let invFilter = 'all';
+let invSearch = '';
+let showLowOnly = false;
 
-        function stopBarcodeScanner() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    html5QrCode.clear();
-                    closeModal('barcode-scanner-modal');
-                });
-            }
-        }
+document.getElementById('inv-search').addEventListener('input', e => { invSearch = e.target.value; renderInventory(); });
 
-        // Locations
-        function renderLocations() {
-            const list = document.getElementById('locations-list');
-            if (locations.length === 0) {
-                list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📍</div><p>No locations yet</p></div>`;
-                return;
-            }
-            list.innerHTML = locations.map(loc => `
-                <div class="item-card">
-                    <div class="item-name">${loc['Location Name']}</div>
-                    <div style="color: var(--color-text-secondary); font-size: 14px;">${loc['Location Type']}</div>
-                </div>
-            `).join('');
-        }
+document.getElementById('cat-filters').addEventListener('click', e => {
+  const chip = e.target.closest('[data-cat]');
+  if (!chip) return;
+  invFilter = chip.dataset.cat;
+  document.querySelectorAll('#cat-filters .chip').forEach(c => c.classList.toggle('active', c.dataset.cat === invFilter));
+  renderInventory();
+});
 
-        // Projects
-        function renderProjects() {
-            const list = document.getElementById('projects-list');
-            if (projects.length === 0) {
-                list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><p>No projects yet</p></div>`;
-                return;
-            }
-            list.innerHTML = projects.map(proj => `
-                <div class="item-card">
-                    <div class="item-name">${proj['Project Name']}</div>
-                    <div class="item-meta">
-                        <span class="badge badge-${proj.Status.toLowerCase().replace(' ', '-')}">${proj.Status}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
+document.getElementById('low-stock-toggle').addEventListener('click', () => {
+  showLowOnly = !showLowOnly;
+  document.getElementById('low-stock-toggle').style.color = showLowOnly ? 'var(--red)' : '';
+  renderInventory();
+});
 
-        // Audit System
-        function startAudit(type) {
-            let auditItems = [];
-            if (type === 'full') {
-                auditItems = [...inventory];
-            } else if (type === 'location') {
-                const location = prompt('Enter location name:');
-                if (!location) return;
-                auditItems = inventory.filter(i => i.Location === location);
-            } else if (type === 'not-audited') {
-                const thirtyDaysAgo = new Date();
-                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                auditItems = inventory.filter(i => !i['Last Audited Date'] || new Date(i['Last Audited Date']) < thirtyDaysAgo);
-            }
+function getFilteredInventory() {
+  return inventory.filter(it => {
+    const catOk = invFilter === 'all' || it.category === invFilter;
+    const q = invSearch.toLowerCase();
+    const searchOk = !q || it.name?.toLowerCase().includes(q) || (it.tags||'').toLowerCase().includes(q) || (it.barcode||'').toLowerCase().includes(q);
+    const lowOk = !showLowOnly || (it.quantity <= (it.lowStock || 5));
+    return catOk && searchOk && lowOk;
+  });
+}
 
-            if (auditItems.length === 0) {
-                alert('No items to audit');
-                return;
-            }
+function renderInventory() {
+  const list = document.getElementById('inv-list');
+  const items = getFilteredInventory();
+  document.getElementById('inv-count-label').textContent = inventory.length + ' item' + (inventory.length !== 1 ? 's' : '');
+  // Low stock dot
+  const lowCount = inventory.filter(i => i.quantity <= (i.lowStock || 5)).length;
+  document.getElementById('dot-inventory').classList.toggle('show', lowCount > 0);
 
-            currentAuditSession = {
-                id: Date.now().toString(),
-                type: type,
-                items: auditItems,
-                currentIndex: 0,
-                results: [],
-                startDate: new Date().toISOString()
-            };
+  if (!items.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div><h3>${showLowOnly ? 'No low stock items' : 'No items yet'}</h3><p>${showLowOnly ? 'All items are well stocked.' : 'Tap + to add your first inventory item.'}</p></div>`;
+    return;
+  }
+  list.innerHTML = items.map(it => {
+    const isLow = it.quantity <= (it.lowStock || 5);
+    const thumb = it.photo
+      ? `<div class="inv-thumb"><img src="${it.photo}" alt="${esc(it.name)}" loading="lazy"></div>`
+      : `<div class="inv-thumb"><div class="inv-thumb-placeholder"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div>`;
+    return `<div class="card inv-card" onclick="openDetailModal('${it.id}')">
+      <div class="card-body card-row">
+        ${thumb}
+        <div class="inv-info">
+          <div class="inv-name">${esc(it.name)}</div>
+          <div class="inv-meta">${it.location ? esc(it.location) : '<span style="color:var(--text-faint)">No location</span>'}</div>
+          <div style="margin-top:4px"><span class="badge badge-${it.category?.toLowerCase().replace(/\s/g,'-')}">${it.category || '—'}</span></div>
+        </div>
+        <div class="inv-right">
+          <div class="qty-badge ${isLow ? 'low' : ''}">${it.quantity}</div>
+          <span class="badge badge-${(it.status||'available').toLowerCase().replace(/\s/g,'-')}" style="font-size:10px">${it.status||'Available'}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-            showAuditItem();
-        }
+/* =====================================================
+   ITEM DETAIL MODAL
+   ===================================================== */
+function openDetailModal(id) {
+  const it = inventory.find(x => x.id === id);
+  if (!it) return;
+  document.getElementById('detail-modal-title').textContent = it.name;
+  const isLow = it.quantity <= (it.lowStock || 5);
+  const heroImg = it.photo
+    ? `<img src="${it.photo}" alt="${esc(it.name)}" style="width:100%;height:100%;object-fit:cover">`
+    : `<div class="detail-hero-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
 
-        function showAuditItem() {
-            document.getElementById('audit-start-screen').classList.add('hidden');
-            const screen = document.getElementById('audit-item-screen');
-            screen.classList.remove('hidden');
+  const tags = it.tags ? it.tags.split(',').map(t => `<span class="badge" style="background:var(--accent-glass);color:var(--accent);border:1px solid var(--accent-border);font-size:11px">${esc(t.trim())}</span>`).join('') : '—';
 
-            const session = currentAuditSession;
-            const item = session.items[session.currentIndex];
-            const progress = ((session.currentIndex + 1) / session.items.length * 100).toFixed(0);
+  document.getElementById('detail-modal-body').innerHTML = `
+    <div class="detail-hero">${heroImg}</div>
+    <div class="detail-field"><div class="detail-field-label">Name</div><div class="detail-field-value large">${esc(it.name)}</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <span class="badge badge-${it.category?.toLowerCase().replace(/\s/g,'-')}">${it.category||'—'}</span>
+      <span class="badge badge-${(it.status||'available').toLowerCase().replace(/\s/g,'-')}">${it.status||'Available'}</span>
+      ${isLow ? '<span class="badge badge-low-stock">⚠ Low Stock</span>' : ''}
+      <span class="badge badge-${(it.auditStatus||'pending').toLowerCase()}">${it.auditStatus||'Pending'}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="stat-card"><div class="stat-num ${isLow ? 'style="color:var(--red)"' : ''}">${it.quantity}</div><div class="stat-lbl">Qty</div></div>
+      <div class="stat-card"><div class="stat-num" style="font-size:18px">$${Number(it.price||0).toFixed(2)}</div><div class="stat-lbl">Price</div></div>
+    </div>
+    ${it.description ? `<div class="detail-field"><div class="detail-field-label">Description</div><div class="detail-field-value">${esc(it.description)}</div></div>` : ''}
+    <div class="detail-field"><div class="detail-field-label">Location</div><div class="detail-field-value">${it.location ? esc(it.location) : '<span style="color:var(--text-muted)">Not set</span>'}</div></div>
+    ${it.barcode ? `<div class="detail-field"><div class="detail-field-label">Barcode / QR</div><div class="detail-field-value" style="font-family:monospace">${esc(it.barcode)}</div></div>` : ''}
+    <div class="detail-field"><div class="detail-field-label">Tags</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">${tags}</div></div>
+    ${it.notes ? `<div class="detail-field"><div class="detail-field-label">Notes</div><div class="detail-field-value">${esc(it.notes)}</div></div>` : ''}
+    ${it.lastAudited ? `<div class="detail-field"><div class="detail-field-label">Last Audited</div><div class="detail-field-value">${new Date(it.lastAudited).toLocaleDateString()}</div></div>` : ''}
+    <div class="detail-actions">
+      <button class="btn btn-glass" onclick="closeDetailModal();openItemModal('${it.id}')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit
+      </button>
+      <button class="btn btn-danger" onclick="deleteItem('${it.id}')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+        Delete
+      </button>
+    </div>
+  `;
+  openModal('detail-modal');
+}
+function closeDetailModal() { closeModal('detail-modal'); }
 
-            screen.innerHTML = `
-                <div class="audit-progress">
-                    <h3>${item.Name}</h3>
-                    <p style="color: var(--color-text-secondary); margin: 8px 0;">📍 ${item.Location || 'No location'}</p>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
-                    </div>
-                    <p style="margin-top: 8px; font-size: 14px;">Item ${session.currentIndex + 1} of ${session.items.length}</p>
-                </div>
-                <div style="background: var(--color-surface-elevated); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                    <div class="detail-row">
-                        <span class="detail-label">Expected Quantity</span>
-                        <span class="detail-value" style="font-size: 24px; font-weight: 600;">×${item.Quantity}</span>
-                    </div>
-                </div>
-                <div class="audit-actions">
-                    <button class="btn" style="background: var(--color-success);" onclick="auditResult('Confirmed')">✅ Confirmed</button>
-                </div>
-                <button class="btn btn-secondary" onclick="auditResult('Quantity Off')">🔢 Quantity Off</button>
-                <button class="btn btn-secondary" style="background: rgba(239, 68, 68, 0.2); color: var(--color-error);" onclick="auditResult('Not Found')">❌ Not Found</button>
-            `;
-        }
+function deleteItem(id) {
+  if (!confirm('Delete this item?')) return;
+  inventory = inventory.filter(x => x.id !== id);
+  persist();
+  closeDetailModal();
+  renderInventory();
+  showToast('Item deleted', 'info');
+}
 
-        function auditResult(result) {
-            const session = currentAuditSession;
-            const item = session.items[session.currentIndex];
-            
-            let actualQuantity = item.Quantity;
-            if (result === 'Quantity Off') {
-                const input = prompt('Enter actual quantity:', item.Quantity);
-                if (input === null) return;
-                actualQuantity = parseInt(input);
-                item.Quantity = actualQuantity;
-            }
+/* =====================================================
+   ITEM FORM
+   ===================================================== */
+let editingItemId = null;
+let currentPhotoData = null;
+let currentTags = [];
 
-            session.results.push({
-                itemId: item.id,
-                itemName: item.Name,
-                result: result,
-                expectedQuantity: item.Quantity,
-                actualQuantity: actualQuantity,
-                timestamp: new Date().toISOString()
-            });
+function openItemModal(id = null) {
+  editingItemId = id;
+  currentPhotoData = null;
+  currentTags = [];
+  document.getElementById('item-modal-title').textContent = id ? 'Edit Item' : 'Add Item';
+  document.getElementById('item-save-btn').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>${id ? 'Update Item' : 'Save Item'}`;
 
-            item['Last Audited Date'] = new Date().toISOString();
-            item['Audit Status'] = result === 'Confirmed' ? 'Confirmed' : 'Discrepancy';
+  const it = id ? inventory.find(x => x.id === id) : null;
 
-            session.currentIndex++;
-            if (session.currentIndex < session.items.length) {
-                showAuditItem();
-            } else {
-                showAuditSummary();
-            }
-            saveData();
-        }
+  // Reset fields
+  document.getElementById('item-name').value = it?.name || '';
+  document.getElementById('item-category').value = it?.category || 'Material';
+  document.getElementById('item-status').value = it?.status || 'Available';
+  document.getElementById('item-desc').value = it?.description || '';
+  document.getElementById('item-qty').value = it?.quantity ?? 1;
+  document.getElementById('item-qty-display').textContent = it?.quantity ?? 1;
+  document.getElementById('item-low-stock').value = it?.lowStock ?? 5;
+  document.getElementById('item-price').value = it?.price ?? 0;
+  document.getElementById('item-barcode').value = it?.barcode || '';
+  document.getElementById('item-notes').value = it?.notes || '';
 
-        function showAuditSummary() {
-            document.getElementById('audit-item-screen').classList.add('hidden');
-            const screen = document.getElementById('audit-summary-screen');
-            screen.classList.remove('hidden');
+  // Location dropdown
+  setDropdownValue('location-dropdown', it?.location || '', it?.location || '');
 
-            const session = currentAuditSession;
-            const confirmed = session.results.filter(r => r.result === 'Confirmed').length;
-            const quantityOff = session.results.filter(r => r.result === 'Quantity Off').length;
-            const notFound = session.results.filter(r => r.result === 'Not Found').length;
+  // Tags
+  currentTags = it?.tags ? it.tags.split(',').map(t => t.trim()).filter(Boolean) : [];
+  renderTagChips();
 
-            screen.innerHTML = `
-                <h2>Audit Complete</h2>
-                <div style="margin: 24px 0;">
-                    <div class="detail-row">
-                        <span class="detail-label">Total Items</span>
-                        <span class="detail-value">${session.items.length}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">✅ Confirmed</span>
-                        <span class="detail-value" style="color: var(--color-success);">${confirmed}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">🔢 Quantity Off</span>
-                        <span class="detail-value" style="color: var(--color-warning);">${quantityOff}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">❌ Not Found</span>
-                        <span class="detail-value" style="color: var(--color-error);">${notFound}</span>
-                    </div>
-                </div>
-                <button class="btn" onclick="closeAudit()">Close Audit</button>
-            `;
+  // Photo
+  clearPhoto();
+  if (it?.photo) {
+    currentPhotoData = it.photo;
+    document.getElementById('photo-preview').src = it.photo;
+    document.getElementById('photo-preview').classList.add('show');
+    document.getElementById('photo-placeholder').classList.add('hide');
+    document.getElementById('clear-photo-btn').style.display = 'flex';
+  }
 
-            session.endDate = new Date().toISOString();
-            auditSessions.push(session);
-            saveData();
-        }
+  populateLocationDropdown();
+  openModal('item-modal');
+}
 
-        function closeAudit() {
-            document.getElementById('audit-summary-screen').classList.add('hidden');
-            document.getElementById('audit-start-screen').classList.remove('hidden');
-            currentAuditSession = null;
-            renderAuditHistory();
-        }
+function closeItemModal() { closeModal('item-modal'); }
 
-        function renderAuditHistory() {
-            const container = document.getElementById('audit-history');
-            if (auditSessions.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); margin-top: 24px;">No audit history</p>';
-                return;
-            }
-            container.innerHTML = '<h3 style="margin-bottom: 16px;">Audit History</h3>' + 
-                auditSessions.slice().reverse().map(session => {
-                    const discrepancies = session.results.filter(r => r.result !== 'Confirmed').length;
-                    return `
-                        <div class="item-card">
-                            <div class="item-name">${session.type.charAt(0).toUpperCase() + session.type.slice(1)} Audit</div>
-                            <div style="color: var(--color-text-secondary); font-size: 14px; margin-top: 4px;">
-                                ${new Date(session.startDate).toLocaleDateString()}
-                            </div>
-                            <div style="margin-top: 8px;">
-                                <span class="badge badge-material">${session.items.length} items</span>
-                                ${discrepancies > 0 ? `<span class="low-stock-badge">${discrepancies} discrepancies</span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-        }
+function stepField(inputId, delta) {
+  const input = document.getElementById(inputId);
+  const newVal = Math.max(0, Number(input.value) + delta);
+  input.value = newVal;
+  document.getElementById(inputId + '-display').textContent = newVal;
+}
 
-        // Export
-        function exportData() {
-            let csv = 'Name,Category,Description,Quantity,Status,Location,Price,Barcode,Tags,Date Added\n';
-            inventory.forEach(item => {
-                csv += `"${item.Name}","${item.Category}","${item.Description || ''}",${item.Quantity},"${item.Status}","${item.Location || ''}",${item.Price || 0},"${item.Barcode || ''}","${item.Tags || ''}","${item['Date Added']}"\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `asms-inventory-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-        }
+function handlePhotoSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    currentPhotoData = e.target.result;
+    document.getElementById('photo-preview').src = currentPhotoData;
+    document.getElementById('photo-preview').classList.add('show');
+    document.getElementById('photo-placeholder').classList.add('hide');
+    document.getElementById('clear-photo-btn').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
 
-        // Airtable Sync
-        async function syncToAirtable(table, record) {
-            const apiKey = localStorage.getItem('airtable_api_key');
-            const baseId = localStorage.getItem('airtable_base_id');
-            
-            if (!apiKey || !baseId) return;
+function clearPhoto() {
+  currentPhotoData = null;
+  document.getElementById('photo-preview').src = '';
+  document.getElementById('photo-preview').classList.remove('show');
+  document.getElementById('photo-placeholder').classList.remove('hide');
+  document.getElementById('clear-photo-btn').style.display = 'none';
+  document.getElementById('photo-file').value = '';
+}
 
-            try {
-                await fetch(`https://api.airtable.com/v0/${baseId}/${table}`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ fields: record })
-                });
-            } catch (error) {
-                console.error('Sync error:', error);
-            }
-        }
+function saveItem() {
+  const name = document.getElementById('item-name').value.trim();
+  if (!name) { showToast('Name is required', 'error'); return; }
 
-        // Modal Management
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
+  const item = {
+    id: editingItemId || uid(),
+    name,
+    category: document.getElementById('item-category').value,
+    status: document.getElementById('item-status').value,
+    description: document.getElementById('item-desc').value.trim(),
+    quantity: Number(document.getElementById('item-qty').value),
+    lowStock: Number(document.getElementById('item-low-stock').value),
+    price: Number(document.getElementById('item-price').value),
+    location: document.getElementById('item-location').value.trim(),
+    barcode: document.getElementById('item-barcode').value.trim(),
+    tags: currentTags.join(', '),
+    notes: document.getElementById('item-notes').value.trim(),
+    photo: currentPhotoData,
+    auditStatus: editingItemId ? (inventory.find(x=>x.id===editingItemId)?.auditStatus || 'Pending') : 'Pending',
+    lastAudited: editingItemId ? inventory.find(x=>x.id===editingItemId)?.lastAudited : null,
+    dateAdded: editingItemId ? inventory.find(x=>x.id===editingItemId)?.dateAdded : new Date().toISOString(),
+    lastModified: new Date().toISOString(),
+  };
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-    </script>
+  // Auto-create location if new
+  if (item.location && !locations.find(l => l.name === item.location)) {
+    locations.push({ id: uid(), name: item.location, type: 'Storage', description: '', dateCreated: new Date().toISOString() });
+  }
+
+  if (editingItemId) {
+    const idx = inventory.findIndex(x => x.id === editingItemId);
+    if (idx >= 0) inventory[idx] = item;
+  } else {
+    inventory.unshift(item);
+  }
+
+  persist();
+  closeItemModal();
+  renderInventory();
+  showToast(editingItemId ? 'Item updated' : 'Item added', 'success');
+}
+
+/* =====================================================
+   TAGS INPUT
+   ===================================================== */
+function renderTagChips() {
+  const wrap = document.getElementById('tags-chips');
+  wrap.innerHTML = currentTags.map(t => `
+    <span class="tag-chip">
+      ${esc(t)}
+      <span class="tag-chip-remove" onclick="removeTag('${esc(t)}')">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </span>
+    </span>`).join('');
+}
+function removeTag(t) {
+  currentTags = currentTags.filter(x => x !== t);
+  renderTagChips();
+}
+function addTag(t) {
+  t = t.trim().toLowerCase();
+  if (!t || currentTags.includes(t)) return;
+  currentTags.push(t);
+  renderTagChips();
+  document.getElementById('tags-text').value = '';
+  document.getElementById('item-tags').value = currentTags.join(', ');
+  hideTagsSuggestions();
+}
+function onTagsKeydown(e) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    addTag(e.target.value);
+  } else if (e.key === 'Backspace' && !e.target.value && currentTags.length) {
+    currentTags.pop(); renderTagChips();
+  }
+}
+function onTagsInput(val) {
+  if (val.endsWith(',')) { addTag(val.slice(0,-1)); return; }
+  showTagsSuggestions(val);
+}
+let tagsSuggestionsTimeout;
+function showTagsSuggestions(query = '') {
+  const box = document.getElementById('tags-suggestions');
+  const all = getAllTags().filter(t => !currentTags.includes(t) && (!query || t.includes(query.toLowerCase())));
+  if (!all.length) { box.classList.remove('open'); return; }
+  box.innerHTML = all.slice(0, 8).map(t =>
+    `<div class="dropdown-opt" onmousedown="event.preventDefault();addTag('${esc(t)}')">${esc(t)}</div>`
+  ).join('');
+  box.classList.add('open');
+  document.getElementById('tags-wrap').classList.add('focused');
+}
+function hideTagsSuggestions() {
+  setTimeout(() => {
+    document.getElementById('tags-suggestions')?.classList.remove('open');
+    document.getElementById('tags-wrap')?.classList.remove('focused');
+  }, 150);
+}
+
+/* =====================================================
+   LOCATION DROPDOWN
+   ===================================================== */
+function populateLocationDropdown() {
+  const opts = document.getElementById('location-opts');
+  opts.innerHTML = locations.map(l => {
+    const cur = document.getElementById('item-location').value;
+    return `<div class="dropdown-opt ${cur === l.name ? 'selected' : ''}" data-val="${esc(l.name)}" onclick="selectDropdownOpt('location-dropdown', '${esc(l.name)}')">${esc(l.name)} <span style="font-size:11px;color:var(--text-faint)">${l.type||''}</span>${cur === l.name ? '<svg class="check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' : ''}</div>`;
+  }).join('') || '<div class="dropdown-opt" style="color:var(--text-faint);cursor:default">No locations yet</div>';
+}
+
+function toggleDropdown(id) {
+  const container = document.getElementById(id);
+  const list = document.getElementById(id + '-list');
+  const trigger = document.getElementById(id.replace('-dropdown', '') + '-trigger') || container.querySelector('.dropdown-trigger');
+  const isOpen = list.classList.contains('open');
+  // Close all open dropdowns
+  document.querySelectorAll('.dropdown-list.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.dropdown-trigger.open').forEach(t => t.classList.remove('open'));
+  if (!isOpen) {
+    list.classList.add('open');
+    trigger.classList.add('open');
+    // focus search
+    const search = list.querySelector('.dropdown-search');
+    if (search) setTimeout(() => search.focus(), 100);
+  }
+}
+function closeAllDropdowns() {
+  document.querySelectorAll('.dropdown-list.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.dropdown-trigger.open').forEach(t => t.classList.remove('open'));
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.custom-dropdown')) closeAllDropdowns();
+});
+
+function filterDropdown(ddId, query) {
+  const opts = document.getElementById(ddId + '-list').querySelectorAll('.dropdown-opt[data-val]');
+  opts.forEach(opt => {
+    opt.style.display = !query || opt.dataset.val?.toLowerCase().includes(query.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function selectDropdownOpt(ddId, val) {
+  setDropdownValue(ddId, val, val);
+  closeAllDropdowns();
+}
+
+function setDropdownValue(ddId, val, displayVal) {
+  document.getElementById('item-location').value = val;
+  const trigger = document.getElementById('location-trigger');
+  const display = document.getElementById('location-display-val');
+  if (val) {
+    display.textContent = displayVal;
+    display.classList.remove('placeholder');
+  } else {
+    display.textContent = 'Select or add location…';
+    display.classList.add('placeholder');
+  }
+}
+
+function addNewLocationFromDropdown() {
+  closeAllDropdowns();
+  closeItemModal();
+  openLocationModal(null, true);
+}
+
+/* =====================================================
+   LOCATIONS
+   ===================================================== */
+function locIcon(type) {
+  const icons = {
+    Studio: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>`,
+    Storage: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`,
+    Shelf: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="19" x2="20" y2="19"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="5" x2="20" y2="5"/><line x1="7" y1="5" x2="7" y2="19"/><line x1="17" y1="5" x2="17" y2="19"/></svg>`,
+    Cabinet: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="2" width="18" height="20" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><circle cx="10" cy="8" r="1"/><circle cx="10" cy="17" r="1"/></svg>`,
+    Drawer: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="9" r="1"/><circle cx="12" cy="15" r="1"/></svg>`,
+    Bin: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8H3l2 14h14z"/><path d="M1 8h22"/><path d="M9 4h6"/></svg>`,
+    Table: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="8" width="20" height="4" rx="2"/><line x1="6" y1="12" x2="6" y2="20"/><line x1="18" y1="12" x2="18" y2="20"/></svg>`,
+    Box: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>`,
+  };
+  return icons[type] || icons.Box;
+}
+function locColorClass(type) {
+  const map = { Studio:'loc-shelf', Storage:'loc-storage', Shelf:'loc-shelf', Cabinet:'loc-cabinet', Drawer:'loc-drawer', Bin:'loc-bin', Table:'loc-table', Box:'loc-box' };
+  return map[type] || 'loc-shelf';
+}
+
+function renderLocations() {
+  const list = document.getElementById('loc-list');
+  document.getElementById('loc-count-label').textContent = locations.length + ' location' + (locations.length !== 1 ? 's' : '');
+  if (!locations.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 00-8 8c0 5.4 7 12 8 12s8-6.6 8-12a8 8 0 00-8-8z"/></svg></div><h3>No locations yet</h3><p>Add locations to organize your studio space.</p></div>`;
+    return;
+  }
+  list.innerHTML = locations.map(l => {
+    const count = inventory.filter(i => i.location === l.name).length;
+    return `<div class="card loc-card" onclick="showLocationItems('${l.id}')">
+      <div class="card-body card-row">
+        <div class="loc-icon ${locColorClass(l.type)}">${locIcon(l.type)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:16px;font-weight:600">${esc(l.name)}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${l.type} • ${count} item${count !== 1 ? 's' : ''}</div>
+          ${l.description ? `<div style="font-size:12px;color:var(--text-muted);margin-top:2px">${esc(l.description)}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="header-btn" onclick="event.stopPropagation();openLocationModal('${l.id}')" aria-label="Edit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="header-btn" onclick="event.stopPropagation();deleteLocation('${l.id}')" style="color:var(--red)" aria-label="Delete">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showLocationItems(locId) {
+  const loc = locations.find(l => l.id === locId);
+  if (!loc) return;
+  const items = inventory.filter(i => i.location === loc.name);
+  document.getElementById('detail-modal-title').textContent = loc.name;
+  document.getElementById('detail-modal-body').innerHTML = `
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">${loc.type} • ${items.length} item${items.length !== 1 ? 's' : ''}</div>
+    ${items.length ? items.map(it => `
+      <div class="card inv-card" style="margin-bottom:10px" onclick="closeDetailModal();openDetailModal('${it.id}')">
+        <div class="card-body card-row">
+          <div class="inv-thumb">${it.photo ? `<img src="${it.photo}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : `<div class="inv-thumb-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="21 15 16 10 5 21"/></svg></div>`}</div>
+          <div class="inv-info"><div class="inv-name">${esc(it.name)}</div><div style="margin-top:4px"><span class="badge badge-${it.category?.toLowerCase()}">${it.category}</span></div></div>
+          <div class="qty-badge">${it.quantity}</div>
+        </div>
+      </div>`).join('') : `<div class="empty-state" style="padding:32px 0"><div class="empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div><h3>Empty location</h3><p>No items stored here yet.</p></div>`}
+  `;
+  openModal('detail-modal');
+}
+
+let editingLocId = null;
+let fromItemModal = false;
+
+function openLocationModal(id = null, backToItem = false) {
+  editingLocId = id;
+  fromItemModal = backToItem;
+  document.getElementById('location-modal-title').textContent = id ? 'Edit Location' : 'Add Location';
+  const loc = id ? locations.find(l => l.id === id) : null;
+  document.getElementById('loc-name').value = loc?.name || '';
+  document.getElementById('loc-type').value = loc?.type || 'Shelf';
+  document.getElementById('loc-desc').value = loc?.description || '';
+  openModal('location-modal');
+}
+function closeLocationModal() {
+  closeModal('location-modal');
+  if (fromItemModal) setTimeout(() => openItemModal(editingItemId), 300);
+}
+function saveLocation() {
+  const name = document.getElementById('loc-name').value.trim();
+  if (!name) { showToast('Location name required', 'error'); return; }
+  const loc = { id: editingLocId || uid(), name, type: document.getElementById('loc-type').value, description: document.getElementById('loc-desc').value.trim(), dateCreated: new Date().toISOString() };
+  if (editingLocId) {
+    const old = locations.find(l => l.id === editingLocId);
+    if (old && old.name !== name) inventory.forEach(i => { if (i.location === old.name) i.location = name; });
+    const idx = locations.findIndex(l => l.id === editingLocId);
+    if (idx >= 0) locations[idx] = loc;
+  } else {
+    locations.push(loc);
+  }
+  persist();
+  closeLocationModal();
+  renderLocations();
+  showToast(editingLocId ? 'Location updated' : 'Location added', 'success');
+}
+function deleteLocation(id) {
+  if (!confirm('Delete this location? Items assigned here will lose their location.')) return;
+  const loc = locations.find(l => l.id === id);
+  if (loc) inventory.forEach(i => { if (i.location === loc.name) i.location = ''; });
+  locations = locations.filter(l => l.id !== id);
+  persist(); renderLocations();
+  showToast('Location deleted', 'info');
+}
+
+/* =====================================================
+   PROJECTS
+   ===================================================== */
+let projFilter = 'all';
+document.getElementById('proj-filters').addEventListener('click', e => {
+  const chip = e.target.closest('[data-proj]');
+  if (!chip) return;
+  projFilter = chip.dataset.proj;
+  document.querySelectorAll('#proj-filters .chip').forEach(c => c.classList.toggle('active', c.dataset.proj === projFilter));
+  renderProjects();
+});
+
+function renderProjects() {
+  const list = document.getElementById('proj-list');
+  const items = projects.filter(p => projFilter === 'all' || p.status === projFilter);
+  if (!items.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div><h3>No projects yet</h3><p>Track commissions and studio projects.</p></div>`;
+    return;
+  }
+  list.innerHTML = items.map(p => `
+    <div class="card proj-card" onclick="openProjectDetail('${p.id}')">
+      <div class="card-body">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:16px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</div>
+          <span class="badge badge-${p.status?.toLowerCase().replace(/\s/g,'-')}">${p.status}</span>
+        </div>
+        ${p.client ? `<div style="font-size:13px;color:var(--text-muted);margin-top:4px">Client: ${esc(p.client)}</div>` : ''}
+        <div class="proj-dates">
+          ${p.startDate ? `<span>Start: ${p.startDate}</span>` : ''}
+          ${p.dueDate ? `<span>Due: ${p.dueDate}</span>` : ''}
+        </div>
+        ${p.budget ? `<div class="proj-budget">$${Number(p.budget).toFixed(2)}</div>` : ''}
+        ${p.description ? `<div style="font-size:13px;color:var(--text-muted);margin-top:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(p.description)}</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function openProjectDetail(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('detail-modal-title').textContent = p.name;
+  document.getElementById('detail-modal-body').innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <span class="badge badge-${p.status?.toLowerCase().replace(/\s/g,'-')}">${p.status}</span>
+      ${p.budget ? `<span class="badge" style="background:var(--accent-glass);color:var(--accent)">$${Number(p.budget).toFixed(2)}</span>` : ''}
+    </div>
+    ${p.client ? `<div class="detail-field"><div class="detail-field-label">Client</div><div class="detail-field-value">${esc(p.client)}</div></div>` : ''}
+    ${p.startDate||p.dueDate ? `<div class="detail-field"><div class="detail-field-label">Timeline</div><div class="detail-field-value">${p.startDate ? 'Start: ' + p.startDate : ''} ${p.dueDate ? ' → Due: ' + p.dueDate : ''}</div></div>` : ''}
+    ${p.description ? `<div class="detail-field"><div class="detail-field-label">Description</div><div class="detail-field-value">${esc(p.description)}</div></div>` : ''}
+    ${p.notes ? `<div class="detail-field"><div class="detail-field-label">Notes</div><div class="detail-field-value">${esc(p.notes)}</div></div>` : ''}
+    <div class="detail-actions">
+      <button class="btn btn-glass" onclick="closeDetailModal();openProjectModal('${p.id}')">Edit</button>
+      <button class="btn btn-danger" onclick="deleteProject('${p.id}')">Delete</button>
+    </div>`;
+  openModal('detail-modal');
+}
+
+let editingProjId = null;
+function openProjectModal(id = null) {
+  editingProjId = id;
+  document.getElementById('project-modal-title').textContent = id ? 'Edit Project' : 'Add Project';
+  const p = id ? projects.find(x => x.id === id) : null;
+  document.getElementById('proj-name').value = p?.name || '';
+  document.getElementById('proj-status').value = p?.status || 'Active';
+  document.getElementById('proj-budget').value = p?.budget || 0;
+  document.getElementById('proj-client').value = p?.client || '';
+  document.getElementById('proj-start').value = p?.startDate || '';
+  document.getElementById('proj-due').value = p?.dueDate || '';
+  document.getElementById('proj-desc').value = p?.description || '';
+  document.getElementById('proj-notes').value = p?.notes || '';
+  openModal('project-modal');
+}
+function closeProjectModal() { closeModal('project-modal'); }
+function saveProject() {
+  const name = document.getElementById('proj-name').value.trim();
+  if (!name) { showToast('Project name required', 'error'); return; }
+  const p = {
+    id: editingProjId || uid(), name,
+    status: document.getElementById('proj-status').value,
+    budget: document.getElementById('proj-budget').value,
+    client: document.getElementById('proj-client').value.trim(),
+    startDate: document.getElementById('proj-start').value,
+    dueDate: document.getElementById('proj-due').value,
+    description: document.getElementById('proj-desc').value.trim(),
+    notes: document.getElementById('proj-notes').value.trim(),
+    dateAdded: new Date().toISOString(),
+  };
+  if (editingProjId) { const idx = projects.findIndex(x => x.id === editingProjId); if (idx >= 0) projects[idx] = p; }
+  else projects.unshift(p);
+  persist(); closeProjectModal(); renderProjects();
+  showToast(editingProjId ? 'Project updated' : 'Project added', 'success');
+}
+function deleteProject(id) {
+  if (!confirm('Delete this project?')) return;
+  projects = projects.filter(x => x.id !== id);
+  persist(); closeDetailModal(); renderProjects();
+  showToast('Project deleted', 'info');
+}
+
+/* =====================================================
+   AUDIT
+   ===================================================== */
+let auditQueue = [];
+let auditIdx = 0;
+let auditResults = [];
+let auditScannerActive = false;
+let auditHtml5Scanner = null;
+let qtyOffVal = 0;
+
+function renderAuditStart() {
+  // Stats from history
+  const last = auditHistory[auditHistory.length - 1];
+  document.getElementById('as-total').textContent = inventory.length;
+  document.getElementById('as-confirmed').textContent = last?.confirmed || 0;
+  document.getElementById('as-disc').textContent = last?.discrepancies || 0;
+
+  // History
+  const hist = document.getElementById('audit-history-list');
+  if (!auditHistory.length) {
+    hist.innerHTML = `<div style="font-size:14px;color:var(--text-muted);padding:16px 0">No audits yet. Run your first cycle count above.</div>`;
+    return;
+  }
+  hist.innerHTML = [...auditHistory].reverse().map(a => `
+    <div class="history-card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:600">${a.scope}</div>
+        <span class="badge badge-${a.discrepancies ? 'discrepancy' : 'confirmed'}">${a.discrepancies ? a.discrepancies + ' issues' : '✓ Clean'}</span>
+      </div>
+      <div class="history-meta">${new Date(a.date).toLocaleDateString()} • ${a.total} items • ${Math.round((a.confirmed/Math.max(a.total,1))*100)}% confirmed</div>
+    </div>`).join('');
+}
+
+function startAudit(mode, locationFilter = null) {
+  let queue = [...inventory];
+  if (mode === 'location' && locationFilter) queue = queue.filter(i => i.location === locationFilter);
+  if (mode === 'stale') {
+    const threshold = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    queue = queue.filter(i => !i.lastAudited || new Date(i.lastAudited).getTime() < threshold);
+  }
+  queue.sort((a, b) => (a.location || '').localeCompare(b.location || ''));
+  if (!queue.length) { showToast('No items match that audit scope', 'info'); return; }
+  auditQueue = queue;
+  auditIdx = 0;
+  auditResults = [];
+  qtyOffVal = 0;
+  showAuditView('audit-session');
+  renderAuditItem();
+  closeModal('loc-picker-modal');
+}
+
+function showLocationPicker() {
+  const list = document.getElementById('loc-picker-list');
+  if (!locations.length) { showToast('No locations defined', 'info'); return; }
+  list.innerHTML = locations.map(l => {
+    const count = inventory.filter(i => i.location === l.name).length;
+    return `<div class="card loc-card" style="margin-bottom:10px" onclick="startAudit('location','${esc(l.name)}')">
+      <div class="card-body card-row">
+        <div class="loc-icon ${locColorClass(l.type)}">${locIcon(l.type)}</div>
+        <div style="flex:1"><div style="font-weight:600">${esc(l.name)}</div><div style="font-size:12px;color:var(--text-muted)">${count} items</div></div>
+      </div>
+    </div>`;
+  }).join('');
+  openModal('loc-picker-modal');
+}
+
+function renderAuditItem() {
+  if (auditIdx >= auditQueue.length) { showAuditSummary(); return; }
+  const it = auditQueue[auditIdx];
+  const pct = auditIdx / auditQueue.length * 100;
+  document.getElementById('audit-progress-fill').style.width = pct + '%';
+  document.getElementById('audit-counter').textContent = `Item ${auditIdx + 1} of ${auditQueue.length}`;
+  document.getElementById('audit-item-name').textContent = it.name;
+  document.getElementById('audit-item-location').textContent = it.location || 'No location';
+  document.getElementById('audit-item-badge').innerHTML = `<span class="badge badge-${it.category?.toLowerCase()}">${it.category||'—'}</span>`;
+  document.getElementById('audit-expected-qty').textContent = '×' + it.quantity;
+
+  // Photo
+  const hero = document.getElementById('audit-item-hero');
+  if (it.photo) hero.innerHTML = `<img src="${it.photo}" alt="${esc(it.name)}" style="width:100%;height:100%;object-fit:cover">`;
+  else hero.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(240,240,248,0.2)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+
+  // Reset qty-off
+  document.getElementById('qty-off-wrap').classList.remove('show');
+  qtyOffVal = it.quantity;
+  document.getElementById('qty-off-val').textContent = qtyOffVal;
+
+  // Scanner button text
+  document.getElementById('audit-scan-btn').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="7.01" y2="12"/><line x1="12" y1="12" x2="17" y2="12"/></svg> ${auditScannerActive ? 'Stop Scanning' : 'Scan Barcode to Confirm'}`;
+}
+
+function auditAction(type) {
+  if (auditScannerActive) stopAuditScanner();
+  const it = auditQueue[auditIdx];
+  const result = { itemId: it.id, itemName: it.name, expected: it.quantity, actual: it.quantity, result: type, timestamp: new Date().toISOString() };
+
+  if (type === 'confirm') {
+    it.auditStatus = 'Confirmed';
+    it.lastAudited = new Date().toISOString();
+    result.result = 'Confirmed';
+  } else if (type === 'qty-off') {
+    result.actual = qtyOffVal;
+    it.quantity = qtyOffVal;
+    it.auditStatus = 'Discrepancy';
+    it.lastAudited = new Date().toISOString();
+    result.result = 'Quantity Off';
+  } else if (type === 'not-found') {
+    it.auditStatus = 'Discrepancy';
+    result.result = 'Not Found';
+  }
+
+  // Update inventory
+  const idx = inventory.findIndex(x => x.id === it.id);
+  if (idx >= 0) inventory[idx] = it;
+  persist();
+
+  auditResults.push(result);
+  auditIdx++;
+  renderAuditItem();
+}
+
+function showQtyOff() {
+  document.getElementById('qty-off-wrap').classList.add('show');
+}
+function stepQtyOff(delta) {
+  qtyOffVal = Math.max(0, qtyOffVal + delta);
+  document.getElementById('qty-off-val').textContent = qtyOffVal;
+}
+
+function showAuditSummary() {
+  showAuditView('audit-summary');
+  const confirmed = auditResults.filter(r => r.result === 'Confirmed').length;
+  const qtyOff = auditResults.filter(r => r.result === 'Quantity Off').length;
+  const notFound = auditResults.filter(r => r.result === 'Not Found').length;
+  document.getElementById('sum-confirmed').textContent = confirmed;
+  document.getElementById('sum-qty-off').textContent = qtyOff;
+  document.getElementById('sum-not-found').textContent = notFound;
+
+  const disc = auditResults.filter(r => r.result !== 'Confirmed');
+  const dl = document.getElementById('discrepancy-list');
+  dl.innerHTML = disc.length ? disc.map(d => `
+    <div class="card" style="margin-bottom:10px"><div class="card-body">
+      <div style="font-weight:600">${esc(d.itemName)}</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:4px">
+        ${d.result === 'Not Found' ? '<span style="color:var(--red)">Not Found</span>' : `<span style="color:var(--yellow)">Expected ${d.expected}, found ${d.actual}</span>`}
+      </div>
+    </div></div>`).join('') : `<div style="font-size:14px;color:var(--green);padding:16px 0">✓ No discrepancies found!</div>`;
+
+  // Save to history
+  auditHistory.push({ id: uid(), date: new Date().toISOString(), scope: auditQueue.length === inventory.length ? 'Full Audit' : 'Partial Audit', total: auditQueue.length, confirmed, discrepancies: qtyOff + notFound });
+  persist();
+}
+
+function closeAuditSession() {
+  showAuditView('audit-start');
+  renderAuditStart();
+}
+
+function showAuditView(id) {
+  document.querySelectorAll('.audit-view').forEach(v => v.classList.remove('visible'));
+  document.getElementById(id).classList.add('visible');
+}
+
+/* ── AUDIT BARCODE SCANNER ────────────────────── */
+function toggleAuditScanner() {
+  if (auditScannerActive) { stopAuditScanner(); return; }
+  auditScannerActive = true;
+  document.getElementById('scan-pulse-indicator').style.display = 'flex';
+  document.getElementById('audit-scan-btn').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Stop Scanning`;
+  document.getElementById('audit-scan-btn').style.borderColor = 'rgba(255,69,58,0.4)';
+  document.getElementById('audit-scan-btn').style.color = 'var(--red)';
+
+  openScanner('audit');
+}
+function stopAuditScanner() {
+  auditScannerActive = false;
+  document.getElementById('scan-pulse-indicator').style.display = 'none';
+  document.getElementById('audit-scan-btn').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="7.01" y2="12"/><line x1="12" y1="12" x2="17" y2="12"/></svg> Scan Barcode to Confirm`;
+  document.getElementById('audit-scan-btn').style.borderColor = '';
+  document.getElementById('audit-scan-btn').style.color = '';
+}
+
+/* =====================================================
+   BARCODE SCANNER
+   ===================================================== */
+let scannerMode = null; // 'barcode' | 'audit'
+let html5Scanner = null;
+
+function openScanner(mode) {
+  scannerMode = mode;
+  document.getElementById('scanner-label').textContent = mode === 'audit' ? 'Scan item barcode to confirm…' : 'Point at barcode or QR code';
+  document.getElementById('scanner-hint').textContent = mode === 'audit' ? 'Barcode must match the current audit item' : 'Barcode will fill the field automatically';
+  document.getElementById('scanner-overlay').classList.add('open');
+  document.getElementById('scanner-viewport').innerHTML = '';
+
+  if (html5Scanner) { try { html5Scanner.stop(); } catch(e){} html5Scanner = null; }
+
+  html5Scanner = new Html5Qrcode('scanner-viewport');
+  html5Scanner.start(
+    { facingMode: 'environment' },
+    { fps: 12, qrbox: { width: 260, height: 120 } },
+    (decodedText) => {
+      handleScanResult(decodedText);
+    },
+    () => {}
+  ).catch(err => {
+    showToast('Camera access denied', 'error');
+    closeScanner();
+  });
+}
+
+function closeScanner() {
+  document.getElementById('scanner-overlay').classList.remove('open');
+  if (html5Scanner) {
+    html5Scanner.stop().catch(() => {}).finally(() => { html5Scanner = null; });
+  }
+  if (scannerMode === 'audit') stopAuditScanner();
+  scannerMode = null;
+}
+
+function handleScanResult(code) {
+  if (scannerMode === 'barcode') {
+    document.getElementById('item-barcode').value = code;
+    closeScanner();
+    showToast('Barcode scanned: ' + code.slice(0, 20), 'success');
+  } else if (scannerMode === 'audit') {
+    const it = auditQueue[auditIdx];
+    if (!it) { closeScanner(); return; }
+    if (it.barcode && it.barcode.trim() === code.trim()) {
+      // Match! Auto-confirm
+      closeScanner();
+      showToast('✓ Barcode matched — confirmed!', 'success');
+      setTimeout(() => auditAction('confirm'), 300);
+    } else if (!it.barcode) {
+      // Item has no barcode — offer to assign or just confirm
+      closeScanner();
+      showToast('No barcode on file. Use manual confirm.', 'info');
+    } else {
+      // No match
+      showToast('Barcode mismatch! Expected: ' + (it.barcode || '—'), 'error');
+      // Don't close — keep scanning
+    }
+  }
+}
+
+/* =====================================================
+   SETTINGS
+   ===================================================== */
+function renderSettings() {
+  document.getElementById('set-inv-count').textContent = inventory.length;
+  document.getElementById('set-loc-count').textContent = locations.length;
+  document.getElementById('set-proj-count').textContent = projects.length;
+
+  // Tags library
+  const tags = getAllTags().filter(t => inventory.some(i => (i.tags||'').split(',').map(x=>x.trim()).includes(t)));
+  const lib = document.getElementById('tags-library-view');
+  lib.innerHTML = tags.length ? tags.map(t => `<span class="badge" style="background:var(--accent-glass);color:var(--accent);border:1px solid var(--accent-border)">${esc(t)}</span>`).join('') : '<span style="font-size:13px;color:var(--text-muted)">No tags yet.</span>';
+}
+
+function exportCSV() {
+  const headers = ['Name','Category','Status','Quantity','Low Stock','Location','Price','Barcode','Tags','Description','Notes','Audit Status','Last Audited','Date Added'];
+  const rows = inventory.map(it => [it.name, it.category, it.status, it.quantity, it.lowStock||5, it.location||'', it.price||0, it.
+barcode||'', it.tags||'', it.description||'', it.notes||'', it.auditStatus||'Pending', it.lastAudited ? new Date(it.lastAudited).toLocaleDateString() : '', it.dateAdded ? new Date(it.dateAdded).toLocaleDateString() : '']);
+  const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  downloadFile(csv, 'asms-inventory.csv', 'text/csv');
+  showToast('CSV exported', 'success');
+}
+
+function exportJSON() {
+  const data = JSON.stringify({ inventory, locations, projects, auditHistory, exportedAt: new Date().toISOString() }, null, 2);
+  downloadFile(data, 'asms-backup.json', 'application/json');
+  showToast('Backup exported', 'success');
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!confirm('This will replace all current data. Continue?')) return;
+      if (data.inventory) inventory = data.inventory;
+      if (data.locations) locations = data.locations;
+      if (data.projects) projects = data.projects;
+      if (data.auditHistory) auditHistory = data.auditHistory;
+      persist();
+      renderSettings();
+      showToast('Data restored successfully', 'success');
+    } catch { showToast('Invalid backup file', 'error'); }
+  };
+  reader.readAsText(file);
+}
+
+function clearAllData() {
+  if (!confirm('Delete ALL data permanently? This cannot be undone.')) return;
+  inventory = []; locations = []; projects = []; auditHistory = [];
+  persist();
+  renderInventory(); renderSettings();
+  showToast('All data cleared', 'info');
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* =====================================================
+   MODAL HELPERS
+   ===================================================== */
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+/* =====================================================
+   UTILITIES
+   ===================================================== */
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function showToast(msg, type = 'info', duration = 2800) {
+  const container = document.getElementById('toast-container');
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${icons[type]||'ℹ'}</span> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toast-out 250ms ease forwards';
+    setTimeout(() => toast.remove(), 250);
+  }, duration);
+}
+
+/* =====================================================
+   SEED DATA (first run)
+   ===================================================== */
+function seedIfEmpty() {
+  if (inventory.length || locations.length) return;
+  locations = [
+    { id: uid(), name: 'Studio A', type: 'Studio', description: 'Main studio space', dateCreated: new Date().toISOString() },
+    { id: uid(), name: 'Shelf 1', type: 'Shelf', description: 'Supply shelf by door', dateCreated: new Date().toISOString() },
+    { id: uid(), name: 'Cabinet B', type: 'Cabinet', description: 'Art supply cabinet', dateCreated: new Date().toISOString() },
+    { id: uid(), name: 'Storage Room', type: 'Storage', description: 'Back storage area', dateCreated: new Date().toISOString() },
+  ];
+  inventory = [
+    { id: uid(), name: 'Acrylic Paint Set (24 colors)', category: 'Material', status: 'Available', quantity: 3, lowStock: 2, location: 'Cabinet B', price: 28.99, barcode: '123456789', tags: 'acrylic, paint, color', description: 'Professional grade acrylics', notes: '', photo: null, auditStatus: 'Pending', dateAdded: new Date().toISOString(), lastModified: new Date().toISOString() },
+    { id: uid(), name: 'Mixed Media Canvas (16x20)', category: 'Supply', status: 'Available', quantity: 8, lowStock: 5, location: 'Shelf 1', price: 12.50, barcode: '987654321', tags: 'canvas, mixed media', description: 'Stretched canvas for assemblage work', notes: '', photo: null, auditStatus: 'Confirmed', lastAudited: new Date().toISOString(), dateAdded: new Date().toISOString(), lastModified: new Date().toISOString() },
+    { id: uid(), name: 'Heat Gun', category: 'Tool', status: 'In Use', quantity: 1, lowStock: 1, location: 'Studio A', price: 45.00, barcode: '', tags: 'heat, resin', description: 'For resin and encaustic work', notes: 'Handle with care', photo: null, auditStatus: 'Confirmed', lastAudited: new Date().toISOString(), dateAdded: new Date().toISOString(), lastModified: new Date().toISOString() },
+    { id: uid(), name: 'Epoxy Resin Kit', category: 'Material', status: 'Available', quantity: 2, lowStock: 3, location: 'Storage Room', price: 65.00, barcode: '111222333', tags: 'resin, epoxy, mixed media', description: 'High gloss 2-part epoxy', notes: 'Check expiration', photo: null, auditStatus: 'Pending', dateAdded: new Date().toISOString(), lastModified: new Date().toISOString() },
+  ];
+  persist();
+}
+
+/* =====================================================
+   INIT
+   ===================================================== */
+seedIfEmpty();
+switchTab('inventory');
+</script>
 </body>
 </html>
