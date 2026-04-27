@@ -374,6 +374,9 @@ select.form-input option{background:var(--bg2)}
   .tab-panel{max-width:720px;margin:0 auto}
 }
 </style>
+<!-- Firebase SDKs loaded upfront via CDN (compat for global access) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -1400,7 +1403,7 @@ function parseFbConfig(raw){
   return JSON.parse(s);
 }
 
-async function connectFirebase(){
+function connectFirebase(){
   const raw=document.getElementById('fbConfigInput').value.trim();
   const errEl=document.getElementById('fbConfigError');
   errEl.style.display='none';
@@ -1411,25 +1414,63 @@ async function connectFirebase(){
   setSavedFbConfig(raw);
   setSyncStatus('connecting','Connecting…');
   try{
-    const {initializeApp,getApps,getApp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const {getDatabase,ref,set,onValue,off}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
-    if(fbApp)try{fbListeners.forEach(fn=>fn());fbListeners=[];}catch(e){}
-    fbApp=getApps().length?getApp():initializeApp(cfg);
-    fbDatabase=getDatabase(fbApp);
-    // Push local data up then subscribe
-    await set(ref(fbDatabase,'asms'),{inventory:db.inventory,locations:db.locations,projects:db.projects,auditSessions:db.auditSessions,tags:db.tags});
-    const unsub=onValue(ref(fbDatabase,'asms'),snap=>{
-      const d=snap.val();
-      if(d){db.inventory=d.inventory||[];db.locations=d.locations||[];db.projects=d.projects||[];db.auditSessions=d.auditSessions||[];db.tags=d.tags||db.tags;lsSave();renderTab(currentTab);renderSettings();}
-      setSyncStatus('online','Synced');
-    },err=>{setSyncStatus('offline','Sync error');});
-    fbListeners.push(()=>off(ref(fbDatabase,'asms')));
-    toast('Firebase connected');
-  }catch(e){setSyncStatus('offline','Error');errEl.textContent='Connection failed: '+e.message;errEl.style.display='block';}
+    // Disconnect any existing app
+    if(fbApp){
+      fbListeners.forEach(fn=>{try{fn()}catch(e){}});
+      fbListeners=[];
+      try{fbApp.delete()}catch(e){}
+    }
+    // Use compat SDK loaded via <script> tags
+    const existingApps=firebase.apps;
+    if(existingApps.length>0){
+      existingApps.forEach(a=>{try{a.delete()}catch(e){}});
+    }
+    fbApp=firebase.initializeApp(cfg);
+    fbDatabase=firebase.database();
+    // Push local snapshot up, then subscribe to live changes
+    fbDatabase.ref('asms').set({
+      inventory:db.inventory,
+      locations:db.locations,
+      projects:db.projects,
+      auditSessions:db.auditSessions,
+      tags:db.tags
+    }).then(()=>{
+      const ref=fbDatabase.ref('asms');
+      ref.on('value',snap=>{
+        const d=snap.val();
+        if(d){
+          db.inventory=d.inventory||[];
+          db.locations=d.locations||[];
+          db.projects=d.projects||[];
+          db.auditSessions=d.auditSessions||[];
+          db.tags=d.tags||db.tags;
+          lsSave();
+          renderTab(currentTab);
+          renderSettings();
+        }
+        setSyncStatus('online','Synced');
+      },err=>{
+        setSyncStatus('offline','Sync error');
+        errEl.textContent='Listener error: '+err.message;
+        errEl.style.display='block';
+      });
+      fbListeners.push(()=>ref.off('value'));
+      toast('Firebase connected');
+    }).catch(e=>{
+      setSyncStatus('offline','Error');
+      errEl.textContent='Write failed: '+e.message;
+      errEl.style.display='block';
+    });
+  }catch(e){
+    setSyncStatus('offline','Error');
+    errEl.textContent='Connection failed: '+e.message;
+    errEl.style.display='block';
+  }
 }
 
 function disconnectFirebase(){
   fbListeners.forEach(fn=>{try{fn()}catch(e){}});fbListeners=[];
+  if(fbApp){try{fbApp.delete()}catch(e){}}
   fbApp=null;fbDatabase=null;
   setSyncStatus('offline','Offline');
   toast('Disconnected','error');
@@ -1441,13 +1482,16 @@ function setSyncStatus(state,label){
   document.getElementById('syncLabel').textContent=label;
 }
 
-async function persistData(){
+function persistData(){
   lsSave();
   if(fbDatabase){
-    try{
-      const {ref,set}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
-      await set(ref(fbDatabase,'asms'),{inventory:db.inventory,locations:db.locations,projects:db.projects,auditSessions:db.auditSessions,tags:db.tags});
-    }catch(e){console.warn('Firebase write failed',e);}
+    fbDatabase.ref('asms').set({
+      inventory:db.inventory,
+      locations:db.locations,
+      projects:db.projects,
+      auditSessions:db.auditSessions,
+      tags:db.tags
+    }).catch(e=>console.warn('Firebase write failed',e));
   }
 }
 
@@ -1455,12 +1499,12 @@ async function persistData(){
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // ── INIT ──────────────────────────────────────────────────────────
-(async function init(){
+(function init(){
   lsLoad();
   renderInventory();
   renderSettings();
   const saved=getSavedFbConfig();
-  if(saved){document.getElementById('fbConfigInput').value=saved;await connectFirebase();}
+  if(saved){document.getElementById('fbConfigInput').value=saved;connectFirebase();}
 })();
 </script>
 </body>
