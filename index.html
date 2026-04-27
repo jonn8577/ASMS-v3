@@ -1907,6 +1907,7 @@ function saveItem() {
     lowStock: Number(document.getElementById('item-low-stock').value),
     price: Number(document.getElementById('item-price').value),
     location: document.getElementById('item-location').value.trim(),
+    locationId: (() => { const v = document.getElementById('item-location').value.trim(); const m = locations.find(l => (l.locationPath||l.name) === v || l.name === v); return m ? m.id : null; })(),
     barcode: document.getElementById('item-barcode').value.trim(),
     tags: currentTags.join(', '),
     notes: document.getElementById('item-notes').value.trim(),
@@ -1918,7 +1919,7 @@ function saveItem() {
   };
 
   // Auto-create location if new
-  if (item.location && !locations.find(l => l.name === item.location)) {
+  if (item.location && !locations.find(l => l.name === item.location || (l.locationPath && l.locationPath === item.location))) {
     locations.push({ id: uid(), name: item.location, type: 'Storage', description: '', dateCreated: new Date().toISOString() });
   }
 
@@ -2101,7 +2102,7 @@ function renderLocations() {
   }
 
   function renderNode(l, depth) {
-    const count = inventory.filter(i => i.location === (l.locationPath || l.name) || i.location === l.name).length;
+    const count = inventory.filter(i => i.locationId === l.id || i.location === (l.locationPath||l.name) || i.location === l.name).length;
     const kids  = getChildren(l.id);
     const path  = l.locationPath || l.name;
     const indent = depth * 14;
@@ -2137,7 +2138,7 @@ function renderLocations() {
 function showLocationItems(locId) {
   const loc = locations.find(l => l.id === locId);
   if (!loc) return;
-  const items = inventory.filter(i => i.location === loc.name);
+  const items = inventory.filter(i => i.locationId === loc.id || i.location === (loc.locationPath||loc.name) || i.location === loc.name);
   document.getElementById('detail-modal-title').textContent = loc.name;
   document.getElementById('detail-modal-body').innerHTML = `
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">${loc.type} • ${items.length} item${items.length !== 1 ? 's' : ''}</div>
@@ -2212,7 +2213,7 @@ function saveLocation() {
     if (old) {
       // Update any inventory items pointing to the old name/path
       inventory.forEach(i => {
-        if (i.location === old.name || i.location === old.locationPath) i.location = draft.locationPath;
+        if (i.locationId === old.id || i.location === old.name || i.location === old.locationPath) { i.location = draft.locationPath; i.locationId = draft.id; }
       });
     }
     const idx = locations.findIndex(l => l.id === editingLocId);
@@ -2233,7 +2234,7 @@ function saveLocation() {
 function deleteLocation(id) {
   if (!confirm('Delete this location? Items assigned here will lose their location.')) return;
   const loc = locations.find(l => l.id === id);
-  if (loc) inventory.forEach(i => { if (i.location === loc.name) i.location = ''; });
+  if (loc) inventory.forEach(i => { if (i.locationId === loc.id || i.location === loc.name || i.location === (loc.locationPath||loc.name)) { i.location = ''; i.locationId = null; } });
   locations = locations.filter(l => l.id !== id);
   persist(); renderLocations();
   showToast('Location deleted', 'info');
@@ -2373,7 +2374,7 @@ function renderAuditStart() {
 
 function startAudit(mode, locationFilter = null) {
   let queue = [...inventory];
-  if (mode === 'location' && locationFilter) queue = queue.filter(i => i.location === locationFilter);
+  if (mode === 'location' && locationFilter) { const lf = locations.find(l => l.name === locationFilter || (l.locationPath||l.name) === locationFilter); queue = queue.filter(i => lf ? (i.locationId === lf.id || i.location === locationFilter) : i.location === locationFilter); }
   if (mode === 'stale') {
     const threshold = Date.now() - 30 * 24 * 60 * 60 * 1000;
     queue = queue.filter(i => !i.lastAudited || new Date(i.lastAudited).getTime() < threshold);
@@ -2393,7 +2394,7 @@ function showLocationPicker() {
   const list = document.getElementById('loc-picker-list');
   if (!locations.length) { showToast('No locations defined', 'info'); return; }
   list.innerHTML = locations.map(l => {
-    const count = inventory.filter(i => i.location === l.name).length;
+    const count = inventory.filter(i => i.locationId === l.id || i.location === l.name || i.location === (l.locationPath||l.name)).length;
     return `<div class="card loc-card" style="margin-bottom:10px" onclick="startAudit('location','${esc(l.name)}')">
       <div class="card-body card-row">
         <div class="loc-icon ${locColorClass(l.type)}">${locIcon(l.type)}</div>
