@@ -1,1678 +1,739 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASMS Studio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
-<style>
-/* ============================================================
-   ART DIRECTION: TJR Studio Inventory Management
-   Palette: Black surfaces, TJR Red (#C8102E) primary, Teal (#00838A) secondary
-   Typography: Barlow Condensed (display/labels) + Barlow (body)
-   Density: Dense — this is a working tool, not a portfolio
-   ============================================================ */
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASMS</title>
+  <style>
+    :root {
+      --tjr-red: #fc242d;
+      --tjr-black: #000000;
+      --tjr-teal: #23fbf2;
+      --tjr-teal-dark: #00b8b0;
+      --tjr-yellow: #f2c94c;
 
-/* ---------- RESET & BASE ---------- */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
-}
-body {
-  min-height: 100dvh;
-  font-family: 'Barlow', system-ui, sans-serif;
-  font-size: 1rem;
-  background: var(--color-bg);
-  color: var(--color-text);
-  overflow-x: hidden;
-}
-img, svg { display: block; max-width: 100%; }
-button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
-input, select, textarea { font: inherit; color: inherit; }
-ul[role="list"] { list-style: none; }
-:focus-visible { outline: 2px solid var(--color-red); outline-offset: 3px; border-radius: var(--radius-sm); }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
+      --bg-0: #050505;
+      --bg-1: #0d0d0d;
+      --bg-2: #171717;
+      --bg-3: #222222;
 
-/* ---------- TJR DESIGN TOKENS ---------- */
-:root, [data-theme="dark"] {
-  /* Surfaces — near-black, charcoal, dark gray */
-  --color-bg:              #0d0d0d;
-  --color-surface:         #141414;
-  --color-surface-2:       #1a1a1a;
-  --color-surface-offset:  #202020;
-  --color-surface-dynamic: #2a2a2a;
-  --color-divider:         #2e2e2e;
-  --color-border:          #383838;
+      --text-1: #f5f5f5;
+      --text-2: #b8b8b8;
+      --text-3: #7d7d7d;
 
-  /* Text */
-  --color-text:            #f0eeeb;
-  --color-text-muted:      #8a8785;
-  --color-text-faint:      #52504e;
-  --color-text-inverse:    #0d0d0d;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
 
-  /* TJR Red — primary brand, icons, CTAs */
-  --color-red:             #C8102E;
-  --color-red-hover:       #a80e26;
-  --color-red-active:      #8a0b1e;
-  --color-red-subtle:      rgba(200, 16, 46, 0.12);
-  --color-red-border:      rgba(200, 16, 46, 0.3);
+      --success: var(--tjr-teal);
+      --danger: var(--tjr-red);
+      --warning: #f59e0b;
 
-  /* TJR Teal — secondary, sync status, success states */
-  --color-teal:            #00838A;
-  --color-teal-hover:      #006b71;
-  --color-teal-active:     #005459;
-  --color-teal-subtle:     rgba(0, 131, 138, 0.12);
-  --color-teal-border:     rgba(0, 131, 138, 0.3);
+      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+    }
 
-  /* Semantic */
-  --color-success:         #00838A;
-  --color-warning:         #e0820a;
-  --color-error:           #C8102E;
+    * {
+      box-sizing: border-box;
+    }
 
-  /* Radius */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
-  --radius-full: 9999px;
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(35, 251, 242, 0.07), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(252, 36, 45, 0.10), transparent 32%),
+        var(--bg-0);
+      color: var(--text-1);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
 
-  /* Spacing */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-  /* Transitions */
-  --trans: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      background: rgba(10, 10, 10, 0.82);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+    }
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
-}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-[data-theme="light"] {
-  --color-bg:              #f5f4f2;
-  --color-surface:         #ffffff;
-  --color-surface-2:       #fafaf9;
-  --color-surface-offset:  #f0efed;
-  --color-surface-dynamic: #e8e6e3;
-  --color-divider:         #dddbd8;
-  --color-border:          #d0ceca;
-  --color-text:            #1a1816;
-  --color-text-muted:      #6b6965;
-  --color-text-faint:      #b0aeab;
-  --color-text-inverse:    #ffffff;
-  --color-red-subtle:      rgba(200, 16, 46, 0.08);
-  --color-teal-subtle:     rgba(0, 131, 138, 0.08);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
-}
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(252,36,45,0.18), rgba(35,251,242,0.10)),
+        var(--bg-2);
+      border: 1px solid var(--border);
+      color: var(--tjr-red);
+      box-shadow: var(--shadow-lg);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
 
-/* ---------- TYPOGRAPHY ---------- */
-.font-display { font-family: 'Barlow Condensed', system-ui, sans-serif; }
-.text-xs  { font-size: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem); }
-.text-sm  { font-size: clamp(0.875rem, 0.8rem + 0.35vw, 1rem); }
-.text-base{ font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem); }
-.text-lg  { font-size: clamp(1.125rem, 1rem + 0.75vw, 1.5rem); font-weight: 600; }
-.text-xl  { font-size: clamp(1.4rem, 1.2rem + 1vw, 1.8rem); font-weight: 700; }
+    .brand-copy h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+    }
 
-/* ---------- LAYOUT ---------- */
-.app-shell {
-  display: flex;
-  flex-direction: column;
-  min-height: 100dvh;
-}
+    .brand-copy p {
+      margin: 4px 0 0;
+      color: var(--text-2);
+      font-size: 13px;
+    }
 
-/* Header */
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  gap: var(--space-3);
-}
-.header-logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-.logo-mark {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-}
-.logo-text {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  line-height: 1;
-}
-.logo-text span { color: var(--color-red); }
-.header-actions { display: flex; align-items: center; gap: var(--space-2); }
-.sync-status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: 0.75rem;
-  font-family: 'Barlow Condensed', sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-border);
-}
-.sync-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-text-faint);
-  transition: background var(--trans);
-}
-.sync-dot.synced { background: var(--color-teal); box-shadow: 0 0 6px var(--color-teal); }
-.sync-dot.syncing { background: var(--color-warning); animation: pulse 1s ease-in-out infinite; }
-.sync-dot.error { background: var(--color-red); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .firebase-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-1);
+      white-space: nowrap;
+    }
 
-.icon-btn {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  color: var(--color-text-muted);
-  transition: background var(--trans), color var(--trans);
-}
-.icon-btn:hover { background: var(--color-surface-offset); color: var(--color-text); }
-.icon-btn:active { background: var(--color-surface-dynamic); }
+    .firebase-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-pill);
+      background: #666;
+      flex: 0 0 auto;
+    }
 
-/* Main content area */
-.app-content {
-  flex: 1;
-  overflow-y: auto;
-  padding-bottom: 80px;
-}
+    .firebase-status.offline .firebase-status-dot {
+      background: var(--danger);
+      box-shadow: 0 0 0 6px rgba(252, 36, 45, 0.10);
+    }
 
-/* Tab views */
-.tab-view { display: none; padding: var(--space-4); max-width: 960px; margin: 0 auto; }
-.tab-view.active { display: block; }
+    .firebase-status.connecting .firebase-status-dot {
+      background: var(--warning);
+      animation: firebasePulse 1.25s infinite ease-in-out;
+    }
 
-/* Bottom nav */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  display: flex;
-  align-items: stretch;
-  height: 64px;
-}
-.nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  color: var(--color-text-muted);
-  font-size: 0.65rem;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  transition: color var(--trans), background var(--trans);
-  border: none;
-  background: none;
-  cursor: pointer;
-  padding: var(--space-2) var(--space-1);
-  min-height: 44px;
-  border-radius: 0;
-  position: relative;
-}
-.nav-item svg { transition: color var(--trans); }
-.nav-item.active { color: var(--color-red); }
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32px;
-  height: 2px;
-  background: var(--color-red);
-  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-}
-.nav-item:hover:not(.active) { background: var(--color-surface-offset); color: var(--color-text); }
-.nav-item:active { background: var(--color-surface-dynamic); }
+    .firebase-status.online .firebase-status-dot {
+      background: var(--success);
+      box-shadow: 0 0 0 6px rgba(35, 251, 242, 0.12);
+    }
 
-/* ---------- CARDS & COMPONENTS ---------- */
-.card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-sm);
-}
-.card + .card { margin-top: var(--space-3); }
+    .firebase-status.error .firebase-status-dot {
+      background: var(--danger);
+      box-shadow: 0 0 0 6px rgba(252, 36, 45, 0.12);
+    }
 
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-}
-.section-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
+    @keyframes firebasePulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.14); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.6; }
+    }
 
-/* Stat grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-3);
-  margin-bottom: var(--space-6);
-}
-.stat-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-3);
-  text-align: center;
-}
-.stat-value {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
-  font-weight: 700;
-  color: var(--color-text);
-  line-height: 1;
-  margin-bottom: var(--space-1);
-}
-.stat-label {
-  font-size: 0.68rem;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
+    .app-main {
+      flex: 1;
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 18px 96px;
+    }
 
-/* Item list */
-.item-list { display: flex; flex-direction: column; gap: var(--space-2); }
-.item-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  transition: background var(--trans), border-color var(--trans);
-  cursor: pointer;
-}
-.item-row:hover { background: var(--color-surface-offset); border-color: var(--color-border); }
-.item-row:active { background: var(--color-surface-dynamic); }
-.item-icon {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-red);
-}
-.item-meta { flex: 1; min-width: 0; }
-.item-name {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.item-sub {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  margin-top: 1px;
-}
-.item-badge {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-.badge-available { background: var(--color-teal-subtle); color: var(--color-teal); border: 1px solid var(--color-teal-border); }
-.badge-inuse { background: var(--color-red-subtle); color: var(--color-red); border: 1px solid var(--color-red-border); }
-.badge-pending { background: rgba(224,130,10,0.12); color: var(--color-warning); border: 1px solid rgba(224,130,10,0.3); }
+    .panel {
+      background: rgba(23, 23, 23, 0.84);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(16px);
+    }
 
-/* Tags */
-.tags-wrap { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.tag-chip {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  background: var(--color-surface-offset);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  transition: background var(--trans), color var(--trans), border-color var(--trans);
-  cursor: pointer;
-}
-.tag-chip:hover { background: var(--color-red-subtle); color: var(--color-red); border-color: var(--color-red-border); }
-.tag-chip.active { background: var(--color-red-subtle); color: var(--color-red); border-color: var(--color-red-border); }
+    .hero-panel {
+      padding: 20px;
+      margin-bottom: 18px;
+    }
 
-/* Buttons */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 0.875rem;
-  font-family: 'Barlow Condensed', sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  transition: background var(--trans), color var(--trans), border-color var(--trans);
-  min-height: 44px;
-  cursor: pointer;
-  border: none;
-}
-.btn-primary { background: var(--color-red); color: #fff; }
-.btn-primary:hover { background: var(--color-red-hover); }
-.btn-primary:active { background: var(--color-red-active); }
-.btn-secondary { background: var(--color-teal); color: #fff; }
-.btn-secondary:hover { background: var(--color-teal-hover); }
-.btn-ghost {
-  background: transparent;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-}
-.btn-ghost:hover { background: var(--color-surface-offset); color: var(--color-text); }
-.btn-sm { min-height: 36px; padding: var(--space-1) var(--space-3); font-size: 0.8rem; }
+    .hero-panel h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.15;
+    }
 
-/* Form elements */
-.form-group { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-4); }
-.form-label {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-.form-input, .form-select, .form-textarea {
-  width: 100%;
-  background: var(--color-surface-offset);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-3);
-  color: var(--color-text);
-  font-size: 0.9rem;
-  transition: border-color var(--trans), box-shadow var(--trans);
-  min-height: 44px;
-}
-.form-input:focus, .form-select:focus, .form-textarea:focus {
-  outline: none;
-  border-color: var(--color-teal);
-  box-shadow: 0 0 0 3px var(--color-teal-subtle);
-}
-.form-textarea { min-height: 100px; resize: vertical; }
+    .hero-panel p {
+      margin: 0;
+      color: var(--text-2);
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 70ch;
+    }
 
-/* Firebase config block */
-.config-block {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  font-family: 'Courier New', monospace;
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-  min-height: 160px;
-  white-space: pre-wrap;
-  word-break: break-all;
-  resize: vertical;
-  width: 100%;
-  line-height: 1.6;
-  transition: border-color var(--trans);
-}
-.config-block:focus {
-  outline: none;
-  border-color: var(--color-teal);
-  box-shadow: 0 0 0 3px var(--color-teal-subtle);
-}
+    .sync-banner {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      font-size: 14px;
+      line-height: 1.45;
+    }
 
-/* Status messages */
-.status-msg {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  font-size: 0.85rem;
-  margin-top: var(--space-3);
-}
-.status-msg.success { background: var(--color-teal-subtle); color: var(--color-teal); border: 1px solid var(--color-teal-border); }
-.status-msg.error { background: var(--color-red-subtle); color: var(--color-red); border: 1px solid var(--color-red-border); }
-.status-msg.info { background: rgba(224,130,10,0.1); color: var(--color-warning); border: 1px solid rgba(224,130,10,0.25); }
-.status-msg.hidden { display: none; }
+    .sync-banner.hidden {
+      display: none;
+    }
 
-/* Divider */
-.divider {
-  height: 1px;
-  background: var(--color-divider);
-  margin: var(--space-4) 0;
-}
+    .sync-banner.info {
+      background: rgba(35, 251, 242, 0.08);
+      border-color: rgba(35, 251, 242, 0.18);
+      color: #d8fffd;
+    }
 
-/* Page header */
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-5);
-  padding-top: var(--space-2);
-}
-.page-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: clamp(1.4rem, 3vw, 1.8rem);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--color-text);
-  text-transform: uppercase;
-}
+    .sync-banner.error {
+      background: rgba(252, 36, 45, 0.08);
+      border-color: rgba(252, 36, 45, 0.18);
+      color: #ffe1e3;
+    }
 
-/* Empty state */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-12) var(--space-8);
-  text-align: center;
-  color: var(--color-text-muted);
-}
-.empty-state-icon { color: var(--color-red); margin-bottom: var(--space-4); opacity: 0.6; }
-.empty-state h3 {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text);
-  margin-bottom: var(--space-2);
-}
-.empty-state p { font-size: 0.875rem; max-width: 32ch; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
 
-/* FAB */
-.fab {
-  position: fixed;
-  bottom: calc(64px + var(--space-4));
-  right: var(--space-4);
-  z-index: 90;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--color-red);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-md);
-  transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
-}
-.fab:hover { background: var(--color-red-hover); transform: scale(1.06); box-shadow: var(--shadow-lg); }
-.fab:active { background: var(--color-red-active); transform: scale(0.97); }
+    .stat-card {
+      padding: 18px;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms ease;
-}
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal-sheet {
-  background: var(--color-surface);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  width: 100%;
-  max-width: 640px;
-  max-height: 90dvh;
-  overflow-y: auto;
-  padding: var(--space-6) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
-  transform: translateY(40px);
-  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.modal-overlay.open .modal-sheet { transform: translateY(0); }
-.modal-handle {
-  width: 36px;
-  height: 4px;
-  background: var(--color-border);
-  border-radius: var(--radius-full);
-  margin: 0 auto var(--space-5);
-}
-.modal-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: var(--space-5);
-}
+    .stat-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 600;
+    }
 
-/* Search bar */
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  background: var(--color-surface-offset);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  margin-bottom: var(--space-4);
-  transition: border-color var(--trans);
-}
-.search-bar:focus-within { border-color: var(--color-teal); }
-.search-bar svg { color: var(--color-text-faint); flex-shrink: 0; }
-.search-bar input {
-  flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  font-size: 0.9rem;
-  color: var(--color-text);
-  min-height: 32px;
-}
-.search-bar input::placeholder { color: var(--color-text-faint); }
+    .stat-label svg {
+      color: var(--tjr-red);
+    }
 
-/* Location tree */
-.location-item {
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  margin-bottom: var(--space-2);
-  cursor: pointer;
-  transition: background var(--trans), border-color var(--trans);
-}
-.location-item:hover { background: var(--color-surface-offset); }
-.location-header { display: flex; align-items: center; gap: var(--space-3); }
-.location-icon { color: var(--color-red); flex-shrink: 0; }
-.location-info { flex: 1; min-width: 0; }
-.location-name { font-weight: 600; font-size: 0.9rem; }
-.location-count { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 2px; }
-.location-children { margin-left: var(--space-8); margin-top: var(--space-2); }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      margin-top: 10px;
+    }
 
-/* Audit row */
-.audit-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--color-divider);
-}
-.audit-row:last-child { border-bottom: none; }
-.audit-check {
-  width: 22px;
-  height: 22px;
-  border-radius: var(--radius-sm);
-  border: 2px solid var(--color-border);
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: background var(--trans), border-color var(--trans);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.audit-check.checked {
-  background: var(--color-teal);
-  border-color: var(--color-teal);
-}
-.audit-check.discrepancy {
-  background: var(--color-red-subtle);
-  border-color: var(--color-red);
-}
+    .section {
+      margin-top: 18px;
+    }
 
-/* Settings section */
-.settings-section {
-  margin-bottom: var(--space-6);
-}
-.settings-section-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-faint);
-  margin-bottom: var(--space-3);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-.settings-section-title svg { color: var(--color-red); }
+    .section-card {
+      padding: 18px;
+    }
 
-/* Firebase section special style */
-.firebase-section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-}
-.firebase-section-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
-}
-.firebase-section-title svg { color: var(--color-teal); }
-.firebase-help {
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-4);
-  line-height: 1.5;
-}
+    .section-title {
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-1);
+    }
 
-/* data section */
-.data-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
-</style>
+    .section-title svg {
+      color: var(--tjr-red);
+    }
+
+    .section-copy {
+      margin: 0 0 16px;
+      color: var(--text-2);
+      font-size: 14px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      background: rgba(35, 251, 242, 0.08);
+      border: 1px solid rgba(35, 251, 242, 0.18);
+      color: var(--tjr-teal);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      min-height: 44px;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 160ms ease, opacity 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--tjr-red);
+      color: white;
+      border-color: rgba(252, 36, 45, 0.35);
+    }
+
+    .btn-secondary {
+      background: rgba(35, 251, 242, 0.12);
+      color: var(--tjr-teal);
+      border-color: rgba(35, 251, 242, 0.22);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.04);
+      color: var(--text-1);
+    }
+
+    .app-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(10, 10, 10, 0.9);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-item {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--text-2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 56px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .nav-item svg {
+      color: var(--tjr-red);
+    }
+
+    .nav-item.active {
+      color: var(--text-1);
+    }
+
+    .muted {
+      color: var(--text-2);
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: var(--text-3);
+      word-break: break-word;
+    }
+
+    @media (max-width: 760px) {
+      .app-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<div class="app-shell">
-
-  <!-- HEADER -->
   <header class="app-header">
-    <div class="header-logo">
-      <!-- TJR Logo Mark SVG -->
-      <svg class="logo-mark" aria-label="TJR Studio" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="32" height="32" rx="6" fill="#C8102E"/>
-        <text x="5" y="23" font-family="'Barlow Condensed', sans-serif" font-size="16" font-weight="800" fill="white" letter-spacing="-0.5">TJR</text>
-      </svg>
-      <div>
-        <div class="logo-text">ASMS <span>Studio</span></div>
+    <div class="brand">
+      <div class="brand-mark">TJR</div>
+      <div class="brand-copy">
+        <h1>ASMS</h1>
+        <p>Art Studio Management System</p>
       </div>
     </div>
-    <div class="header-actions">
-      <div class="sync-status" id="syncStatus">
-        <div class="sync-dot" id="syncDot"></div>
-        <span id="syncLabel">Local</span>
-      </div>
-      <button class="icon-btn" data-theme-toggle aria-label="Toggle theme">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
+
+    <div id="firebaseStatus" class="firebase-status offline" role="status" aria-live="polite">
+      <span class="firebase-status-dot"></span>
+      <span id="firebaseStatusText">Offline</span>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
-  <main class="app-content" id="appContent">
+  <main class="app-main">
+    <section class="panel hero-panel">
+      <h2>Studio system, now with baked-in Firebase startup.</h2>
+      <p>
+        This build auto-connects to Firebase on load, reports connection health in the header,
+        falls back cleanly on timeout, and uses a TJR-forward red, black, and teal UI.
+      </p>
 
-    <!-- ====== INVENTORY TAB ====== -->
-    <div class="tab-view active" id="tab-inventory">
-      <div class="page-header">
-        <h1 class="page-title">Inventory</h1>
-        <button class="btn btn-primary btn-sm" onclick="openModal('addItemModal')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Item
-        </button>
-      </div>
+      <div id="firebaseBanner" class="sync-banner hidden info"></div>
 
-      <div class="search-bar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" placeholder="Search items, tags, locations…" id="inventorySearch" oninput="filterInventory()">
+      <div class="btn-row">
+        <button class="btn btn-primary" id="retryFirebaseBtn" type="button">Retry Firebase</button>
+        <button class="btn btn-secondary" id="seedDemoBtn" type="button">Seed Demo Counts</button>
+        <button class="btn btn-ghost" id="clearDemoBtn" type="button">Clear Demo</button>
       </div>
+    </section>
 
-      <div class="tags-wrap" id="inventoryTagFilter" style="margin-bottom: var(--space-4);">
-        <!-- tags rendered by JS -->
-      </div>
-
-      <div class="item-list" id="inventoryList">
-        <!-- items rendered by JS -->
-      </div>
-    </div>
-
-    <!-- ====== LOCATIONS TAB ====== -->
-    <div class="tab-view" id="tab-locations">
-      <div class="page-header">
-        <h1 class="page-title">Locations</h1>
-        <button class="btn btn-primary btn-sm" onclick="openModal('addLocationModal')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Location
-        </button>
-      </div>
-      <div id="locationsList">
-        <!-- rendered by JS -->
-      </div>
-    </div>
-
-    <!-- ====== PROJECTS TAB ====== -->
-    <div class="tab-view" id="tab-projects">
-      <div class="page-header">
-        <h1 class="page-title">Projects</h1>
-        <button class="btn btn-primary btn-sm" onclick="openModal('addProjectModal')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Project
-        </button>
-      </div>
-      <div class="item-list" id="projectsList">
-        <!-- rendered by JS -->
-      </div>
-    </div>
-
-    <!-- ====== AUDIT TAB ====== -->
-    <div class="tab-view" id="tab-audit">
-      <div class="page-header">
-        <h1 class="page-title">Audit</h1>
-        <button class="btn btn-ghost btn-sm" onclick="startAudit()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-3.22"/></svg>
-          Start New
-        </button>
-      </div>
-
-      <div class="card" style="margin-bottom: var(--space-4);">
-        <div class="section-header">
-          <span class="section-title">Audit Progress</span>
-          <span id="auditProgress" style="font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;color:var(--color-teal);font-weight:700;">0 / 0</span>
+    <section class="stats">
+      <article class="panel stat-card">
+        <div class="stat-label">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="9" y1="21" x2="9" y2="9"></line>
+          </svg>
+          Inventory
         </div>
-        <div style="height:6px;background:var(--color-surface-offset);border-radius:var(--radius-full);overflow:hidden;">
-          <div id="auditBar" style="height:100%;width:0%;background:var(--color-teal);border-radius:var(--radius-full);transition:width 300ms ease;"></div>
-        </div>
-      </div>
+        <div class="stat-value" id="inventoryCount">0</div>
+      </article>
 
-      <div class="card">
-        <div id="auditList">
-          <!-- rendered by JS -->
+      <article class="panel stat-card">
+        <div class="stat-label">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          Locations
         </div>
-      </div>
-    </div>
+        <div class="stat-value" id="locationsCount">0</div>
+      </article>
 
-    <!-- ====== SETTINGS TAB ====== -->
-    <div class="tab-view" id="tab-settings">
-      <div class="page-header">
-        <h1 class="page-title">Settings</h1>
-      </div>
+      <article class="panel stat-card">
+        <div class="stat-label">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Projects
+        </div>
+        <div class="stat-value" id="projectsCount">0</div>
+      </article>
+    </section>
 
-      <!-- STUDIO STATS -->
-      <div class="settings-section">
-        <div class="settings-section-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Studio Stats
-        </div>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="statItems">0</div>
-            <div class="stat-label">Items</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="statLocations">0</div>
-            <div class="stat-label">Locations</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="statProjects">0</div>
-            <div class="stat-label">Projects</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAGS LIBRARY -->
-      <div class="settings-section">
-        <div class="settings-section-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-          Tags Library
-        </div>
-        <div class="tags-wrap" id="allTagsList">
-          <!-- rendered by JS -->
-        </div>
-        <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3);">
-          <input type="text" class="form-input" id="newTagInput" placeholder="New tag name…" style="flex:1;" onkeydown="if(event.key==='Enter')addTag()">
-          <button class="btn btn-primary btn-sm" onclick="addTag()">Add</button>
-        </div>
-      </div>
-
-      <!-- FIREBASE SYNC -->
-      <div class="settings-section">
-        <div class="settings-section-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    <section class="section">
+      <div class="panel section-card">
+        <h3 class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06A2 2 0 1 1 3.4 16.97l.06-.06A1.65 1.65 0 0 0 3.79 15 1.65 1.65 0 0 0 2.28 14H2a2 2 0 1 1 0-4h.28a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82L3.4 7.12A2 2 0 1 1 6.23 4.3l.06.06A1.65 1.65 0 0 0 8.11 4a1.65 1.65 0 0 0 1-1.51V2a2 2 0 1 1 4 0v.49a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 20.82 7.12l-.06.06A1.65 1.65 0 0 0 20.43 9c.2.62.78 1 1.43 1H22a2 2 0 1 1 0 4h-.14a1.65 1.65 0 0 0-1.43 1z"></path>
+          </svg>
           Firebase Sync
+        </h3>
+        <p class="section-copy">
+          Startup sync runs automatically now. If Firebase is slow or unavailable, the app shows a proper timeout state instead of hanging.
+        </p>
+        <div class="tag-row">
+          <span class="tag">TJR Red Icons</span>
+          <span class="tag">Auto Connect</span>
+          <span class="tag">Timeout Safe</span>
+          <span class="tag">Offline Fallback</span>
         </div>
-        <div class="firebase-section">
-          <div class="firebase-section-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-            Cloud Sync Configuration
-          </div>
-          <p class="firebase-help">Paste your Firebase config below to enable real-time sync across all devices. Photos stay local only to avoid document size limits.</p>
-
-          <div class="form-group">
-            <label class="form-label">Firebase Config (JS or JSON format)</label>
-            <textarea class="config-block" id="firebaseConfigInput" placeholder='Paste config here — JS object or JSON format both work:
-
-const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  ...
-};'></textarea>
-          </div>
-
-          <div id="firebaseStatus" class="status-msg hidden"></div>
-
-          <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);flex-wrap:wrap;">
-            <button class="btn btn-secondary" onclick="connectFirebase()" style="flex:1;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-              Connect to Firebase
-            </button>
-            <button class="btn btn-ghost" onclick="disconnectFirebase()">Disconnect</button>
-          </div>
-        </div>
+        <div style="margin-top:16px" class="mono" id="debugText">Awaiting startup…</div>
       </div>
-
-      <!-- DATA -->
-      <div class="settings-section">
-        <div class="settings-section-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-          Data
-        </div>
-        <div class="data-actions">
-          <button class="btn btn-ghost btn-sm" onclick="exportData()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export JSON
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Import JSON
-          </button>
-          <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-        </div>
-        <div class="divider"></div>
-        <button class="btn btn-ghost btn-sm" onclick="confirmClearData()" style="color:var(--color-error);">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          Clear All Local Data
-        </button>
-      </div>
-
-    </div>
+    </section>
   </main>
 
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
-    <button class="nav-item active" id="nav-inventory" onclick="switchTab('inventory')" aria-label="Inventory">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-        <line x1="12" y1="22.08" x2="12" y2="12"/>
+  <nav class="app-nav" aria-label="Primary">
+    <button class="nav-item active" type="button">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+        <line x1="3" y1="9" x2="21" y2="9"></line>
+        <line x1="9" y1="21" x2="9" y2="9"></line>
       </svg>
-      Inventory
+      <span>Inventory</span>
     </button>
-    <button class="nav-item" id="nav-locations" onclick="switchTab('locations')" aria-label="Locations">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-        <circle cx="12" cy="10" r="3"/>
+    <button class="nav-item" type="button">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
       </svg>
-      Locations
+      <span>Locations</span>
     </button>
-    <button class="nav-item" id="nav-projects" onclick="switchTab('projects')" aria-label="Projects">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-        <line x1="8" y1="21" x2="16" y2="21"/>
-        <line x1="12" y1="17" x2="12" y2="21"/>
+    <button class="nav-item" type="button">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
       </svg>
-      Projects
+      <span>Projects</span>
     </button>
-    <button class="nav-item" id="nav-audit" onclick="switchTab('audit')" aria-label="Audit">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
+    <button class="nav-item" type="button">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06A2 2 0 1 1 3.4 16.97l.06-.06A1.65 1.65 0 0 0 3.79 15 1.65 1.65 0 0 0 2.28 14H2a2 2 0 1 1 0-4h.28a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82L3.4 7.12A2 2 0 1 1 6.23 4.3l.06.06A1.65 1.65 0 0 0 8.11 4a1.65 1.65 0 0 0 1-1.51V2a2 2 0 1 1 4 0v.49a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 20.82 7.12l-.06.06A1.65 1.65 0 0 0 20.43 9c.2.62.78 1 1.43 1H22a2 2 0 1 1 0 4h-.14a1.65 1.65 0 0 0-1.43 1z"></path>
       </svg>
-      Audit
-    </button>
-    <button class="nav-item" id="nav-settings" onclick="switchTab('settings')" aria-label="Settings">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
-        <circle cx="12" cy="12" r="10"/>
-      </svg>
-      Settings
+      <span>Settings</span>
     </button>
   </nav>
-</div>
 
-<!-- ====== MODALS ====== -->
+  <script type="module">
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<!-- Add Item Modal -->
-<div class="modal-overlay" id="addItemModal" onclick="closeModalOnOverlay(event,'addItemModal')">
-  <div class="modal-sheet" role="dialog" aria-label="Add Item">
-    <div class="modal-handle"></div>
-    <div class="modal-title">
-      <svg width="18" height="18" style="display:inline;vertical-align:middle;color:var(--color-red);margin-right:6px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-      Add Item
-    </div>
-    <div class="form-group">
-      <label class="form-label">Item Name *</label>
-      <input type="text" class="form-input" id="newItemName" placeholder="e.g. Miter Saw">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Category</label>
-      <select class="form-select" id="newItemCategory">
-        <option value="Tool">Tool</option>
-        <option value="Supply">Supply</option>
-        <option value="Material">Material</option>
-        <option value="Equipment">Equipment</option>
-        <option value="Artwork">Artwork</option>
-        <option value="Reference">Reference</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Location</label>
-      <select class="form-select" id="newItemLocation">
-        <option value="">— No location —</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Quantity</label>
-      <input type="number" class="form-input" id="newItemQty" value="1" min="1">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Tags (comma separated)</label>
-      <input type="text" class="form-input" id="newItemTags" placeholder="acrylic, paint, canvas">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea class="form-textarea" id="newItemNotes" placeholder="Any notes…"></textarea>
-    </div>
-    <div style="display:flex;gap:var(--space-3);">
-      <button class="btn btn-primary" onclick="saveItem()" style="flex:1;">Save Item</button>
-      <button class="btn btn-ghost" onclick="closeModal('addItemModal')">Cancel</button>
-    </div>
-  </div>
-</div>
+    // ====================================
+    // BAKED-IN FIREBASE CONFIG
+    // ====================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-O985gyiOb7Jq5ibRqsPdPfdVLrmQiXo",
+      authDomain: "asms-studio.firebaseapp.com",
+      projectId: "asms-studio",
+      storageBucket: "asms-studio.firebasestorage.app",
+      messagingSenderId: "128775260947",
+      appId: "1:128775260947:web:c094545988222d7afd68e6"
+    };
 
-<!-- Add Location Modal -->
-<div class="modal-overlay" id="addLocationModal" onclick="closeModalOnOverlay(event,'addLocationModal')">
-  <div class="modal-sheet" role="dialog" aria-label="Add Location">
-    <div class="modal-handle"></div>
-    <div class="modal-title">
-      <svg width="18" height="18" style="display:inline;vertical-align:middle;color:var(--color-red);margin-right:6px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      Add Location
-    </div>
-    <div class="form-group">
-      <label class="form-label">Location Name *</label>
-      <input type="text" class="form-input" id="newLocationName" placeholder="e.g. Studio Main, PKO-3D-D1">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Parent Location (optional)</label>
-      <select class="form-select" id="newLocationParent">
-        <option value="">— Top Level —</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Type</label>
-      <select class="form-select" id="newLocationType">
-        <option value="Room">Room</option>
-        <option value="Cabinet">Cabinet</option>
-        <option value="Drawer">Drawer</option>
-        <option value="Shelf">Shelf</option>
-        <option value="Box">Box</option>
-        <option value="Toolbox">Toolbox</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Barcode / NFC ID (optional)</label>
-      <input type="text" class="form-input" id="newLocationBarcode" placeholder="Scan or enter manually">
-    </div>
-    <div style="display:flex;gap:var(--space-3);">
-      <button class="btn btn-primary" onclick="saveLocation()" style="flex:1;">Save Location</button>
-      <button class="btn btn-ghost" onclick="closeModal('addLocationModal')">Cancel</button>
-    </div>
-  </div>
-</div>
+    const FIREBASE_CONNECT_TIMEOUT_MS = 7000;
 
-<!-- Add Project Modal -->
-<div class="modal-overlay" id="addProjectModal" onclick="closeModalOnOverlay(event,'addProjectModal')">
-  <div class="modal-sheet" role="dialog" aria-label="Add Project">
-    <div class="modal-handle"></div>
-    <div class="modal-title">
-      <svg width="18" height="18" style="display:inline;vertical-align:middle;color:var(--color-red);margin-right:6px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-      New Project
-    </div>
-    <div class="form-group">
-      <label class="form-label">Project Name *</label>
-      <input type="text" class="form-input" id="newProjectName" placeholder="e.g. Mixed Media Assemblage #12">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Status</label>
-      <select class="form-select" id="newProjectStatus">
-        <option value="Active">Active</option>
-        <option value="In Progress">In Progress</option>
-        <option value="On Hold">On Hold</option>
-        <option value="Complete">Complete</option>
-        <option value="Commission">Commission</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea class="form-textarea" id="newProjectNotes" placeholder="Project description, client, etc."></textarea>
-    </div>
-    <div style="display:flex;gap:var(--space-3);">
-      <button class="btn btn-primary" onclick="saveProject()" style="flex:1;">Save Project</button>
-      <button class="btn btn-ghost" onclick="closeModal('addProjectModal')">Cancel</button>
-    </div>
-  </div>
-</div>
+    let firebaseApp = null;
+    let db = null;
+    let firebaseReady = false;
+    let firebaseConnectError = null;
 
-<!-- Item Detail Modal -->
-<div class="modal-overlay" id="itemDetailModal" onclick="closeModalOnOverlay(event,'itemDetailModal')">
-  <div class="modal-sheet" role="dialog" aria-label="Item Detail" id="itemDetailContent">
-    <div class="modal-handle"></div>
-    <!-- populated dynamically -->
-  </div>
-</div>
+    const statusEl = document.getElementById("firebaseStatus");
+    const statusTextEl = document.getElementById("firebaseStatusText");
+    const bannerEl = document.getElementById("firebaseBanner");
+    const debugTextEl = document.getElementById("debugText");
 
-<script>
-// ============================================================
-// ASMS STUDIO — Core Application Logic
-// Firebase Realtime Database Integration
-// TJR Brand Kit: Red #C8102E / Black / Teal #00838A
-// ============================================================
+    const inventoryCountEl = document.getElementById("inventoryCount");
+    const locationsCountEl = document.getElementById("locationsCount");
+    const projectsCountEl = document.getElementById("projectsCount");
 
-// ---------- STATE ----------
-let state = {
-  items: [],
-  locations: [],
-  projects: [],
-  tags: ['acrylic','canvas','color','epoxy','heat','mixed media','paint','resin'],
-  auditSession: [],
-  firebase: null,
-  db: null,
-  connected: false
-};
+    const retryFirebaseBtn = document.getElementById("retryFirebaseBtn");
+    const seedDemoBtn = document.getElementById("seedDemoBtn");
+    const clearDemoBtn = document.getElementById("clearDemoBtn");
 
-// ---------- FIREBASE SCHEMA ----------
-// Firestore collections:
-// /inventory/{itemId}   → item documents
-// /locations/{locId}    → location documents (tree via parentId)
-// /projects/{projId}    → project documents
-// /meta/tags            → tags array document
-//
-// Item document schema:
-// { id, name, category, locationId, qty, tags[], notes,
-//   status, auditStatus, barcode, createdAt, updatedAt }
-//
-// Location document schema:
-// { id, name, type, parentId|null, barcode, createdAt }
-//
-// Project document schema:
-// { id, name, status, notes, itemIds[], createdAt, updatedAt }
-//
-// meta/tags document:
-// { list: ["acrylic","canvas",...] }
+    function setFirebaseStatus(state, message = "") {
+      statusEl.classList.remove("offline", "connecting", "online", "error");
+      statusEl.classList.add(state);
 
-// ---------- THEME TOGGLE ----------
-(function(){
-  const r = document.documentElement;
-  const stored = null; // no localStorage in sandboxed iframe
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  let theme = prefersDark ? 'dark' : 'light';
-  r.setAttribute('data-theme', theme);
-  const btn = document.querySelector('[data-theme-toggle]');
-  if(btn) btn.addEventListener('click', () => {
-    theme = theme === 'dark' ? 'light' : 'dark';
-    r.setAttribute('data-theme', theme);
-    updateThemeIcon(btn, theme);
-  });
-  function updateThemeIcon(b, t) {
-    b.innerHTML = t === 'dark'
-      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
-      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
-  }
-})();
+      const labels = {
+        offline: "Offline",
+        connecting: "Connecting…",
+        online: "Synced",
+        error: "Sync Error"
+      };
 
-// ---------- TAB NAVIGATION ----------
-function switchTab(tabId) {
-  document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('tab-' + tabId).classList.add('active');
-  document.getElementById('nav-' + tabId).classList.add('active');
-  if (tabId === 'settings') renderSettings();
-  if (tabId === 'audit') renderAudit();
-  if (tabId === 'locations') renderLocations();
-  if (tabId === 'projects') renderProjects();
-}
+      statusTextEl.textContent = labels[state] || "Offline";
 
-// ---------- MODAL SYSTEM ----------
-function openModal(id) {
-  if (id === 'addItemModal') populateLocationDropdown('newItemLocation');
-  if (id === 'addLocationModal') populateLocationDropdown('newLocationParent', true);
-  document.getElementById(id).classList.add('open');
-}
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function closeModalOnOverlay(e, id) { if (e.target.id === id) closeModal(id); }
-
-// ---------- UTILITY ----------
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-function now() { return new Date().toISOString(); }
-
-function getLocationName(locId) {
-  if (!locId) return '—';
-  const loc = state.locations.find(l => l.id === locId);
-  return loc ? loc.name : '—';
-}
-
-function populateLocationDropdown(selectId, includeNone=true) {
-  const sel = document.getElementById(selectId);
-  if (!sel) return;
-  sel.innerHTML = includeNone ? '<option value="">— Top Level —</option>' : '<option value="">— No location —</option>';
-  state.locations.forEach(loc => {
-    const opt = document.createElement('option');
-    opt.value = loc.id;
-    opt.textContent = loc.name + (loc.type ? ` (${loc.type})` : '');
-    sel.appendChild(opt);
-  });
-}
-
-function getCategoryIcon(cat) {
-  const icons = {
-    Tool: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
-    Supply: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-8 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>`,
-    Material: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>`,
-    Equipment: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>`,
-    Artwork: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>`,
-    Reference: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
-  };
-  return icons[cat] || icons.Supply;
-}
-
-// ---------- RENDER INVENTORY ----------
-function renderInventory(items) {
-  const list = document.getElementById('inventoryList');
-  if (!items) items = state.items;
-  if (items.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><h3>No Items Yet</h3><p>Tap Add Item to start building your studio inventory.</p></div>`;
-    return;
-  }
-  list.innerHTML = items.map(item => `
-    <div class="item-row" onclick="showItemDetail('${item.id}')">
-      <div class="item-icon">${getCategoryIcon(item.category)}</div>
-      <div class="item-meta">
-        <div class="item-name">${escHtml(item.name)}</div>
-        <div class="item-sub">${item.category} · ${getLocationName(item.locationId)}${item.qty > 1 ? ` · qty ${item.qty}` : ''}</div>
-      </div>
-      ${item.status ? `<span class="item-badge badge-${item.status === 'Available' ? 'available' : item.status === 'In Use' ? 'inuse' : 'pending'}">${escHtml(item.status)}</span>` : ''}
-    </div>
-  `).join('');
-}
-
-function filterInventory() {
-  const q = document.getElementById('inventorySearch').value.toLowerCase();
-  const activeTag = document.querySelector('#inventoryTagFilter .tag-chip.active');
-  const tagFilter = activeTag ? activeTag.dataset.tag : null;
-  let filtered = state.items.filter(item => {
-    const matchQ = !q || item.name.toLowerCase().includes(q) || (item.notes||'').toLowerCase().includes(q) || getLocationName(item.locationId).toLowerCase().includes(q);
-    const matchTag = !tagFilter || (item.tags && item.tags.includes(tagFilter));
-    return matchQ && matchTag;
-  });
-  renderInventory(filtered);
-}
-
-function renderTagFilter() {
-  const wrap = document.getElementById('inventoryTagFilter');
-  if (!wrap) return;
-  wrap.innerHTML = state.tags.map(tag => `<button class="tag-chip" data-tag="${escHtml(tag)}" onclick="toggleTagFilter(this,'${escHtml(tag)}')">${escHtml(tag)}</button>`).join('');
-}
-
-function toggleTagFilter(el, tag) {
-  const isActive = el.classList.contains('active');
-  document.querySelectorAll('#inventoryTagFilter .tag-chip').forEach(c => c.classList.remove('active'));
-  if (!isActive) el.classList.add('active');
-  filterInventory();
-}
-
-// ---------- RENDER LOCATIONS ----------
-function renderLocations() {
-  const container = document.getElementById('locationsList');
-  const topLevel = state.locations.filter(l => !l.parentId);
-  if (topLevel.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3>No Locations Yet</h3><p>Add storage locations for your studio items.</p></div>`;
-    return;
-  }
-  function buildTree(parentId) {
-    const children = state.locations.filter(l => l.parentId === parentId);
-    return children.map(loc => {
-      const itemCount = state.items.filter(i => i.locationId === loc.id).length;
-      const childrenHtml = buildTree(loc.id);
-      return `
-        <div class="location-item">
-          <div class="location-header">
-            <div class="location-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            </div>
-            <div class="location-info">
-              <div class="location-name">${escHtml(loc.name)}${loc.type ? ` <span style="color:var(--color-text-faint);font-size:0.75rem;">(${escHtml(loc.type)})</span>` : ''}</div>
-              <div class="location-count">${itemCount} item${itemCount !== 1 ? 's' : ''}${loc.barcode ? ` · ${escHtml(loc.barcode)}` : ''}</div>
-            </div>
-          </div>
-          ${childrenHtml ? `<div class="location-children">${childrenHtml}</div>` : ''}
-        </div>`;
-    }).join('');
-  }
-  container.innerHTML = buildTree(null) || buildTree(undefined);
-  if (!container.innerHTML.trim()) {
-    container.innerHTML = state.locations.map(loc => {
-      const itemCount = state.items.filter(i => i.locationId === loc.id).length;
-      return `<div class="location-item"><div class="location-header"><div class="location-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="location-info"><div class="location-name">${escHtml(loc.name)}</div><div class="location-count">${itemCount} item${itemCount!==1?'s':''}</div></div></div></div>`;
-    }).join('');
-  }
-}
-
-// ---------- RENDER PROJECTS ----------
-function renderProjects() {
-  const list = document.getElementById('projectsList');
-  if (state.projects.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><h3>No Projects Yet</h3><p>Track your commissions and personal work here.</p></div>`;
-    return;
-  }
-  list.innerHTML = state.projects.map(p => {
-    const statusMap = { Active:'available', 'In Progress':'inuse', 'On Hold':'pending', Complete:'available', Commission:'inuse' };
-    return `<div class="item-row">
-      <div class="item-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-      <div class="item-meta"><div class="item-name">${escHtml(p.name)}</div><div class="item-sub">${p.notes ? escHtml(p.notes.slice(0,60)) + (p.notes.length>60?'…':'') : 'No notes'}</div></div>
-      <span class="item-badge badge-${statusMap[p.status]||'pending'}">${escHtml(p.status)}</span>
-    </div>`;
-  }).join('');
-}
-
-// ---------- RENDER AUDIT ----------
-function renderAudit() {
-  const list = document.getElementById('auditList');
-  const items = state.auditSession.length ? state.auditSession : state.items.map(i => ({...i, auditChecked: false, hasDiscrepancy: false}));
-  state.auditSession = items;
-  const checked = items.filter(i => i.auditChecked).length;
-  document.getElementById('auditProgress').textContent = `${checked} / ${items.length}`;
-  document.getElementById('auditBar').style.width = items.length ? `${(checked/items.length*100)}%` : '0%';
-  if (items.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><h3>No Items to Audit</h3><p>Add inventory items first.</p></div>';
-    return;
-  }
-  list.innerHTML = items.map((item, idx) => `
-    <div class="audit-row">
-      <div class="audit-check ${item.auditChecked ? (item.hasDiscrepancy ? 'discrepancy' : 'checked') : ''}" onclick="toggleAudit(${idx})" role="checkbox" aria-checked="${item.auditChecked}" tabindex="0">
-        ${item.auditChecked && !item.hasDiscrepancy ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
-        ${item.hasDiscrepancy ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>` : ''}
-      </div>
-      <div class="item-meta">
-        <div class="item-name">${escHtml(item.name)}</div>
-        <div class="item-sub">${item.category} · ${getLocationName(item.locationId)}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function toggleAudit(idx) {
-  const item = state.auditSession[idx];
-  if (!item.auditChecked) {
-    item.auditChecked = true;
-    item.hasDiscrepancy = false;
-  } else if (!item.hasDiscrepancy) {
-    item.hasDiscrepancy = true;
-  } else {
-    item.auditChecked = false;
-    item.hasDiscrepancy = false;
-  }
-  renderAudit();
-}
-
-function startAudit() {
-  state.auditSession = state.items.map(i => ({...i, auditChecked: false, hasDiscrepancy: false}));
-  renderAudit();
-}
-
-// ---------- RENDER SETTINGS ----------
-function renderSettings() {
-  document.getElementById('statItems').textContent = state.items.length;
-  document.getElementById('statLocations').textContent = state.locations.length;
-  document.getElementById('statProjects').textContent = state.projects.length;
-  const allTags = document.getElementById('allTagsList');
-  allTags.innerHTML = state.tags.map(tag => `<span class="tag-chip">${escHtml(tag)}</span>`).join('');
-}
-
-// ---------- ITEM DETAIL ----------
-function showItemDetail(id) {
-  const item = state.items.find(i => i.id === id);
-  if (!item) return;
-  const content = document.getElementById('itemDetailContent');
-  content.innerHTML = `
-    <div class="modal-handle"></div>
-    <div class="modal-title">
-      <span style="color:var(--color-red);margin-right:6px">${getCategoryIcon(item.category).replace('18','18').replace('18','18')}</span>
-      ${escHtml(item.name)}
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-4);">
-      <div><div class="form-label" style="margin-bottom:4px">Category</div><div>${escHtml(item.category)}</div></div>
-      <div><div class="form-label" style="margin-bottom:4px">Qty</div><div>${item.qty || 1}</div></div>
-      <div><div class="form-label" style="margin-bottom:4px">Location</div><div>${getLocationName(item.locationId)}</div></div>
-      <div><div class="form-label" style="margin-bottom:4px">Status</div><div>${item.status || '—'}</div></div>
-    </div>
-    ${item.tags && item.tags.length ? `<div class="form-label" style="margin-bottom:var(--space-2)">Tags</div><div class="tags-wrap" style="margin-bottom:var(--space-4)">${item.tags.map(t=>`<span class="tag-chip active">${escHtml(t)}</span>`).join('')}</div>` : ''}
-    ${item.notes ? `<div class="form-label" style="margin-bottom:var(--space-2)">Notes</div><p style="font-size:0.875rem;color:var(--color-text-muted);margin-bottom:var(--space-4)">${escHtml(item.notes)}</p>` : ''}
-    <div style="display:flex;gap:var(--space-3);">
-      <button class="btn btn-ghost" style="flex:1;color:var(--color-error);" onclick="deleteItem('${id}')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-        Delete
-      </button>
-      <button class="btn btn-ghost" onclick="closeModal('itemDetailModal')">Close</button>
-    </div>
-  `;
-  openModal('itemDetailModal');
-}
-
-// ---------- SAVE / DELETE ----------
-function saveItem() {
-  const name = document.getElementById('newItemName').value.trim();
-  if (!name) { alert('Item name is required.'); return; }
-  const tagStr = document.getElementById('newItemTags').value;
-  const tags = tagStr ? tagStr.split(',').map(t => t.trim().toLowerCase()).filter(Boolean) : [];
-  tags.forEach(t => { if (!state.tags.includes(t)) state.tags.push(t); });
-  const item = {
-    id: uid(),
-    name,
-    category: document.getElementById('newItemCategory').value,
-    locationId: document.getElementById('newItemLocation').value || null,
-    qty: parseInt(document.getElementById('newItemQty').value) || 1,
-    tags,
-    notes: document.getElementById('newItemNotes').value.trim(),
-    status: 'Available',
-    auditStatus: 'Pending',
-    createdAt: now(),
-    updatedAt: now()
-  };
-  state.items.push(item);
-  if (state.connected && state.db) fbWrite('inventory/' + item.id, item);
-  saveLocal();
-  closeModal('addItemModal');
-  clearForm(['newItemName','newItemNotes','newItemTags']);
-  document.getElementById('newItemQty').value = '1';
-  renderInventory();
-  renderTagFilter();
-}
-
-function deleteItem(id) {
-  state.items = state.items.filter(i => i.id !== id);
-  if (state.connected && state.db) fbDelete('inventory/' + id);
-  saveLocal();
-  closeModal('itemDetailModal');
-  renderInventory();
-}
-
-function saveLocation() {
-  const name = document.getElementById('newLocationName').value.trim();
-  if (!name) { alert('Location name is required.'); return; }
-  const loc = {
-    id: uid(),
-    name,
-    type: document.getElementById('newLocationType').value,
-    parentId: document.getElementById('newLocationParent').value || null,
-    barcode: document.getElementById('newLocationBarcode').value.trim() || null,
-    createdAt: now()
-  };
-  state.locations.push(loc);
-  if (state.connected && state.db) fbWrite('locations/' + loc.id, loc);
-  saveLocal();
-  closeModal('addLocationModal');
-  clearForm(['newLocationName','newLocationBarcode']);
-  renderLocations();
-}
-
-function saveProject() {
-  const name = document.getElementById('newProjectName').value.trim();
-  if (!name) { alert('Project name is required.'); return; }
-  const proj = {
-    id: uid(),
-    name,
-    status: document.getElementById('newProjectStatus').value,
-    notes: document.getElementById('newProjectNotes').value.trim(),
-    itemIds: [],
-    createdAt: now(),
-    updatedAt: now()
-  };
-  state.projects.push(proj);
-  if (state.connected && state.db) fbWrite('projects/' + proj.id, proj);
-  saveLocal();
-  closeModal('addProjectModal');
-  clearForm(['newProjectName','newProjectNotes']);
-  renderProjects();
-}
-
-function addTag() {
-  const input = document.getElementById('newTagInput');
-  const tag = input.value.trim().toLowerCase();
-  if (!tag || state.tags.includes(tag)) { input.value=''; return; }
-  state.tags.push(tag);
-  saveLocal();
-  input.value = '';
-  renderSettings();
-  renderTagFilter();
-}
-
-function clearForm(ids) { ids.forEach(id => { const el = document.getElementById(id); if(el) el.value=''; }); }
-
-// ---------- LOCAL PERSISTENCE ----------
-function saveLocal() {
-  // Uses in-memory state only (no localStorage in sandboxed iframe)
-  // When Firebase is connected, data persists via Firestore
-}
-
-// ---------- FIREBASE CONNECTION ----------
-function parseFirebaseConfig(raw) {
-  // Accepts both JS object literal (const firebaseConfig = {...};) and strict JSON
-  let cleaned = raw.trim();
-  // Strip JS variable wrapper
-  cleaned = cleaned.replace(/^(?:const|let|var)\s+\w+\s*=\s*/, '');
-  // Strip trailing semicolon
-  cleaned = cleaned.replace(/;\s*$/, '').trim();
-  // Quote unquoted keys (JS object → JSON)
-  cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:)/g, '$1"$2"$3');
-  return JSON.parse(cleaned);
-}
-
-function setSync(state_) {
-  const dot = document.getElementById('syncDot');
-  const label = document.getElementById('syncLabel');
-  dot.className = 'sync-dot ' + state_;
-  const labels = { synced:'Synced', syncing:'Syncing…', error:'Error', '':'Local' };
-  label.textContent = labels[state_] || 'Local';
-}
-
-async function connectFirebase() {
-  const raw = document.getElementById('firebaseConfigInput').value;
-  const statusEl = document.getElementById('firebaseStatus');
-  if (!raw.trim()) {
-    showStatus(statusEl, 'error', 'Paste your Firebase config first.');
-    return;
-  }
-  let config;
-  try {
-    config = parseFirebaseConfig(raw);
-  } catch(e) {
-    showStatus(statusEl, 'error', '✕ Invalid config: ' + e.message);
-    return;
-  }
-  showStatus(statusEl, 'info', 'Connecting to Firebase…');
-  setSync('syncing');
-  try {
-    // Dynamically load Firebase SDK
-    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const { getDatabase, ref, set, get, onValue, remove } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
-
-    if (!state.firebase) {
-      state.firebase = initializeApp(config, 'asms-' + Date.now());
+      if (!message) {
+        bannerEl.className = "sync-banner hidden info";
+        bannerEl.textContent = "";
+      } else {
+        bannerEl.className = `sync-banner ${state === "error" ? "error" : "info"}`;
+        bannerEl.textContent = message;
+      }
     }
-    state.db = getDatabase(state.firebase);
-    state._fbRef = ref;
-    state._fbSet = set;
-    state._fbGet = get;
-    state._fbOnValue = onValue;
-    state._fbRemove = remove;
 
-    // Test connection & load data
-    const rootRef = ref(state.db, '/');
-    const snapshot = await get(rootRef);
-    const data = snapshot.val() || {};
+    function withTimeout(promise, ms, label = "Request") {
+      let timer;
+      const timeoutPromise = new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error(`${label} timed out after ${ms}ms`));
+        }, ms);
+      });
 
-    // Merge remote data into state
-    if (data.inventory) state.items = Object.values(data.inventory).filter(Boolean);
-    if (data.locations) state.locations = Object.values(data.locations).filter(Boolean);
-    if (data.projects) state.projects = Object.values(data.projects).filter(Boolean);
-    if (data.meta && data.meta.tags && data.meta.tags.list) state.tags = data.meta.tags.list;
-
-    // Listen for real-time changes
-    onValue(ref(state.db, 'inventory'), snap => {
-      if (snap.val()) { state.items = Object.values(snap.val()).filter(Boolean); renderInventory(); }
-    });
-    onValue(ref(state.db, 'locations'), snap => {
-      if (snap.val()) { state.locations = Object.values(snap.val()).filter(Boolean); renderLocations(); }
-    });
-    onValue(ref(state.db, 'projects'), snap => {
-      if (snap.val()) { state.projects = Object.values(snap.val()).filter(Boolean); renderProjects(); }
-    });
-
-    state.connected = true;
-    setSync('synced');
-    showStatus(statusEl, 'success', '✓ Connected to Firebase — ' + (config.projectId || '') + '. Data syncing in real-time.');
-    renderInventory();
-    renderTagFilter();
-    renderSettings();
-
-  } catch(err) {
-    setSync('error');
-    showStatus(statusEl, 'error', '✕ Firebase error: ' + err.message);
-    state.connected = false;
-  }
-}
-
-function disconnectFirebase() {
-  state.firebase = null;
-  state.db = null;
-  state.connected = false;
-  setSync('');
-  const statusEl = document.getElementById('firebaseStatus');
-  showStatus(statusEl, 'info', 'Disconnected from Firebase. Data is local only.');
-}
-
-function fbWrite(path, data) {
-  if (!state.db || !state._fbRef || !state._fbSet) return;
-  state._fbSet(state._fbRef(state.db, path), data).catch(e => console.error('FB write error:', e));
-}
-
-function fbDelete(path) {
-  if (!state.db || !state._fbRef || !state._fbRemove) return;
-  state._fbRemove(state._fbRef(state.db, path)).catch(e => console.error('FB delete error:', e));
-}
-
-// ---------- STATUS HELPER ----------
-function showStatus(el, type, msg) {
-  el.className = 'status-msg ' + type;
-  el.textContent = msg;
-}
-
-// ---------- EXPORT / IMPORT ----------
-function exportData() {
-  const data = { items: state.items, locations: state.locations, projects: state.projects, tags: state.tags, exportedAt: now() };
-  const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'asms-export-' + new Date().toISOString().slice(0,10) + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (data.items) state.items = data.items;
-      if (data.locations) state.locations = data.locations;
-      if (data.projects) state.projects = data.projects;
-      if (data.tags) state.tags = data.tags;
-      renderInventory();
-      renderTagFilter();
-      renderSettings();
-      alert('Data imported successfully!');
-    } catch(err) {
-      alert('Import failed: ' + err.message);
+      return Promise.race([
+        promise.finally(() => clearTimeout(timer)),
+        timeoutPromise
+      ]);
     }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-}
 
-function confirmClearData() {
-  if (confirm('Clear all local data? This cannot be undone.')) {
-    state.items = []; state.locations = []; state.projects = []; state.tags = [];
-    renderInventory(); renderTagFilter(); renderSettings();
-  }
-}
+    function setCounts({ inventory = 0, locations = 0, projects = 0 } = {}) {
+      inventoryCountEl.textContent = inventory;
+      locationsCountEl.textContent = locations;
+      projectsCountEl.textContent = projects;
+    }
 
-// ---------- SECURITY HELPER ----------
-function escHtml(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+    function setDebug(text) {
+      debugTextEl.textContent = text;
+      console.log(text);
+    }
 
-// ---------- INIT ----------
-(function init() {
-  renderInventory();
-  renderTagFilter();
-})();
-</script>
+    function startOfflineMode(reason = "Offline mode active.") {
+      firebaseReady = false;
+      window.firebaseReady = false;
+      setDebug(reason);
+
+      // Replace this with your localStorage/bootstrap logic if it already exists.
+      const localInventory = JSON.parse(localStorage.getItem("asms_inventory") || "[]");
+      const localLocations = JSON.parse(localStorage.getItem("asms_locations") || "[]");
+      const localProjects = JSON.parse(localStorage.getItem("asms_projects") || "[]");
+
+      setCounts({
+        inventory: localInventory.length,
+        locations: localLocations.length,
+        projects: localProjects.length
+      });
+    }
+
+    async function loadAppDataFromFirestore(db) {
+      // Lightweight probe docs.
+      // Replace this with your real listeners/loaders when wiring into full ASMS.
+      const [inventorySnap, locationsSnap, projectsSnap] = await Promise.allSettled([
+        getDoc(doc(db, "meta", "inventory")),
+        getDoc(doc(db, "meta", "locations")),
+        getDoc(doc(db, "meta", "projects"))
+      ]);
+
+      let inventory = 0;
+      let locations = 0;
+      let projects = 0;
+
+      if (inventorySnap.status === "fulfilled" && inventorySnap.value.exists()) {
+        inventory = Number(inventorySnap.value.data().count || 0);
+      }
+
+      if (locationsSnap.status === "fulfilled" && locationsSnap.value.exists()) {
+        locations = Number(locationsSnap.value.data().count || 0);
+      }
+
+      if (projectsSnap.status === "fulfilled" && projectsSnap.value.exists()) {
+        projects = Number(projectsSnap.value.data().count || 0);
+      }
+
+      setCounts({ inventory, locations, projects });
+      setDebug("Firebase connected and startup probe completed.");
+    }
+
+    async function connectFirebaseOnStartup() {
+      try {
+        setFirebaseStatus("connecting", "Connecting to Firebase…");
+        setDebug("Bootstrapping Firebase with baked config…");
+
+        firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        db = getFirestore(firebaseApp);
+
+        const probe = getDoc(doc(db, "meta", "tags"));
+        await withTimeout(probe, FIREBASE_CONNECT_TIMEOUT_MS, "Firebase startup connection");
+
+        firebaseReady = true;
+        firebaseConnectError = null;
+        window.firebaseApp = firebaseApp;
+        window.db = db;
+        window.firebaseReady = true;
+
+        setFirebaseStatus("online", "Firebase connected. Real-time sync is available.");
+        await loadAppDataFromFirestore(db);
+      } catch (error) {
+        firebaseReady = false;
+        firebaseConnectError = error;
+        window.firebaseReady = false;
+
+        console.error("Firebase auto-connect failed:", error);
+
+        const isTimeout = /timed out/i.test(error.message);
+        const message = isTimeout
+          ? "Firebase took too long to respond. The app stayed in offline mode."
+          : `Firebase connection failed: ${error.message}`;
+
+        setFirebaseStatus("error", message);
+        startOfflineMode(message);
+      }
+    }
+
+    function seedDemoCounts() {
+      localStorage.setItem("asms_inventory", JSON.stringify(new Array(42).fill({})));
+      localStorage.setItem("asms_locations", JSON.stringify(new Array(9).fill({})));
+      localStorage.setItem("asms_projects", JSON.stringify(new Array(5).fill({})));
+      startOfflineMode("Demo counts seeded locally.");
+    }
+
+    function clearDemoCounts() {
+      localStorage.removeItem("asms_inventory");
+      localStorage.removeItem("asms_locations");
+      localStorage.removeItem("asms_projects");
+      setCounts({ inventory: 0, locations: 0, projects: 0 });
+      setDebug("Local demo data cleared.");
+    }
+
+    window.ASMSFirebase = {
+      get app() {
+        return firebaseApp;
+      },
+      get db() {
+        return db;
+      },
+      get ready() {
+        return firebaseReady;
+      },
+      get error() {
+        return firebaseConnectError;
+      },
+      reconnect: connectFirebaseOnStartup
+    };
+
+    retryFirebaseBtn.addEventListener("click", connectFirebaseOnStartup);
+    seedDemoBtn.addEventListener("click", seedDemoCounts);
+    clearDemoBtn.addEventListener("click", clearDemoCounts);
+
+    window.addEventListener("DOMContentLoaded", connectFirebaseOnStartup);
+  </script>
 </body>
 </html>
