@@ -1,739 +1,1467 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ASMS</title>
-  <style>
-    :root {
-      --tjr-red: #fc242d;
-      --tjr-black: #000000;
-      --tjr-teal: #23fbf2;
-      --tjr-teal-dark: #00b8b0;
-      --tjr-yellow: #f2c94c;
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ASMS"/>
+<title>ASMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap" rel="stylesheet">
+<style>
+/* ── TJR DESIGN TOKENS ──────────────────────────────────────────── */
+:root {
+  --red:        #e8192c;
+  --red-dim:    rgba(232,25,44,0.14);
+  --red-glow:   rgba(232,25,44,0.22);
+  --teal:       #1de9de;
+  --teal-dim:   rgba(29,233,222,0.12);
+  --teal-glow:  rgba(29,233,222,0.20);
+  --bg0: #050505;
+  --bg1: #0d0d0d;
+  --bg2: #141414;
+  --bg3: #1c1c1c;
+  --bg4: #242424;
+  --border:     rgba(255,255,255,0.08);
+  --border-hi:  rgba(255,255,255,0.14);
+  --text1: #f2f2f2;
+  --text2: #a8a8a8;
+  --text3: #5a5a5a;
+  --success: #1de9de;
+  --warning: #f59e0b;
+  --danger:  #e8192c;
+  --r-sm: 10px; --r-md: 14px; --r-lg: 18px; --r-xl: 22px; --r-pill: 999px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* ── RESET ──────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg0);color:var(--text1);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+input,button,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+img{display:block;max-width:100%;height:auto}
+ul{list-style:none}
 
-      --bg-0: #050505;
-      --bg-1: #0d0d0d;
-      --bg-2: #171717;
-      --bg-3: #222222;
+/* ── BACKGROUND ─────────────────────────────────────────────────── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 5%, rgba(232,25,44,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 95%, rgba(29,233,222,0.06) 0%, transparent 60%);
+}
 
-      --text-1: #f5f5f5;
-      --text-2: #b8b8b8;
-      --text-3: #7d7d7d;
+/* ── HEADER ─────────────────────────────────────────────────────── */
+.app-header{
+  position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 18px;
+  background:rgba(8,8,8,0.88);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  flex-shrink:0;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{
+  width:38px;height:38px;border-radius:11px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,rgba(232,25,44,0.2),rgba(29,233,222,0.08)),var(--bg3);
+  border:1px solid var(--border);
+  font-weight:800;font-size:13px;letter-spacing:0.06em;color:var(--red);
+}
+.brand-text h1{font-size:17px;font-weight:800;letter-spacing:0.01em}
+.brand-text p{font-size:12px;color:var(--text2)}
+.sync-pill{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 11px;border-radius:var(--r-pill);
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  font-size:12px;font-weight:700;white-space:nowrap;
+}
+.sync-dot{width:8px;height:8px;border-radius:var(--r-pill);background:var(--text3);flex-shrink:0}
+.sync-pill.online .sync-dot{background:var(--teal);box-shadow:0 0 0 5px var(--teal-glow)}
+.sync-pill.offline .sync-dot{background:var(--danger);box-shadow:0 0 0 5px var(--red-glow)}
+.sync-pill.connecting .sync-dot{background:var(--warning);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
 
-      --border: rgba(255, 255, 255, 0.08);
-      --border-strong: rgba(255, 255, 255, 0.14);
+/* ── MAIN AREA ──────────────────────────────────────────────────── */
+.app-main{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  position:relative;z-index:1;
+  -webkit-overflow-scrolling:touch;
+}
+.tab-panel{display:none;padding:16px 16px calc(80px + var(--safe-bottom))}
+.tab-panel.active{display:block}
 
-      --success: var(--tjr-teal);
-      --danger: var(--tjr-red);
-      --warning: #f59e0b;
+/* ── BOTTOM NAV ─────────────────────────────────────────────────── */
+.app-nav{
+  position:relative;z-index:10;flex-shrink:0;
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:rgba(8,8,8,0.92);border-top:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  padding-bottom:var(--safe-bottom);
+}
+.nav-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;min-height:60px;padding:8px 4px;
+  font-size:11px;font-weight:700;color:var(--text3);
+  transition:color 160ms ease;
+}
+.nav-btn svg{color:var(--text3);transition:color 160ms ease}
+.nav-btn.active{color:var(--text1)}
+.nav-btn.active svg{color:var(--red)}
 
-      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
-      --radius-sm: 10px;
-      --radius-md: 14px;
-      --radius-lg: 18px;
-      --radius-pill: 999px;
-    }
+/* ── CARD ────────────────────────────────────────────────────────── */
+.card{
+  background:rgba(18,18,18,0.85);border:1px solid var(--border);
+  border-radius:var(--r-lg);box-shadow:var(--shadow);
+  backdrop-filter:blur(12px);
+  margin-bottom:12px;overflow:hidden;
+}
+.card-body{padding:16px}
+.card-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:13px 16px;cursor:pointer;
+  border-bottom:1px solid var(--border);
+  transition:background 140ms ease;
+}
+.card-row:last-child{border-bottom:none}
+.card-row:hover,.card-row:active{background:rgba(255,255,255,0.04)}
+.card-row-left{flex:1;min-width:0}
+.card-row-title{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-row-sub{font-size:13px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-row-right{flex-shrink:0;display:flex;align-items:center;gap:8px}
 
-    * {
-      box-sizing: border-box;
-    }
+/* ── BADGES ─────────────────────────────────────────────────────── */
+.badge{
+  display:inline-flex;align-items:center;padding:3px 9px;border-radius:var(--r-pill);
+  font-size:11px;font-weight:700;white-space:nowrap;
+}
+.badge-teal{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(29,233,222,0.2)}
+.badge-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(232,25,44,0.25)}
+.badge-green{background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2)}
+.badge-amber{background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2)}
+.badge-gray{background:rgba(255,255,255,0.06);color:var(--text2);border:1px solid var(--border)}
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      background:
-        radial-gradient(circle at top left, rgba(35, 251, 242, 0.07), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(252, 36, 45, 0.10), transparent 32%),
-        var(--bg-0);
-      color: var(--text-1);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
+/* ── BUTTONS ─────────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:44px;padding:0 20px;border-radius:14px;font-size:14px;font-weight:700;
+  border:1px solid var(--border);transition:transform 150ms ease,opacity 150ms ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0);opacity:.85}
+.btn-primary{background:var(--red);color:#fff;border-color:rgba(232,25,44,0.4)}
+.btn-teal{background:var(--teal-dim);color:var(--teal);border-color:rgba(29,233,222,0.25)}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text1)}
+.btn-danger{background:rgba(232,25,44,0.14);color:var(--red);border-color:rgba(232,25,44,0.25)}
+.btn-sm{min-height:36px;padding:0 14px;font-size:13px;border-radius:10px}
+.btn-icon{padding:0;width:44px;border-radius:12px}
+.btn-full{width:100%;display:flex}
 
-    body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+/* ── FAB ─────────────────────────────────────────────────────────── */
+.fab{
+  position:fixed;bottom:calc(76px + var(--safe-bottom));right:18px;z-index:20;
+  width:54px;height:54px;border-radius:var(--r-pill);
+  background:var(--red);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px var(--red-glow);
+  transition:transform 160ms ease,box-shadow 160ms ease;
+}
+.fab:hover{transform:scale(1.06);box-shadow:0 6px 28px var(--red-glow)}
+.fab:active{transform:scale(0.96)}
+.fab svg{pointer-events:none}
 
-    .app-header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 16px 18px;
-      background: rgba(10, 10, 10, 0.82);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(16px);
-    }
+/* ── SECTION HEADER ─────────────────────────────────────────────── */
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.section-title{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--text2);
+}
+.section-title svg{color:var(--red)}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+/* ── STATS GRID ─────────────────────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat-card{
+  padding:14px;border-radius:var(--r-lg);
+  background:rgba(18,18,18,0.85);border:1px solid var(--border);
+  display:flex;flex-direction:column;gap:6px;
+}
+.stat-label{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);font-weight:600}
+.stat-label svg{color:var(--red)}
+.stat-value{font-size:28px;font-weight:800;line-height:1}
 
-    .brand-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background:
-        linear-gradient(135deg, rgba(252,36,45,0.18), rgba(35,251,242,0.10)),
-        var(--bg-2);
-      border: 1px solid var(--border);
-      color: var(--tjr-red);
-      box-shadow: var(--shadow-lg);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-    }
+/* ── SEARCH BAR ─────────────────────────────────────────────────── */
+.search-wrap{position:relative;margin-bottom:14px}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.search-input{
+  width:100%;min-height:42px;padding:0 12px 0 40px;
+  background:rgba(255,255,255,0.06);border:1px solid var(--border);
+  border-radius:var(--r-md);font-size:15px;color:var(--text1);
+  transition:border-color 160ms;
+}
+.search-input::placeholder{color:var(--text3)}
+.search-input:focus{outline:none;border-color:var(--teal)}
 
-    .brand-copy h1 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.1;
-    }
+/* ── FORM ────────────────────────────────────────────────────────── */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.form-input{
+  width:100%;min-height:44px;padding:10px 14px;
+  background:rgba(255,255,255,0.06);border:1px solid var(--border);
+  border-radius:var(--r-md);font-size:15px;color:var(--text1);
+  transition:border-color 160ms;
+}
+.form-input:focus{outline:none;border-color:var(--teal)}
+.form-input::placeholder{color:var(--text3)}
+textarea.form-input{min-height:90px;resize:vertical}
+select.form-input{cursor:pointer}
+select.form-input option{background:var(--bg2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-hint{font-size:12px;color:var(--text3);margin-top:4px}
 
-    .brand-copy p {
-      margin: 4px 0 0;
-      color: var(--text-2);
-      font-size: 13px;
-    }
+/* ── PHOTO UPLOAD ────────────────────────────────────────────────── */
+.photo-zone{
+  width:100%;min-height:140px;border-radius:var(--r-lg);
+  background:rgba(255,255,255,0.04);border:2px dashed var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;transition:border-color 160ms,background 160ms;
+  position:relative;overflow:hidden;
+}
+.photo-zone:hover{border-color:var(--red);background:var(--red-dim)}
+.photo-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo-zone-label{font-size:13px;color:var(--text2);pointer-events:none;z-index:1}
+.photo-zone svg{color:var(--text3);z-index:1}
 
-    .firebase-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 38px;
-      padding: 8px 12px;
-      border-radius: var(--radius-pill);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-1);
-      white-space: nowrap;
-    }
+/* ── TAGS INPUT ─────────────────────────────────────────────────── */
+.tags-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.tag-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:var(--r-pill);
+  background:var(--teal-dim);border:1px solid rgba(29,233,222,0.2);
+  color:var(--teal);font-size:13px;font-weight:700;
+}
+.tag-chip button{color:var(--teal);opacity:.7;line-height:1}
 
-    .firebase-status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: var(--radius-pill);
-      background: #666;
-      flex: 0 0 auto;
-    }
+/* ── QTY STEPPER ─────────────────────────────────────────────────── */
+.qty-wrap{display:flex;align-items:center;gap:10px}
+.qty-btn{
+  width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  background:rgba(255,255,255,0.08);border:1px solid var(--border);font-size:18px;
+}
+.qty-display{font-size:20px;font-weight:800;min-width:40px;text-align:center}
 
-    .firebase-status.offline .firebase-status-dot {
-      background: var(--danger);
-      box-shadow: 0 0 0 6px rgba(252, 36, 45, 0.10);
-    }
+/* ── MODAL / SHEET ───────────────────────────────────────────────── */
+.overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);
+  display:none;align-items:flex-end;
+}
+.overlay.open{display:flex}
+.sheet{
+  width:100%;max-height:92dvh;
+  background:var(--bg2);border-radius:var(--r-xl) var(--r-xl) 0 0;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  animation:slideUp 280ms cubic-bezier(0.16,1,0.3,1);
+}
+.sheet-full{max-height:100dvh;border-radius:0}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;border-radius:var(--r-pill);background:var(--border);margin:12px auto 4px}
+.sheet-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.sheet-title{font-size:17px;font-weight:800}
+.sheet-close{
+  width:32px;height:32px;border-radius:var(--r-pill);
+  display:grid;place-items:center;background:rgba(255,255,255,0.08);
+  color:var(--text2);font-size:18px;line-height:1;
+}
+.sheet-body{flex:1;overflow-y:auto;padding:18px;-webkit-overflow-scrolling:touch}
+.sheet-footer{padding:14px 18px calc(14px + var(--safe-bottom));border-top:1px solid var(--border);flex-shrink:0}
 
-    .firebase-status.connecting .firebase-status-dot {
-      background: var(--warning);
-      animation: firebasePulse 1.25s infinite ease-in-out;
-    }
+/* ── TOAST ───────────────────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(12px);
+  z-index:200;padding:11px 18px;border-radius:var(--r-pill);
+  background:rgba(30,30,30,0.95);border:1px solid var(--border);
+  font-size:14px;font-weight:600;white-space:nowrap;
+  opacity:0;transition:opacity 200ms,transform 200ms;pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{color:var(--teal);border-color:rgba(29,233,222,0.3)}
+#toast.error{color:var(--red);border-color:rgba(232,25,44,0.3)}
 
-    .firebase-status.online .firebase-status-dot {
-      background: var(--success);
-      box-shadow: 0 0 0 6px rgba(35, 251, 242, 0.12);
-    }
+/* ── EMPTY STATE ─────────────────────────────────────────────────── */
+.empty{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:60px 24px;color:var(--text3);
+}
+.empty svg{margin-bottom:16px}
+.empty h3{font-size:16px;font-weight:700;color:var(--text2);margin-bottom:6px}
+.empty p{font-size:14px;max-width:28ch}
 
-    .firebase-status.error .firebase-status-dot {
-      background: var(--danger);
-      box-shadow: 0 0 0 6px rgba(252, 36, 45, 0.12);
-    }
+/* ── DETAIL VIEW ─────────────────────────────────────────────────── */
+.detail-hero{
+  width:100%;aspect-ratio:16/9;background:var(--bg3);
+  border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;color:var(--text3);
+}
+.detail-hero img{width:100%;height:100%;object-fit:cover}
+.detail-field{padding:13px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.detail-field:last-child{border-bottom:none}
+.detail-key{font-size:13px;color:var(--text2);flex-shrink:0}
+.detail-val{font-size:14px;font-weight:600;text-align:right;word-break:break-word}
+.detail-actions{display:flex;gap:10px;margin-top:14px}
 
-    @keyframes firebasePulse {
-      0% { transform: scale(1); opacity: 0.6; }
-      50% { transform: scale(1.14); opacity: 1; }
-      100% { transform: scale(1); opacity: 0.6; }
-    }
+/* ── AUDIT ───────────────────────────────────────────────────────── */
+.audit-item-photo{
+  width:100%;aspect-ratio:1/1;border-radius:var(--r-xl);
+  background:var(--bg3);overflow:hidden;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;color:var(--text3);
+}
+.audit-item-photo img{width:100%;height:100%;object-fit:cover}
+.audit-progress{height:4px;background:var(--bg3);border-radius:var(--r-pill);margin-bottom:20px;overflow:hidden}
+.audit-progress-bar{height:100%;background:var(--red);border-radius:var(--r-pill);transition:width 300ms ease}
+.audit-actions{display:grid;gap:10px;margin-top:20px}
 
-    .app-main {
-      flex: 1;
-      width: 100%;
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 20px 18px 96px;
-    }
+/* ── SETTINGS ────────────────────────────────────────────────────── */
+.settings-section{margin-bottom:24px}
+.settings-section-title{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;background:rgba(18,18,18,0.85);
+  border:1px solid var(--border);border-radius:var(--r-md);
+  margin-bottom:8px;gap:12px;
+}
+.settings-row-label{font-size:15px;font-weight:600}
+.settings-row-sub{font-size:12px;color:var(--text2);margin-top:2px}
 
-    .panel {
-      background: rgba(23, 23, 23, 0.84);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
-      backdrop-filter: blur(16px);
-    }
+/* ── LOW STOCK BADGE ─────────────────────────────────────────────── */
+.low-stock-dot{width:8px;height:8px;border-radius:var(--r-pill);background:var(--red);flex-shrink:0}
 
-    .hero-panel {
-      padding: 20px;
-      margin-bottom: 18px;
-    }
+/* ── UTILITY ─────────────────────────────────────────────────────── */
+.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}
+.flex{display:flex}.items-center{align-items:center}.gap-2{gap:8px}.gap-3{gap:12px}
+.text-muted{color:var(--text2)}.text-faint{color:var(--text3)}
+.font-bold{font-weight:700}.text-sm{font-size:13px}.text-xs{font-size:12px}
+.w-full{width:100%}
 
-    .hero-panel h2 {
-      margin: 0 0 8px;
-      font-size: 22px;
-      line-height: 1.15;
-    }
+/* ── FILTER CHIPS ────────────────────────────────────────────────── */
+.filter-row{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-chip{
+  flex-shrink:0;padding:6px 14px;border-radius:var(--r-pill);
+  font-size:13px;font-weight:700;border:1px solid var(--border);
+  background:rgba(255,255,255,0.05);color:var(--text2);cursor:pointer;
+  transition:background 140ms,color 140ms,border-color 140ms;
+}
+.filter-chip.active{background:var(--red-dim);color:var(--red);border-color:rgba(232,25,44,0.3)}
 
-    .hero-panel p {
-      margin: 0;
-      color: var(--text-2);
-      font-size: 14px;
-      line-height: 1.5;
-      max-width: 70ch;
-    }
+/* ── LOCATION TREE ────────────────────────────────────────────────── */
+.loc-indent{padding-left:20px;border-left:2px solid var(--border);margin-left:20px}
 
-    .sync-banner {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    .sync-banner.hidden {
-      display: none;
-    }
-
-    .sync-banner.info {
-      background: rgba(35, 251, 242, 0.08);
-      border-color: rgba(35, 251, 242, 0.18);
-      color: #d8fffd;
-    }
-
-    .sync-banner.error {
-      background: rgba(252, 36, 45, 0.08);
-      border-color: rgba(252, 36, 45, 0.18);
-      color: #ffe1e3;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin: 18px 0;
-    }
-
-    .stat-card {
-      padding: 18px;
-      min-height: 110px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .stat-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-2);
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .stat-label svg {
-      color: var(--tjr-red);
-    }
-
-    .stat-value {
-      font-size: 32px;
-      font-weight: 800;
-      line-height: 1;
-      margin-top: 10px;
-    }
-
-    .section {
-      margin-top: 18px;
-    }
-
-    .section-card {
-      padding: 18px;
-    }
-
-    .section-title {
-      margin: 0 0 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      color: var(--text-1);
-    }
-
-    .section-title svg {
-      color: var(--tjr-red);
-    }
-
-    .section-copy {
-      margin: 0 0 16px;
-      color: var(--text-2);
-      font-size: 14px;
-    }
-
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      min-height: 34px;
-      padding: 8px 12px;
-      border-radius: var(--radius-pill);
-      background: rgba(35, 251, 242, 0.08);
-      border: 1px solid rgba(35, 251, 242, 0.18);
-      color: var(--tjr-teal);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .btn {
-      appearance: none;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      min-height: 44px;
-      padding: 0 16px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 160ms ease, opacity 160ms ease, border-color 160ms ease, background 160ms ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      background: var(--tjr-red);
-      color: white;
-      border-color: rgba(252, 36, 45, 0.35);
-    }
-
-    .btn-secondary {
-      background: rgba(35, 251, 242, 0.12);
-      color: var(--tjr-teal);
-      border-color: rgba(35, 251, 242, 0.22);
-    }
-
-    .btn-ghost {
-      background: rgba(255,255,255,0.04);
-      color: var(--text-1);
-    }
-
-    .app-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 20;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0;
-      padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(10, 10, 10, 0.9);
-      border-top: 1px solid var(--border);
-      backdrop-filter: blur(16px);
-    }
-
-    .nav-item {
-      appearance: none;
-      border: 0;
-      background: transparent;
-      color: var(--text-2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      min-height: 56px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .nav-item svg {
-      color: var(--tjr-red);
-    }
-
-    .nav-item.active {
-      color: var(--text-1);
-    }
-
-    .muted {
-      color: var(--text-2);
-    }
-
-    .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12px;
-      color: var(--text-3);
-      word-break: break-word;
-    }
-
-    @media (max-width: 760px) {
-      .app-header {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-panel h2 {
-        font-size: 20px;
-      }
-    }
-  </style>
+@media(min-width:768px){
+  .stats-grid{grid-template-columns:repeat(3,1fr)}
+  .tab-panel{max-width:720px;margin:0 auto}
+}
+</style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="brand">
-      <div class="brand-mark">TJR</div>
-      <div class="brand-copy">
-        <h1>ASMS</h1>
-        <p>Art Studio Management System</p>
-      </div>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-mark">TJR</div>
+    <div class="brand-text">
+      <h1>ASMS</h1>
+      <p>Art Studio Management</p>
     </div>
+  </div>
+  <div id="syncPill" class="sync-pill offline">
+    <span class="sync-dot"></span>
+    <span id="syncLabel">Offline</span>
+  </div>
+</header>
 
-    <div id="firebaseStatus" class="firebase-status offline" role="status" aria-live="polite">
-      <span class="firebase-status-dot"></span>
-      <span id="firebaseStatusText">Offline</span>
+<!-- MAIN -->
+<main class="app-main">
+
+  <!-- TAB: INVENTORY -->
+  <div id="tab-inventory" class="tab-panel active">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="invSearch" type="search" placeholder="Search name, barcode, tags…"/>
     </div>
-  </header>
+    <div class="filter-row" id="invFilters">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="Artwork">Artwork</button>
+      <button class="filter-chip" data-filter="Material">Material</button>
+      <button class="filter-chip" data-filter="Equipment">Equipment</button>
+      <button class="filter-chip" data-filter="Tool">Tool</button>
+      <button class="filter-chip" data-filter="Supply">Supply</button>
+      <button class="filter-chip" data-filter="lowstock">⚠ Low Stock</button>
+    </div>
+    <div id="invList"></div>
+  </div>
 
-  <main class="app-main">
-    <section class="panel hero-panel">
-      <h2>Studio system, now with baked-in Firebase startup.</h2>
-      <p>
-        This build auto-connects to Firebase on load, reports connection health in the header,
-        falls back cleanly on timeout, and uses a TJR-forward red, black, and teal UI.
-      </p>
+  <!-- TAB: LOCATIONS -->
+  <div id="tab-locations" class="tab-panel">
+    <div id="locList"></div>
+  </div>
 
-      <div id="firebaseBanner" class="sync-banner hidden info"></div>
+  <!-- TAB: PROJECTS -->
+  <div id="tab-projects" class="tab-panel">
+    <div id="projList"></div>
+  </div>
 
-      <div class="btn-row">
-        <button class="btn btn-primary" id="retryFirebaseBtn" type="button">Retry Firebase</button>
-        <button class="btn btn-secondary" id="seedDemoBtn" type="button">Seed Demo Counts</button>
-        <button class="btn btn-ghost" id="clearDemoBtn" type="button">Clear Demo</button>
-      </div>
-    </section>
-
-    <section class="stats">
-      <article class="panel stat-card">
-        <div class="stat-label">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-            <line x1="3" y1="9" x2="21" y2="9"></line>
-            <line x1="9" y1="21" x2="9" y2="9"></line>
-          </svg>
-          Inventory
+  <!-- TAB: AUDIT -->
+  <div id="tab-audit" class="tab-panel">
+    <div id="auditHome">
+      <div class="section-head">
+        <div class="section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Start Audit
         </div>
-        <div class="stat-value" id="inventoryCount">0</div>
-      </article>
+      </div>
+      <div class="card">
+        <div class="card-row" onclick="startAudit('full')">
+          <div class="card-row-left">
+            <div class="card-row-title">Full Audit</div>
+            <div class="card-row-sub">All inventory items sorted by location</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+        <div class="card-row" onclick="startAudit('location')">
+          <div class="card-row-left">
+            <div class="card-row-title">By Location</div>
+            <div class="card-row-sub">Select a specific location to audit</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+        <div class="card-row" onclick="startAudit('stale')">
+          <div class="card-row-left">
+            <div class="card-row-title">Not Recently Audited</div>
+            <div class="card-row-sub">Items not audited in the last 30 days</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+        <div class="card-row" onclick="startAudit('lowstock')">
+          <div class="card-row-left">
+            <div class="card-row-title">Low Stock Items</div>
+            <div class="card-row-sub">Items at or below threshold</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+      </div>
 
-      <article class="panel stat-card">
+      <div class="section-head mt-4">
+        <div class="section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Session History
+        </div>
+      </div>
+      <div id="auditHistory"></div>
+    </div>
+
+    <div id="auditSession" style="display:none">
+      <div class="audit-progress"><div class="audit-progress-bar" id="auditBar" style="width:0%"></div></div>
+      <div id="auditCounter" class="text-sm text-muted" style="text-align:center;margin-bottom:16px"></div>
+      <div class="audit-item-photo" id="auditPhoto">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <div id="auditItemName" style="font-size:20px;font-weight:800;margin-bottom:6px"></div>
+      <div id="auditItemLoc" class="text-muted text-sm" style="margin-bottom:4px"></div>
+      <div id="auditItemQty" class="text-sm" style="margin-bottom:20px"></div>
+      <div class="audit-actions">
+        <button class="btn btn-teal btn-full" onclick="auditConfirm()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+          Confirmed — Quantity Matches
+        </button>
+        <button class="btn btn-ghost btn-full" id="auditQtyOffBtn" onclick="showAuditQtyInput()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Quantity Off
+        </button>
+        <div id="auditQtyWrap" style="display:none" class="card card-body">
+          <div class="form-label">Actual count:</div>
+          <div class="qty-wrap mt-2">
+            <button class="qty-btn" onclick="auditQtyAdj(-1)">−</button>
+            <div class="qty-display" id="auditQtyDisp">0</div>
+            <button class="qty-btn" onclick="auditQtyAdj(1)">+</button>
+          </div>
+          <button class="btn btn-primary btn-full mt-3" onclick="auditQtySubmit()">Submit Count</button>
+        </div>
+        <button class="btn btn-danger btn-full" onclick="auditNotFound()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Not Found
+        </button>
+      </div>
+      <button class="btn btn-ghost btn-sm mt-4" onclick="endAuditEarly()">End Audit Early</button>
+    </div>
+
+    <div id="auditSummary" style="display:none">
+      <div class="card card-body" style="text-align:center;padding:32px 16px">
+        <div style="font-size:48px;margin-bottom:12px">✅</div>
+        <div style="font-size:22px;font-weight:800;margin-bottom:6px">Audit Complete</div>
+        <div id="auditSummaryText" class="text-muted"></div>
+      </div>
+      <div id="auditDiscrepancies" class="mt-4"></div>
+      <button class="btn btn-ghost btn-full mt-4" onclick="closeAuditSummary()">Back to Audit</button>
+    </div>
+  </div>
+
+  <!-- TAB: SETTINGS -->
+  <div id="tab-settings" class="tab-panel">
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="stat-card">
         <div class="stat-label">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Items
+        </div>
+        <div class="stat-value" id="statItems">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Locations
         </div>
-        <div class="stat-value" id="locationsCount">0</div>
-      </article>
-
-      <article class="panel stat-card">
+        <div class="stat-value" id="statLocs">0</div>
+      </div>
+      <div class="stat-card">
         <div class="stat-label">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-          </svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
           Projects
         </div>
-        <div class="stat-value" id="projectsCount">0</div>
-      </article>
-    </section>
-
-    <section class="section">
-      <div class="panel section-card">
-        <h3 class="section-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06A2 2 0 1 1 3.4 16.97l.06-.06A1.65 1.65 0 0 0 3.79 15 1.65 1.65 0 0 0 2.28 14H2a2 2 0 1 1 0-4h.28a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82L3.4 7.12A2 2 0 1 1 6.23 4.3l.06.06A1.65 1.65 0 0 0 8.11 4a1.65 1.65 0 0 0 1-1.51V2a2 2 0 1 1 4 0v.49a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 20.82 7.12l-.06.06A1.65 1.65 0 0 0 20.43 9c.2.62.78 1 1.43 1H22a2 2 0 1 1 0 4h-.14a1.65 1.65 0 0 0-1.43 1z"></path>
-          </svg>
-          Firebase Sync
-        </h3>
-        <p class="section-copy">
-          Startup sync runs automatically now. If Firebase is slow or unavailable, the app shows a proper timeout state instead of hanging.
-        </p>
-        <div class="tag-row">
-          <span class="tag">TJR Red Icons</span>
-          <span class="tag">Auto Connect</span>
-          <span class="tag">Timeout Safe</span>
-          <span class="tag">Offline Fallback</span>
-        </div>
-        <div style="margin-top:16px" class="mono" id="debugText">Awaiting startup…</div>
+        <div class="stat-value" id="statProjs">0</div>
       </div>
-    </section>
-  </main>
+    </div>
 
-  <nav class="app-nav" aria-label="Primary">
-    <button class="nav-item active" type="button">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-        <line x1="3" y1="9" x2="21" y2="9"></line>
-        <line x1="9" y1="21" x2="9" y2="9"></line>
-      </svg>
-      <span>Inventory</span>
-    </button>
-    <button class="nav-item" type="button">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-        <circle cx="12" cy="10" r="3"></circle>
-      </svg>
-      <span>Locations</span>
-    </button>
-    <button class="nav-item" type="button">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-      </svg>
-      <span>Projects</span>
-    </button>
-    <button class="nav-item" type="button">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06A2 2 0 1 1 3.4 16.97l.06-.06A1.65 1.65 0 0 0 3.79 15 1.65 1.65 0 0 0 2.28 14H2a2 2 0 1 1 0-4h.28a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82L3.4 7.12A2 2 0 1 1 6.23 4.3l.06.06A1.65 1.65 0 0 0 8.11 4a1.65 1.65 0 0 0 1-1.51V2a2 2 0 1 1 4 0v.49a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 0 1 1 20.82 7.12l-.06.06A1.65 1.65 0 0 0 20.43 9c.2.62.78 1 1.43 1H22a2 2 0 1 1 0 4h-.14a1.65 1.65 0 0 0-1.43 1z"></path>
-      </svg>
-      <span>Settings</span>
-    </button>
-  </nav>
+    <div class="settings-section">
+      <div class="settings-section-title">☁️ Firebase Sync</div>
+      <div class="card card-body">
+        <div class="form-label">Firebase Config JSON</div>
+        <textarea id="fbConfigInput" class="form-input" rows="7" placeholder='Paste your Firebase config here&#10;(the const firebaseConfig = { ... } block)'></textarea>
+        <div id="fbConfigError" style="color:var(--red);font-size:13px;margin-top:6px;display:none"></div>
+        <div class="flex gap-2 mt-3">
+          <button class="btn btn-primary" id="fbConnectBtn" onclick="connectFirebase()">Connect to Firebase</button>
+          <button class="btn btn-ghost" onclick="disconnectFirebase()">Disconnect</button>
+        </div>
+      </div>
+    </div>
 
-  <script type="module">
-    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    <div class="settings-section">
+      <div class="settings-section-title">Tags Library</div>
+      <div class="card card-body">
+        <div id="tagsLibrary" class="tags-row"></div>
+        <div class="flex gap-2 mt-3">
+          <input id="newTagInput" class="form-input" style="flex:1" placeholder="New tag…" onkeydown="if(event.key==='Enter')addGlobalTag()"/>
+          <button class="btn btn-teal btn-sm" onclick="addGlobalTag()">Add</button>
+        </div>
+      </div>
+    </div>
 
-    // ====================================
-    // BAKED-IN FIREBASE CONFIG
-    // ====================================
-    const firebaseConfig = {
-      apiKey: "AIzaSyC-O985gyiOb7Jq5ibRqsPdPfdVLrmQiXo",
-      authDomain: "asms-studio.firebaseapp.com",
-      projectId: "asms-studio",
-      storageBucket: "asms-studio.firebasestorage.app",
-      messagingSenderId: "128775260947",
-      appId: "1:128775260947:web:c094545988222d7afd68e6"
-    };
+    <div class="settings-section">
+      <div class="settings-section-title">Data</div>
+      <div class="settings-row" onclick="exportCSV()" style="cursor:pointer">
+        <div>
+          <div class="settings-row-label">Export CSV</div>
+          <div class="settings-row-sub">Download inventory as spreadsheet</div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div class="settings-row" onclick="exportJSON()" style="cursor:pointer">
+        <div>
+          <div class="settings-row-label">Export JSON Backup</div>
+          <div class="settings-row-sub">Full backup of all data</div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div class="settings-row" onclick="document.getElementById('importFile').click()" style="cursor:pointer">
+        <div>
+          <div class="settings-row-label">Restore from Backup</div>
+          <div class="settings-row-sub">Import a JSON backup file</div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)"/>
+      <div class="settings-row" onclick="confirmClearData()" style="cursor:pointer">
+        <div>
+          <div class="settings-row-label" style="color:var(--red)">Clear All Local Data</div>
+          <div class="settings-row-sub">Removes everything from this device</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 
-    const FIREBASE_CONNECT_TIMEOUT_MS = 7000;
+<!-- BOTTOM NAV -->
+<nav class="app-nav">
+  <button class="nav-btn active" data-tab="inventory" onclick="switchTab('inventory')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Inventory
+  </button>
+  <button class="nav-btn" data-tab="locations" onclick="switchTab('locations')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    Locations
+  </button>
+  <button class="nav-btn" data-tab="projects" onclick="switchTab('projects')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+    Projects
+  </button>
+  <button class="nav-btn" data-tab="audit" onclick="switchTab('audit')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Audit
+  </button>
+  <button class="nav-btn" data-tab="settings" onclick="switchTab('settings')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    Settings
+  </button>
+</nav>
 
-    let firebaseApp = null;
-    let db = null;
-    let firebaseReady = false;
-    let firebaseConnectError = null;
+<!-- FAB (context sensitive) -->
+<button class="fab" id="fab" onclick="fabAction()">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
 
-    const statusEl = document.getElementById("firebaseStatus");
-    const statusTextEl = document.getElementById("firebaseStatusText");
-    const bannerEl = document.getElementById("firebaseBanner");
-    const debugTextEl = document.getElementById("debugText");
+<!-- TOAST -->
+<div id="toast"></div>
 
-    const inventoryCountEl = document.getElementById("inventoryCount");
-    const locationsCountEl = document.getElementById("locationsCount");
-    const projectsCountEl = document.getElementById("projectsCount");
+<!-- ═══════════════════════ SHEETS / MODALS ═══════════════════════ -->
 
-    const retryFirebaseBtn = document.getElementById("retryFirebaseBtn");
-    const seedDemoBtn = document.getElementById("seedDemoBtn");
-    const clearDemoBtn = document.getElementById("clearDemoBtn");
+<!-- ITEM DETAIL SHEET -->
+<div class="overlay" id="itemDetailOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="itemDetailTitle">Item</div>
+      <button class="sheet-close" onclick="closeSheet('itemDetailOverlay')">×</button>
+    </div>
+    <div class="sheet-body" id="itemDetailBody"></div>
+  </div>
+</div>
 
-    function setFirebaseStatus(state, message = "") {
-      statusEl.classList.remove("offline", "connecting", "online", "error");
-      statusEl.classList.add(state);
+<!-- ADD/EDIT ITEM SHEET -->
+<div class="overlay" id="itemFormOverlay">
+  <div class="sheet sheet-full">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="itemFormTitle">Add Item</div>
+      <button class="sheet-close" onclick="closeSheet('itemFormOverlay')">×</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="itemFormId"/>
+      <div class="form-group">
+        <label class="form-label">Photo</label>
+        <div class="photo-zone" id="itemPhotoZone" onclick="document.getElementById('itemPhotoFile').click()">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span class="photo-zone-label">Tap to add photo</span>
+        </div>
+        <input type="file" id="itemPhotoFile" accept="image/*" style="display:none" onchange="handlePhotoUpload(event,'itemPhotoZone','itemPhotoData')"/>
+        <input type="hidden" id="itemPhotoData"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Name <span style="color:var(--red)">*</span></label>
+        <input id="itemName" class="form-input" placeholder="Item name…"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="itemCategory" class="form-input">
+            <option value="">Select…</option>
+            <option>Artwork</option><option>Material</option><option>Equipment</option>
+            <option>Tool</option><option>Supply</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select id="itemStatus" class="form-input">
+            <option>Available</option><option>In Use</option><option>Storage</option>
+            <option>Sold</option><option>On Loan</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <select id="itemLocation" class="form-input"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Quantity</label>
+          <div class="qty-wrap">
+            <button class="qty-btn" onclick="adjFormQty(-1)">−</button>
+            <div class="qty-display" id="formQtyDisp">1</div>
+            <button class="qty-btn" onclick="adjFormQty(1)">+</button>
+          </div>
+          <input type="hidden" id="itemQty" value="1"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Low Stock Threshold</label>
+          <input id="itemThreshold" class="form-input" type="number" min="0" placeholder="0"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Price ($)</label>
+          <input id="itemPrice" class="form-input" type="number" min="0" step="0.01" placeholder="0.00"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Barcode</label>
+          <input id="itemBarcode" class="form-input" placeholder="Scan or type…"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags</label>
+        <div id="itemTagsRow" class="tags-row"></div>
+        <select id="itemTagSelect" class="form-input mt-2" onchange="addTagFromSelect()">
+          <option value="">Add tag…</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="itemDesc" class="form-input" placeholder="Optional notes…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea id="itemNotes" class="form-input" placeholder="Private notes…"></textarea>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <button class="btn btn-primary btn-full" onclick="saveItem()">Save Item</button>
+    </div>
+  </div>
+</div>
 
-      const labels = {
-        offline: "Offline",
-        connecting: "Connecting…",
-        online: "Synced",
-        error: "Sync Error"
-      };
+<!-- LOCATION FORM SHEET -->
+<div class="overlay" id="locFormOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="locFormTitle">Add Location</div>
+      <button class="sheet-close" onclick="closeSheet('locFormOverlay')">×</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="locFormId"/>
+      <div class="form-group">
+        <label class="form-label">Location Name <span style="color:var(--red)">*</span></label>
+        <input id="locName" class="form-input" placeholder="e.g. Studio Shelf A"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select id="locType" class="form-input">
+          <option>Studio</option><option>Storage</option><option>Shelf</option>
+          <option>Cabinet</option><option>Drawer</option><option>Box</option><option>Bin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Parent Location (optional)</label>
+        <select id="locParent" class="form-input"><option value="">None (top level)</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="locDesc" class="form-input" placeholder="Optional details…"></textarea>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <button class="btn btn-primary btn-full" onclick="saveLocation()">Save Location</button>
+    </div>
+  </div>
+</div>
 
-      statusTextEl.textContent = labels[state] || "Offline";
+<!-- LOCATION DETAIL SHEET -->
+<div class="overlay" id="locDetailOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="locDetailTitle">Location</div>
+      <button class="sheet-close" onclick="closeSheet('locDetailOverlay')">×</button>
+    </div>
+    <div class="sheet-body" id="locDetailBody"></div>
+  </div>
+</div>
 
-      if (!message) {
-        bannerEl.className = "sync-banner hidden info";
-        bannerEl.textContent = "";
-      } else {
-        bannerEl.className = `sync-banner ${state === "error" ? "error" : "info"}`;
-        bannerEl.textContent = message;
-      }
+<!-- PROJECT FORM SHEET -->
+<div class="overlay" id="projFormOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="projFormTitle">Add Project</div>
+      <button class="sheet-close" onclick="closeSheet('projFormOverlay')">×</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="projFormId"/>
+      <div class="form-group">
+        <label class="form-label">Project Name <span style="color:var(--red)">*</span></label>
+        <input id="projName" class="form-input" placeholder="Project name…"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select id="projStatus" class="form-input">
+            <option>Active</option><option>Complete</option><option>On Hold</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client</label>
+          <input id="projClient" class="form-input" placeholder="Client name…"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Budget ($)</label>
+          <input id="projBudget" class="form-input" type="number" min="0" step="0.01" placeholder="0.00"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input id="projDue" class="form-input" type="date"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="projDesc" class="form-input" placeholder="Project details…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea id="projNotes" class="form-input" placeholder="Private notes…"></textarea>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <button class="btn btn-primary btn-full" onclick="saveProject()">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT DETAIL SHEET -->
+<div class="overlay" id="projDetailOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="projDetailTitle">Project</div>
+      <button class="sheet-close" onclick="closeSheet('projDetailOverlay')">×</button>
+    </div>
+    <div class="sheet-body" id="projDetailBody"></div>
+  </div>
+</div>
+
+<!-- AUDIT LOCATION PICKER -->
+<div class="overlay" id="auditLocOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">Select Location</div>
+      <button class="sheet-close" onclick="closeSheet('auditLocOverlay')">×</button>
+    </div>
+    <div class="sheet-body" id="auditLocList"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ JAVASCRIPT ═══════════════════════════ -->
+<script>
+// ── STATE ────────────────────────────────────────────────────────
+let db = {
+  inventory: [],
+  locations: [],
+  projects: [],
+  auditSessions: [],
+  tags: ['acrylic','canvas','color','epoxy','heat','mixed media','paint','resin']
+};
+let fbApp = null, fbDatabase = null, fbListeners = [];
+let currentTab = 'inventory';
+let invFilter = 'all', invQuery = '';
+let auditQueue = [], auditIdx = 0, auditSession = null, auditActualQty = 0;
+
+// ── LOCAL STORAGE ─────────────────────────────────────────────────
+function lsSave(){try{localStorage.setItem('asms_v5',JSON.stringify(db))}catch(e){}}
+function lsLoad(){try{const d=localStorage.getItem('asms_v5');if(d)db=JSON.parse(d)}catch(e){}}
+
+// ── ID / DATE HELPERS ─────────────────────────────────────────────
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function now(){return new Date().toISOString()}
+function fmtDate(d){if(!d)return '—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='show '+type;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.className='',2600);
+}
+
+// ── TAB SWITCH ────────────────────────────────────────────────────
+function switchTab(tab){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.querySelector(`.nav-btn[data-tab="${tab}"]`).classList.add('active');
+  currentTab=tab;
+  const fab=document.getElementById('fab');
+  fab.style.display=(tab==='audit'||tab==='settings')?'none':'flex';
+  renderTab(tab);
+}
+function renderTab(tab){
+  if(tab==='inventory')renderInventory();
+  else if(tab==='locations')renderLocations();
+  else if(tab==='projects')renderProjects();
+  else if(tab==='audit')renderAuditHistory();
+  else if(tab==='settings')renderSettings();
+}
+function fabAction(){
+  if(currentTab==='inventory')openItemForm();
+  else if(currentTab==='locations')openLocForm();
+  else if(currentTab==='projects')openProjForm();
+}
+
+// ── SHEET HELPERS ─────────────────────────────────────────────────
+function openSheet(id){document.getElementById(id).classList.add('open')}
+function closeSheet(id){document.getElementById(id).classList.remove('open')}
+
+// ── PHOTO UPLOAD ──────────────────────────────────────────────────
+function handlePhotoUpload(e,zoneId,dataId){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    document.getElementById(dataId).value=ev.target.result;
+    const z=document.getElementById(zoneId);
+    z.innerHTML=`<img src="${ev.target.result}" alt="photo"/>`;
+  };r.readAsDataURL(f);
+}
+
+// ── INVENTORY ─────────────────────────────────────────────────────
+function renderInventory(){
+  const list=document.getElementById('invList');
+  let items=db.inventory.filter(i=>{
+    if(invFilter==='lowstock'){return i.qty<=(i.threshold||0)&&i.threshold>0}
+    if(invFilter!=='all'&&i.category!==invFilter)return false;
+    if(invQuery){
+      const q=invQuery.toLowerCase();
+      return (i.name||'').toLowerCase().includes(q)||(i.barcode||'').toLowerCase().includes(q)||(i.tags||[]).some(t=>t.toLowerCase().includes(q));
     }
+    return true;
+  });
+  if(!items.length){
+    list.innerHTML=`<div class="empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><h3>No items found</h3><p>Tap + to add your first inventory item</p></div>`;
+    return;
+  }
+  const locMap={};db.locations.forEach(l=>locMap[l.id]=l.name);
+  list.innerHTML='<div class="card">'+items.map(i=>`
+    <div class="card-row" onclick="openItemDetail('${i.id}')">
+      <div class="card-row-left">
+        <div class="card-row-title">${esc(i.name)}</div>
+        <div class="card-row-sub">${locMap[i.locationId]||i.locationId||'No location'} · Qty: ${i.qty||0}</div>
+      </div>
+      <div class="card-row-right">
+        ${i.qty<=(i.threshold||0)&&i.threshold>0?'<div class="low-stock-dot"></div>':''}
+        ${i.category?`<span class="badge badge-gray">${esc(i.category)}</span>`:''}
+      </div>
+    </div>`).join('')+'</div>';
+}
 
-    function withTimeout(promise, ms, label = "Request") {
-      let timer;
-      const timeoutPromise = new Promise((_, reject) => {
-        timer = setTimeout(() => {
-          reject(new Error(`${label} timed out after ${ms}ms`));
-        }, ms);
-      });
+document.getElementById('invSearch').addEventListener('input',e=>{invQuery=e.target.value;renderInventory()});
+document.getElementById('invFilters').addEventListener('click',e=>{
+  const chip=e.target.closest('.filter-chip');if(!chip)return;
+  document.querySelectorAll('#invFilters .filter-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');invFilter=chip.dataset.filter;renderInventory();
+});
 
-      return Promise.race([
-        promise.finally(() => clearTimeout(timer)),
-        timeoutPromise
-      ]);
-    }
+function openItemDetail(id){
+  const item=db.inventory.find(i=>i.id===id);if(!item)return;
+  const locMap={};db.locations.forEach(l=>locMap[l.id]=l.name);
+  document.getElementById('itemDetailTitle').textContent=item.name;
+  document.getElementById('itemDetailBody').innerHTML=`
+    <div class="detail-hero">${item.photo?`<img src="${item.photo}" alt="${esc(item.name)}"/>`:'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'}</div>
+    <div class="card card-body">
+      <div class="detail-field"><span class="detail-key">Category</span><span class="detail-val">${esc(item.category||'—')}</span></div>
+      <div class="detail-field"><span class="detail-key">Status</span><span class="detail-val">${esc(item.status||'—')}</span></div>
+      <div class="detail-field"><span class="detail-key">Location</span><span class="detail-val">${esc(locMap[item.locationId]||item.locationId||'—')}</span></div>
+      <div class="detail-field"><span class="detail-key">Quantity</span><span class="detail-val">${item.qty||0}</span></div>
+      <div class="detail-field"><span class="detail-key">Low Stock At</span><span class="detail-val">${item.threshold||'—'}</span></div>
+      <div class="detail-field"><span class="detail-key">Price</span><span class="detail-val">${item.price?'$'+parseFloat(item.price).toFixed(2):'—'}</span></div>
+      <div class="detail-field"><span class="detail-key">Barcode</span><span class="detail-val">${esc(item.barcode||'—')}</span></div>
+      <div class="detail-field"><span class="detail-key">Tags</span><span class="detail-val">${(item.tags||[]).length?item.tags.map(t=>`<span class="badge badge-teal">${esc(t)}</span>`).join(' '):'—'}</span></div>
+      <div class="detail-field"><span class="detail-key">Audit Status</span><span class="detail-val">${esc(item.auditStatus||'Pending')}</span></div>
+      <div class="detail-field"><span class="detail-key">Last Audited</span><span class="detail-val">${fmtDate(item.lastAudited)}</span></div>
+      <div class="detail-field"><span class="detail-key">Added</span><span class="detail-val">${fmtDate(item.createdAt)}</span></div>
+      ${item.description?`<div class="detail-field" style="flex-direction:column;gap:4px"><span class="detail-key">Description</span><span class="detail-val" style="text-align:left">${esc(item.description)}</span></div>`:''}
+      ${item.notes?`<div class="detail-field" style="flex-direction:column;gap:4px"><span class="detail-key">Notes</span><span class="detail-val" style="text-align:left">${esc(item.notes)}</span></div>`:''}
+    </div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeSheet('itemDetailOverlay');openItemForm('${item.id}')">Edit</button>
+      <button class="btn btn-danger" style="flex:1" onclick="deleteItem('${item.id}')">Delete</button>
+    </div>`;
+  openSheet('itemDetailOverlay');
+}
 
-    function setCounts({ inventory = 0, locations = 0, projects = 0 } = {}) {
-      inventoryCountEl.textContent = inventory;
-      locationsCountEl.textContent = locations;
-      projectsCountEl.textContent = projects;
-    }
+let formItemTags=[];
+function openItemForm(id){
+  formItemTags=[];
+  const item=id?db.inventory.find(i=>i.id===id):null;
+  document.getElementById('itemFormTitle').textContent=item?'Edit Item':'Add Item';
+  document.getElementById('itemFormId').value=item?item.id:'';
+  document.getElementById('itemName').value=item?item.name:'';
+  document.getElementById('itemCategory').value=item?item.category:'';
+  document.getElementById('itemStatus').value=item?item.status:'Available';
+  document.getElementById('itemQty').value=item?item.qty:1;
+  document.getElementById('formQtyDisp').textContent=item?item.qty:1;
+  document.getElementById('itemThreshold').value=item?item.threshold:'';
+  document.getElementById('itemPrice').value=item?item.price:'';
+  document.getElementById('itemBarcode').value=item?item.barcode:'';
+  document.getElementById('itemDesc').value=item?item.description:'';
+  document.getElementById('itemNotes').value=item?item.notes:'';
+  document.getElementById('itemPhotoData').value=item&&item.photo?item.photo:'';
+  const zone=document.getElementById('itemPhotoZone');
+  if(item&&item.photo){zone.innerHTML=`<img src="${item.photo}" alt="photo"/>`}
+  else{zone.innerHTML='<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="photo-zone-label">Tap to add photo</span>'}
+  formItemTags=(item&&item.tags)?[...item.tags]:[];
+  renderFormTags();
+  populateTagSelect();
+  // location dropdown
+  const sel=document.getElementById('itemLocation');
+  sel.innerHTML='<option value="">No location</option>'+db.locations.map(l=>`<option value="${l.id}"${item&&item.locationId===l.id?' selected':''}>${esc(l.name)}</option>`).join('');
+  openSheet('itemFormOverlay');
+}
+function adjFormQty(d){
+  let v=parseInt(document.getElementById('itemQty').value||1)+d;
+  if(v<0)v=0;
+  document.getElementById('itemQty').value=v;
+  document.getElementById('formQtyDisp').textContent=v;
+}
+function renderFormTags(){
+  document.getElementById('itemTagsRow').innerHTML=formItemTags.map(t=>`<span class="tag-chip">${esc(t)}<button onclick="removeFormTag('${esc(t)}')">×</button></span>`).join('');
+}
+function removeFormTag(t){formItemTags=formItemTags.filter(x=>x!==t);renderFormTags()}
+function populateTagSelect(){
+  const sel=document.getElementById('itemTagSelect');
+  const available=db.tags.filter(t=>!formItemTags.includes(t));
+  sel.innerHTML='<option value="">Add tag…</option>'+available.map(t=>`<option>${esc(t)}</option>`).join('');
+}
+function addTagFromSelect(){
+  const sel=document.getElementById('itemTagSelect');
+  const v=sel.value;if(!v)return;
+  if(!formItemTags.includes(v))formItemTags.push(v);
+  sel.value='';renderFormTags();populateTagSelect();
+}
+function saveItem(){
+  const name=document.getElementById('itemName').value.trim();
+  if(!name){toast('Name is required','error');return;}
+  const id=document.getElementById('itemFormId').value||uid();
+  const item={
+    id,name,
+    category:document.getElementById('itemCategory').value,
+    status:document.getElementById('itemStatus').value,
+    locationId:document.getElementById('itemLocation').value,
+    qty:parseInt(document.getElementById('itemQty').value)||0,
+    threshold:parseInt(document.getElementById('itemThreshold').value)||0,
+    price:document.getElementById('itemPrice').value,
+    barcode:document.getElementById('itemBarcode').value.trim(),
+    description:document.getElementById('itemDesc').value.trim(),
+    notes:document.getElementById('itemNotes').value.trim(),
+    tags:formItemTags,
+    photo:document.getElementById('itemPhotoData').value||null,
+    auditStatus:db.inventory.find(i=>i.id===id)?.auditStatus||'Pending',
+    lastAudited:db.inventory.find(i=>i.id===id)?.lastAudited||null,
+    createdAt:db.inventory.find(i=>i.id===id)?.createdAt||now(),
+    updatedAt:now()
+  };
+  const idx=db.inventory.findIndex(i=>i.id===id);
+  if(idx>=0)db.inventory[idx]=item;else db.inventory.push(item);
+  persistData();
+  closeSheet('itemFormOverlay');closeSheet('itemDetailOverlay');
+  renderInventory();renderSettings();
+  toast(idx>=0?'Item updated':'Item added');
+}
+function deleteItem(id){
+  if(!confirm('Delete this item?'))return;
+  db.inventory=db.inventory.filter(i=>i.id!==id);
+  persistData();closeSheet('itemDetailOverlay');renderInventory();renderSettings();toast('Item deleted','error');
+}
 
-    function setDebug(text) {
-      debugTextEl.textContent = text;
-      console.log(text);
-    }
+// ── LOCATIONS ─────────────────────────────────────────────────────
+const LOC_COLORS={Studio:'badge-teal',Storage:'badge-gray',Shelf:'badge-amber',Cabinet:'badge-green',Drawer:'badge-amber',Box:'badge-gray',Bin:'badge-red'};
+function renderLocations(){
+  const list=document.getElementById('locList');
+  if(!db.locations.length){
+    list.innerHTML='<div class="empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><h3>No locations yet</h3><p>Tap + to add your first location</p></div>';
+    return;
+  }
+  const top=db.locations.filter(l=>!l.parentId);
+  list.innerHTML=top.map(l=>renderLocNode(l,0)).join('');
+}
+function renderLocNode(l,depth){
+  const count=db.inventory.filter(i=>i.locationId===l.id).length;
+  const children=db.locations.filter(c=>c.parentId===l.id);
+  const badge=LOC_COLORS[l.type]||'badge-gray';
+  let html=`<div class="card" style="margin-bottom:8px;${depth>0?'margin-left:16px;':''}">
+    <div class="card-row" onclick="openLocDetail('${l.id}')">
+      <div class="card-row-left">
+        <div class="card-row-title">${esc(l.name)}</div>
+        <div class="card-row-sub">${count} item${count!==1?'s':''}</div>
+      </div>
+      <div class="card-row-right">
+        <span class="badge ${badge}">${esc(l.type||'Location')}</span>
+      </div>
+    </div>
+  </div>`;
+  if(children.length)html+=children.map(c=>renderLocNode(c,depth+1)).join('');
+  return html;
+}
+function openLocDetail(id){
+  const loc=db.locations.find(l=>l.id===id);if(!loc)return;
+  const items=db.inventory.filter(i=>i.locationId===id);
+  const parent=db.locations.find(l=>l.id===loc.parentId);
+  document.getElementById('locDetailTitle').textContent=loc.name;
+  document.getElementById('locDetailBody').innerHTML=`
+    <div class="card card-body" style="margin-bottom:14px">
+      <div class="detail-field"><span class="detail-key">Type</span><span class="detail-val">${esc(loc.type||'—')}</span></div>
+      ${parent?`<div class="detail-field"><span class="detail-key">Part of</span><span class="detail-val">${esc(parent.name)}</span></div>`:''}
+      ${loc.description?`<div class="detail-field" style="flex-direction:column;gap:4px"><span class="detail-key">Description</span><span class="detail-val" style="text-align:left">${esc(loc.description)}</span></div>`:''}
+    </div>
+    <div class="section-title" style="margin-bottom:10px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Items (${items.length})
+    </div>
+    ${items.length?`<div class="card">`+items.map(i=>`<div class="card-row" onclick="closeSheet('locDetailOverlay');openItemDetail('${i.id}')"><div class="card-row-left"><div class="card-row-title">${esc(i.name)}</div><div class="card-row-sub">Qty: ${i.qty||0}</div></div><span class="badge badge-gray">${esc(i.category||'—')}</span></div>`).join('')+'</div>':'<div class="empty" style="padding:32px 0"><p>No items here</p></div>'}
+    <div class="detail-actions">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeSheet('locDetailOverlay');openLocForm('${loc.id}')">Edit</button>
+      <button class="btn btn-danger" style="flex:1" onclick="deleteLoc('${loc.id}')">Delete</button>
+    </div>`;
+  openSheet('locDetailOverlay');
+}
+function openLocForm(id){
+  const loc=id?db.locations.find(l=>l.id===id):null;
+  document.getElementById('locFormTitle').textContent=loc?'Edit Location':'Add Location';
+  document.getElementById('locFormId').value=loc?loc.id:'';
+  document.getElementById('locName').value=loc?loc.name:'';
+  document.getElementById('locType').value=loc?loc.type:'Studio';
+  document.getElementById('locDesc').value=loc?loc.description:'';
+  const par=document.getElementById('locParent');
+  const others=db.locations.filter(l=>l.id!==id);
+  par.innerHTML='<option value="">None (top level)</option>'+others.map(l=>`<option value="${l.id}"${loc&&loc.parentId===l.id?' selected':''}>${esc(l.name)}</option>`).join('');
+  openSheet('locFormOverlay');
+}
+function saveLocation(){
+  const name=document.getElementById('locName').value.trim();
+  if(!name){toast('Name is required','error');return;}
+  const id=document.getElementById('locFormId').value||uid();
+  const loc={id,name,type:document.getElementById('locType').value,parentId:document.getElementById('locParent').value||null,description:document.getElementById('locDesc').value.trim(),createdAt:db.locations.find(l=>l.id===id)?.createdAt||now(),updatedAt:now()};
+  const idx=db.locations.findIndex(l=>l.id===id);
+  if(idx>=0)db.locations[idx]=loc;else db.locations.push(loc);
+  persistData();closeSheet('locFormOverlay');closeSheet('locDetailOverlay');renderLocations();renderSettings();toast(idx>=0?'Location updated':'Location added');
+}
+function deleteLoc(id){
+  if(!confirm('Delete this location? Items here will lose their location.'))return;
+  db.locations=db.locations.filter(l=>l.id!==id);
+  db.inventory=db.inventory.map(i=>i.locationId===id?{...i,locationId:''}:i);
+  persistData();closeSheet('locDetailOverlay');renderLocations();renderSettings();toast('Location deleted','error');
+}
 
-    function startOfflineMode(reason = "Offline mode active.") {
-      firebaseReady = false;
-      window.firebaseReady = false;
-      setDebug(reason);
+// ── PROJECTS ──────────────────────────────────────────────────────
+function renderProjects(){
+  const list=document.getElementById('projList');
+  if(!db.projects.length){
+    list.innerHTML='<div class="empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg><h3>No projects yet</h3><p>Tap + to add your first project</p></div>';
+    return;
+  }
+  const active=db.projects.filter(p=>p.status==='Active');
+  const other=db.projects.filter(p=>p.status!=='Active');
+  let html='';
+  if(active.length){html+=`<div class="section-title" style="margin-bottom:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Active</div><div class="card">`+active.map(projRow).join('')+'</div>';}
+  if(other.length){html+=`<div class="section-title" style="margin:16px 0 10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Other</div><div class="card">`+other.map(projRow).join('')+'</div>';}
+  list.innerHTML=html;
+}
+function projRow(p){
+  const bc=p.status==='Active'?'badge-teal':p.status==='Complete'?'badge-green':'badge-amber';
+  return `<div class="card-row" onclick="openProjDetail('${p.id}')"><div class="card-row-left"><div class="card-row-title">${esc(p.name)}</div><div class="card-row-sub">${p.client||'No client'}${p.dueDate?' · Due '+fmtDate(p.dueDate):''}</div></div><span class="badge ${bc}">${esc(p.status)}</span></div>`;
+}
+function openProjDetail(id){
+  const p=db.projects.find(x=>x.id===id);if(!p)return;
+  const bc=p.status==='Active'?'badge-teal':p.status==='Complete'?'badge-green':'badge-amber';
+  document.getElementById('projDetailTitle').textContent=p.name;
+  document.getElementById('projDetailBody').innerHTML=`
+    <div class="card card-body">
+      <div class="detail-field"><span class="detail-key">Status</span><span class="detail-val"><span class="badge ${bc}">${esc(p.status)}</span></span></div>
+      <div class="detail-field"><span class="detail-key">Client</span><span class="detail-val">${esc(p.client||'—')}</span></div>
+      <div class="detail-field"><span class="detail-key">Budget</span><span class="detail-val">${p.budget?'$'+parseFloat(p.budget).toFixed(2):'—'}</span></div>
+      <div class="detail-field"><span class="detail-key">Due Date</span><span class="detail-val">${fmtDate(p.dueDate)}</span></div>
+      <div class="detail-field"><span class="detail-key">Added</span><span class="detail-val">${fmtDate(p.createdAt)}</span></div>
+      ${p.description?`<div class="detail-field" style="flex-direction:column;gap:4px"><span class="detail-key">Description</span><span class="detail-val" style="text-align:left">${esc(p.description)}</span></div>`:''}
+      ${p.notes?`<div class="detail-field" style="flex-direction:column;gap:4px"><span class="detail-key">Notes</span><span class="detail-val" style="text-align:left">${esc(p.notes)}</span></div>`:''}
+    </div>
+    <div class="detail-actions">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeSheet('projDetailOverlay');openProjForm('${p.id}')">Edit</button>
+      <button class="btn btn-danger" style="flex:1" onclick="deleteProject('${p.id}')">Delete</button>
+    </div>`;
+  openSheet('projDetailOverlay');
+}
+function openProjForm(id){
+  const p=id?db.projects.find(x=>x.id===id):null;
+  document.getElementById('projFormTitle').textContent=p?'Edit Project':'Add Project';
+  document.getElementById('projFormId').value=p?p.id:'';
+  document.getElementById('projName').value=p?p.name:'';
+  document.getElementById('projStatus').value=p?p.status:'Active';
+  document.getElementById('projClient').value=p?p.client:'';
+  document.getElementById('projBudget').value=p?p.budget:'';
+  document.getElementById('projDue').value=p?p.dueDate:'';
+  document.getElementById('projDesc').value=p?p.description:'';
+  document.getElementById('projNotes').value=p?p.notes:'';
+  openSheet('projFormOverlay');
+}
+function saveProject(){
+  const name=document.getElementById('projName').value.trim();
+  if(!name){toast('Name is required','error');return;}
+  const id=document.getElementById('projFormId').value||uid();
+  const p={id,name,status:document.getElementById('projStatus').value,client:document.getElementById('projClient').value.trim(),budget:document.getElementById('projBudget').value,dueDate:document.getElementById('projDue').value,description:document.getElementById('projDesc').value.trim(),notes:document.getElementById('projNotes').value.trim(),createdAt:db.projects.find(x=>x.id===id)?.createdAt||now(),updatedAt:now()};
+  const idx=db.projects.findIndex(x=>x.id===id);
+  if(idx>=0)db.projects[idx]=p;else db.projects.push(p);
+  persistData();closeSheet('projFormOverlay');closeSheet('projDetailOverlay');renderProjects();renderSettings();toast(idx>=0?'Project updated':'Project added');
+}
+function deleteProject(id){
+  if(!confirm('Delete this project?'))return;
+  db.projects=db.projects.filter(p=>p.id!==id);
+  persistData();closeSheet('projDetailOverlay');renderProjects();renderSettings();toast('Project deleted','error');
+}
 
-      // Replace this with your localStorage/bootstrap logic if it already exists.
-      const localInventory = JSON.parse(localStorage.getItem("asms_inventory") || "[]");
-      const localLocations = JSON.parse(localStorage.getItem("asms_locations") || "[]");
-      const localProjects = JSON.parse(localStorage.getItem("asms_projects") || "[]");
+// ── AUDIT ─────────────────────────────────────────────────────────
+function startAudit(type){
+  if(type==='location'){
+    const locList=document.getElementById('auditLocList');
+    locList.innerHTML=db.locations.length?'<div class="card">'+db.locations.map(l=>`<div class="card-row" onclick="beginAudit('location','${l.id}');closeSheet('auditLocOverlay')">${esc(l.name)}</div>`).join('')+'</div>':'<div class="empty"><p>No locations yet</p></div>';
+    openSheet('auditLocOverlay');return;
+  }
+  beginAudit(type,null);
+}
+function beginAudit(type,filterId){
+  let items=[];
+  if(type==='full')items=[...db.inventory];
+  else if(type==='location')items=db.inventory.filter(i=>i.locationId===filterId);
+  else if(type==='stale'){const cutoff=Date.now()-30*24*60*60*1000;items=db.inventory.filter(i=>!i.lastAudited||new Date(i.lastAudited).getTime()<cutoff);}
+  else if(type==='lowstock')items=db.inventory.filter(i=>i.qty<=(i.threshold||0)&&i.threshold>0);
+  if(!items.length){toast('No items match this audit type','error');return;}
+  auditQueue=[...items.sort((a,b)=>(a.locationId||'').localeCompare(b.locationId||''))];
+  auditIdx=0;
+  auditSession={id:uid(),type,filterId,startedAt:now(),confirmed:0,qtyOff:0,notFound:0,discrepancies:[]};
+  showAuditSessionUI();
+}
+function showAuditSessionUI(){
+  document.getElementById('auditHome').style.display='none';
+  document.getElementById('auditSession').style.display='block';
+  document.getElementById('auditSummary').style.display='none';
+  showAuditItem();
+}
+function showAuditItem(){
+  const item=auditQueue[auditIdx];
+  const locMap={};db.locations.forEach(l=>locMap[l.id]=l.name);
+  const pct=Math.round((auditIdx/auditQueue.length)*100);
+  document.getElementById('auditBar').style.width=pct+'%';
+  document.getElementById('auditCounter').textContent=`Item ${auditIdx+1} of ${auditQueue.length}`;
+  document.getElementById('auditItemName').textContent=item.name;
+  document.getElementById('auditItemLoc').textContent=locMap[item.locationId]||'No location';
+  document.getElementById('auditItemQty').textContent=`Expected qty: ${item.qty||0}`;
+  const photo=document.getElementById('auditPhoto');
+  photo.innerHTML=item.photo?`<img src="${item.photo}" alt="${esc(item.name)}"/>`:'<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+  document.getElementById('auditQtyWrap').style.display='none';
+  auditActualQty=item.qty||0;
+  document.getElementById('auditQtyDisp').textContent=auditActualQty;
+}
+function auditConfirm(){
+  const item=auditQueue[auditIdx];
+  const inv=db.inventory.find(i=>i.id===item.id);
+  if(inv){inv.auditStatus='Confirmed';inv.lastAudited=now();}
+  auditSession.confirmed++;
+  advanceAudit();
+}
+function showAuditQtyInput(){
+  document.getElementById('auditQtyWrap').style.display='block';
+  document.getElementById('auditQtyOffBtn').style.display='none';
+}
+function auditQtyAdj(d){auditActualQty=Math.max(0,auditActualQty+d);document.getElementById('auditQtyDisp').textContent=auditActualQty}
+function auditQtySubmit(){
+  const item=auditQueue[auditIdx];
+  const inv=db.inventory.find(i=>i.id===item.id);
+  if(inv){inv.qty=auditActualQty;inv.auditStatus='Discrepancy';inv.lastAudited=now();}
+  auditSession.qtyOff++;
+  auditSession.discrepancies.push({name:item.name,expected:item.qty,actual:auditActualQty,result:'Quantity Off'});
+  document.getElementById('auditQtyOffBtn').style.display='flex';
+  advanceAudit();
+}
+function auditNotFound(){
+  const item=auditQueue[auditIdx];
+  const inv=db.inventory.find(i=>i.id===item.id);
+  if(inv){inv.auditStatus='Discrepancy';inv.lastAudited=now();}
+  auditSession.notFound++;
+  auditSession.discrepancies.push({name:item.name,expected:item.qty,actual:0,result:'Not Found'});
+  advanceAudit();
+}
+function advanceAudit(){
+  auditIdx++;
+  persistData();
+  if(auditIdx>=auditQueue.length)finishAudit();
+  else showAuditItem();
+}
+function endAuditEarly(){if(confirm('End this audit early?'))finishAudit()}
+function finishAudit(){
+  auditSession.completedAt=now();
+  db.auditSessions.unshift(auditSession);
+  persistData();
+  document.getElementById('auditSession').style.display='none';
+  document.getElementById('auditSummary').style.display='block';
+  document.getElementById('auditSummaryText').textContent=`${auditSession.confirmed} confirmed · ${auditSession.qtyOff} qty off · ${auditSession.notFound} not found`;
+  const disc=document.getElementById('auditDiscrepancies');
+  if(auditSession.discrepancies.length){
+    disc.innerHTML=`<div class="section-title" style="margin-bottom:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Discrepancies</div><div class="card">`+auditSession.discrepancies.map(d=>`<div class="card-row"><div class="card-row-left"><div class="card-row-title">${esc(d.name)}</div><div class="card-row-sub">Expected: ${d.expected} · Actual: ${d.actual}</div></div><span class="badge badge-red">${esc(d.result)}</span></div>`).join('')+'</div>';
+  }else disc.innerHTML='';
+}
+function closeAuditSummary(){
+  document.getElementById('auditSummary').style.display='none';
+  document.getElementById('auditHome').style.display='block';
+  renderAuditHistory();
+}
+function renderAuditHistory(){
+  const el=document.getElementById('auditHistory');
+  if(!db.auditSessions.length){el.innerHTML='<div class="empty" style="padding:32px 0"><p>No sessions yet</p></div>';return;}
+  el.innerHTML='<div class="card">'+db.auditSessions.slice(0,20).map(s=>`
+    <div class="card-row">
+      <div class="card-row-left">
+        <div class="card-row-title">${s.type==='full'?'Full Audit':s.type==='location'?'By Location':s.type==='stale'?'Not Recently Audited':'Low Stock'}</div>
+        <div class="card-row-sub">${fmtDate(s.startedAt)} · ${s.confirmed||0} confirmed, ${(s.qtyOff||0)+(s.notFound||0)} issues</div>
+      </div>
+      ${(s.qtyOff||0)+(s.notFound||0)>0?'<span class="badge badge-red">Issues</span>':'<span class="badge badge-green">Clean</span>'}
+    </div>`).join('')+'</div>';
+}
 
-      setCounts({
-        inventory: localInventory.length,
-        locations: localLocations.length,
-        projects: localProjects.length
-      });
-    }
+// ── SETTINGS ─────────────────────────────────────────────────────
+function renderSettings(){
+  document.getElementById('statItems').textContent=db.inventory.length;
+  document.getElementById('statLocs').textContent=db.locations.length;
+  document.getElementById('statProjs').textContent=db.projects.length;
+  renderTagsLibrary();
+  const saved=getSavedFbConfig();
+  if(saved)document.getElementById('fbConfigInput').value=saved;
+}
+function renderTagsLibrary(){
+  document.getElementById('tagsLibrary').innerHTML=db.tags.map(t=>`<span class="tag-chip">${esc(t)}<button onclick="removeGlobalTag('${esc(t)}')">×</button></span>`).join('');
+}
+function addGlobalTag(){
+  const v=document.getElementById('newTagInput').value.trim().toLowerCase();
+  if(!v||db.tags.includes(v)){toast('Tag already exists or empty','error');return;}
+  db.tags.push(v);document.getElementById('newTagInput').value='';
+  persistData();renderTagsLibrary();toast('Tag added');
+}
+function removeGlobalTag(t){
+  db.tags=db.tags.filter(x=>x!==t);persistData();renderTagsLibrary();
+}
 
-    async function loadAppDataFromFirestore(db) {
-      // Lightweight probe docs.
-      // Replace this with your real listeners/loaders when wiring into full ASMS.
-      const [inventorySnap, locationsSnap, projectsSnap] = await Promise.allSettled([
-        getDoc(doc(db, "meta", "inventory")),
-        getDoc(doc(db, "meta", "locations")),
-        getDoc(doc(db, "meta", "projects"))
-      ]);
+// ── EXPORT ────────────────────────────────────────────────────────
+function exportCSV(){
+  const cols=['id','name','category','status','qty','threshold','price','barcode','tags','description','notes','auditStatus','lastAudited','createdAt'];
+  const rows=db.inventory.map(i=>cols.map(c=>{
+    const v=c==='tags'?(i.tags||[]).join('|'):i[c]||'';
+    return `"${String(v).replace(/"/g,'""')}"`;
+  }).join(','));
+  downloadBlob([cols.join(',')+'\n'+rows.join('\n')],'asms-inventory.csv','text/csv');
+  toast('CSV exported');
+}
+function exportJSON(){
+  downloadBlob([JSON.stringify(db,null,2)],'asms-backup.json','application/json');
+  toast('Backup exported');
+}
+function importJSON(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{try{const d=JSON.parse(ev.target.result);db=d;persistData();renderTab(currentTab);renderSettings();toast('Backup restored');}catch(err){toast('Invalid backup file','error');}};
+  r.readAsText(f);e.target.value='';
+}
+function downloadBlob(parts,name,type){
+  const blob=new Blob(parts,{type});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+}
+function confirmClearData(){
+  if(!confirm('Delete ALL local data? Export a backup first!'))return;
+  db={inventory:[],locations:[],projects:[],auditSessions:[],tags:['acrylic','canvas','color','epoxy','heat','mixed media','paint','resin']};
+  lsSave();renderTab(currentTab);renderSettings();toast('Data cleared','error');
+}
 
-      let inventory = 0;
-      let locations = 0;
-      let projects = 0;
+// ── FIREBASE ──────────────────────────────────────────────────────
+function getSavedFbConfig(){try{return localStorage.getItem('asms_fbconfig')||''}catch(e){return ''}}
+function setSavedFbConfig(v){try{localStorage.setItem('asms_fbconfig',v)}catch(e){}}
 
-      if (inventorySnap.status === "fulfilled" && inventorySnap.value.exists()) {
-        inventory = Number(inventorySnap.value.data().count || 0);
-      }
+function parseFbConfig(raw){
+  // strip JS wrapper: const firebaseConfig = {...};
+  let s=raw.trim();
+  s=s.replace(/^(const|let|var)\s+\w+\s*=\s*/,'').replace(/;?\s*$/,'').trim();
+  // quote unquoted keys
+  s=s.replace(/([{,]\s*)([a-zA-Z_]\w*)\s*:/g,'$1"$2":');
+  return JSON.parse(s);
+}
 
-      if (locationsSnap.status === "fulfilled" && locationsSnap.value.exists()) {
-        locations = Number(locationsSnap.value.data().count || 0);
-      }
+async function connectFirebase(){
+  const raw=document.getElementById('fbConfigInput').value.trim();
+  const errEl=document.getElementById('fbConfigError');
+  errEl.style.display='none';
+  if(!raw){errEl.textContent='Paste your Firebase config first.';errEl.style.display='block';return;}
+  let cfg;
+  try{cfg=parseFbConfig(raw);}
+  catch(e){errEl.textContent='Invalid config — '+e.message;errEl.style.display='block';return;}
+  setSavedFbConfig(raw);
+  setSyncStatus('connecting','Connecting…');
+  try{
+    const {initializeApp,getApps,getApp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const {getDatabase,ref,set,onValue,off}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    if(fbApp)try{fbListeners.forEach(fn=>fn());fbListeners=[];}catch(e){}
+    fbApp=getApps().length?getApp():initializeApp(cfg);
+    fbDatabase=getDatabase(fbApp);
+    // Push local data up then subscribe
+    await set(ref(fbDatabase,'asms'),{inventory:db.inventory,locations:db.locations,projects:db.projects,auditSessions:db.auditSessions,tags:db.tags});
+    const unsub=onValue(ref(fbDatabase,'asms'),snap=>{
+      const d=snap.val();
+      if(d){db.inventory=d.inventory||[];db.locations=d.locations||[];db.projects=d.projects||[];db.auditSessions=d.auditSessions||[];db.tags=d.tags||db.tags;lsSave();renderTab(currentTab);renderSettings();}
+      setSyncStatus('online','Synced');
+    },err=>{setSyncStatus('offline','Sync error');});
+    fbListeners.push(()=>off(ref(fbDatabase,'asms')));
+    toast('Firebase connected');
+  }catch(e){setSyncStatus('offline','Error');errEl.textContent='Connection failed: '+e.message;errEl.style.display='block';}
+}
 
-      if (projectsSnap.status === "fulfilled" && projectsSnap.value.exists()) {
-        projects = Number(projectsSnap.value.data().count || 0);
-      }
+function disconnectFirebase(){
+  fbListeners.forEach(fn=>{try{fn()}catch(e){}});fbListeners=[];
+  fbApp=null;fbDatabase=null;
+  setSyncStatus('offline','Offline');
+  toast('Disconnected','error');
+}
 
-      setCounts({ inventory, locations, projects });
-      setDebug("Firebase connected and startup probe completed.");
-    }
+function setSyncStatus(state,label){
+  const pill=document.getElementById('syncPill');
+  pill.className='sync-pill '+state;
+  document.getElementById('syncLabel').textContent=label;
+}
 
-    async function connectFirebaseOnStartup() {
-      try {
-        setFirebaseStatus("connecting", "Connecting to Firebase…");
-        setDebug("Bootstrapping Firebase with baked config…");
+async function persistData(){
+  lsSave();
+  if(fbDatabase){
+    try{
+      const {ref,set}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+      await set(ref(fbDatabase,'asms'),{inventory:db.inventory,locations:db.locations,projects:db.projects,auditSessions:db.auditSessions,tags:db.tags});
+    }catch(e){console.warn('Firebase write failed',e);}
+  }
+}
 
-        firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
-        db = getFirestore(firebaseApp);
+// ── UTILITIES ─────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-        const probe = getDoc(doc(db, "meta", "tags"));
-        await withTimeout(probe, FIREBASE_CONNECT_TIMEOUT_MS, "Firebase startup connection");
-
-        firebaseReady = true;
-        firebaseConnectError = null;
-        window.firebaseApp = firebaseApp;
-        window.db = db;
-        window.firebaseReady = true;
-
-        setFirebaseStatus("online", "Firebase connected. Real-time sync is available.");
-        await loadAppDataFromFirestore(db);
-      } catch (error) {
-        firebaseReady = false;
-        firebaseConnectError = error;
-        window.firebaseReady = false;
-
-        console.error("Firebase auto-connect failed:", error);
-
-        const isTimeout = /timed out/i.test(error.message);
-        const message = isTimeout
-          ? "Firebase took too long to respond. The app stayed in offline mode."
-          : `Firebase connection failed: ${error.message}`;
-
-        setFirebaseStatus("error", message);
-        startOfflineMode(message);
-      }
-    }
-
-    function seedDemoCounts() {
-      localStorage.setItem("asms_inventory", JSON.stringify(new Array(42).fill({})));
-      localStorage.setItem("asms_locations", JSON.stringify(new Array(9).fill({})));
-      localStorage.setItem("asms_projects", JSON.stringify(new Array(5).fill({})));
-      startOfflineMode("Demo counts seeded locally.");
-    }
-
-    function clearDemoCounts() {
-      localStorage.removeItem("asms_inventory");
-      localStorage.removeItem("asms_locations");
-      localStorage.removeItem("asms_projects");
-      setCounts({ inventory: 0, locations: 0, projects: 0 });
-      setDebug("Local demo data cleared.");
-    }
-
-    window.ASMSFirebase = {
-      get app() {
-        return firebaseApp;
-      },
-      get db() {
-        return db;
-      },
-      get ready() {
-        return firebaseReady;
-      },
-      get error() {
-        return firebaseConnectError;
-      },
-      reconnect: connectFirebaseOnStartup
-    };
-
-    retryFirebaseBtn.addEventListener("click", connectFirebaseOnStartup);
-    seedDemoBtn.addEventListener("click", seedDemoCounts);
-    clearDemoBtn.addEventListener("click", clearDemoCounts);
-
-    window.addEventListener("DOMContentLoaded", connectFirebaseOnStartup);
-  </script>
+// ── INIT ──────────────────────────────────────────────────────────
+(async function init(){
+  lsLoad();
+  renderInventory();
+  renderSettings();
+  const saved=getSavedFbConfig();
+  if(saved){document.getElementById('fbConfigInput').value=saved;await connectFirebase();}
+})();
+</script>
 </body>
 </html>
